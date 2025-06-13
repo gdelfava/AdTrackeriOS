@@ -72,7 +72,7 @@ class SummaryViewModel: ObservableObject {
 
             let maxRetries = 3
             let attempt = 0
-            let lastError: String? = nil
+            let _: String? = nil
 
             while attempt < maxRetries {
                 // No need for do-catch here, as no errors are thrown in the block
@@ -191,8 +191,6 @@ class SummaryViewModel: ObservableObject {
                 self.isLoading = false
                 return
             }
-            self.error = "Failed to load data. \(lastError ?? "")"
-            self.isLoading = false
         }
     }
 } 
