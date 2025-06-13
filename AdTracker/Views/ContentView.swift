@@ -39,7 +39,7 @@ struct ContentView: View {
                     Spacer()
                     Button(action: { showWhyGoogle = true }) {
                         Text("Why do I need to sign in with Google?")
-                            .font(.body)
+                            .font(.footnote)
                             .foregroundColor(Color.white.opacity(0.7))
                     }
                     .padding(.bottom, 32)
@@ -95,7 +95,7 @@ struct WhyGoogleModal: View {
         .cornerRadius(32)
         .padding(.top, 40)
         .padding(.horizontal, 8)
-        .presentationDetents([.height(500)])
+        .presentationDetents([.large])
     }
 }
 
