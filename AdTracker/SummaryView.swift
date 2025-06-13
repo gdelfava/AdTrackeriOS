@@ -12,6 +12,11 @@ struct SummaryView: View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
+                    if viewModel.isOffline {
+                        Text("No internet connection. Please check your network and try again.")
+                            .foregroundColor(.red)
+                            .padding()
+                    }
                     if viewModel.isLoading {
                         Spacer()
                         ProgressView("Loading...")
