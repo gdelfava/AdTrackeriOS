@@ -17,7 +17,7 @@ struct SettingsView: View {
                                     .aspectRatio(contentMode: .fill)
                                     .frame(width: 100, height: 100)
                                     .clipShape(Circle())
-                                    .overlay(Circle().stroke(Color.white, lineWidth: 4))
+                                    .overlay(Circle().stroke(Color(.systemBackground), lineWidth: 4))
                                     .shadow(radius: 7)
                             } placeholder: {
                                 ProgressView()
@@ -27,6 +27,7 @@ struct SettingsView: View {
                         Text(viewModel.name)
                             .font(.title)
                             .fontWeight(.bold)
+                            .foregroundColor(.primary)
                         Text(viewModel.email)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
@@ -43,7 +44,7 @@ struct SettingsView: View {
                             settingsRow(icon: "bird.fill", color: .blue, title: "@MyAds")
                             settingsRow(icon: "lock.fill", color: .purple, title: "Terms & Privacy Policy")
                         }
-                        .background(Color(UIColor.secondarySystemBackground))
+                        .background(Color(.secondarySystemBackground))
                         .cornerRadius(12)
                     }
                     
@@ -64,14 +65,14 @@ struct SettingsView: View {
                                 .padding()
                             }
                         }
-                        .background(Color(UIColor.secondarySystemBackground))
+                        .background(Color(.secondarySystemBackground))
                         .cornerRadius(12)
                     }
                 }
                 .padding()
             }
             .navigationTitle("Settings")
-            .background(Color.black.ignoresSafeArea())
+            .background(Color(.systemBackground).ignoresSafeArea())
             .onChange(of: viewModel.isSignedOut) { signedOut, _ in
                 if signedOut {
                     authViewModel.isSignedIn = false
@@ -98,5 +99,9 @@ struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsView()
             .environmentObject(AuthViewModel())
+            .preferredColorScheme(.light)
+        SettingsView()
+            .environmentObject(AuthViewModel())
+            .preferredColorScheme(.dark)
     }
 } 
