@@ -9,20 +9,14 @@ class SettingsViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init() {
-        fetchUserInfo()
+    init(authViewModel: AuthViewModel) {
+        authViewModel.$userName.assign(to: &$name)
+        authViewModel.$userEmail.assign(to: &$email)
+        authViewModel.$userProfileImageURL.assign(to: &$imageURL)
     }
     
-    func fetchUserInfo() {
-        // TODO: Replace with real Google API call
-        // Placeholder values for now
-        self.name = "Guilio Del Fava"
-        self.email = "gdelfava@gmail.com"
-        self.imageURL = URL(string: "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y")
-    }
-    
-    func signOut() {
-        // TODO: Clear user data, tokens, etc.
+    func signOut(authViewModel: AuthViewModel) {
+        authViewModel.signOut()
         self.isSignedOut = true
     }
 } 

@@ -6,6 +6,9 @@ import Security
 class AuthViewModel: ObservableObject {
     @Published var isSignedIn: Bool = false
     @Published var accessToken: String? = nil
+    @Published var userName: String = ""
+    @Published var userEmail: String = ""
+    @Published var userProfileImageURL: URL? = nil
     
     private var cancellables = Set<AnyCancellable>()
     private let keychainService = "com.delteqws.AdTracker"
@@ -44,6 +47,11 @@ class AuthViewModel: ObservableObject {
                         self?.accessToken = accessToken
                         self?.isSignedIn = true
                         self?.saveTokenToKeychain(accessToken)
+                        if let profile = result.user.profile {
+                            self?.userName = profile.name
+                            self?.userEmail = profile.email
+                            self?.userProfileImageURL = profile.hasImage ? profile.imageURL(withDimension: 200) : nil
+                        }
                     }
                 }
             }
@@ -55,6 +63,9 @@ class AuthViewModel: ObservableObject {
         accessToken = nil
         isSignedIn = false
         deleteTokenFromKeychain()
+        userName = ""
+        userEmail = ""
+        userProfileImageURL = nil
     }
     
     func refreshTokenIfNeeded() async -> Bool {

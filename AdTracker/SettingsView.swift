@@ -1,9 +1,8 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @StateObject private var viewModel = SettingsViewModel()
-    @Environment(\.presentationMode) var presentationMode
-    @EnvironmentObject var authViewModel: AuthViewModel // Assumes you have an AuthViewModel for login state
+    @EnvironmentObject var authViewModel: AuthViewModel
+    @StateObject private var viewModel = SettingsViewModel(authViewModel: AuthViewModel())
     
     var body: some View {
         NavigationView {
@@ -51,8 +50,7 @@ struct SettingsView: View {
                     Section(header: Text("GENERAL").font(.caption).foregroundColor(.secondary).frame(maxWidth: .infinity, alignment: .leading)) {
                         VStack(spacing: 0) {
                             Button(action: {
-                                viewModel.signOut()
-                                authViewModel.signOut() // Assumes this triggers login screen
+                                viewModel.signOut(authViewModel: authViewModel)
                             }) {
                                 HStack {
                                     Image(systemName: "person.crop.circle.fill.badge.xmark")
@@ -76,6 +74,12 @@ struct SettingsView: View {
                 if signedOut {
                     authViewModel.isSignedIn = false
                 }
+            }
+            .onAppear {
+                // Update viewModel with the real authViewModel's user info
+                viewModel.name = authViewModel.userName
+                viewModel.email = authViewModel.userEmail
+                viewModel.imageURL = authViewModel.userProfileImageURL
             }
         }
     }
