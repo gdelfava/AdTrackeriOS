@@ -11,7 +11,7 @@ struct SummaryView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(alignment: .leading, spacing: 24) {
                     if viewModel.isLoading {
                         Spacer()
                         ProgressView("Loading...")
@@ -34,11 +34,12 @@ struct SummaryView: View {
                         }
                         .padding(.horizontal)
                         Spacer(minLength: 32)
-                        Text("AdTracker is not affiliated with Google, Google AdSense or Google AdMob")
+                        Text("AdTracker is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
                             .font(.footnote)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
+                            .padding(.bottom, 16)
                     }
                 }
                 .padding(.top)
@@ -83,8 +84,7 @@ struct SummaryCardView: View {
                 }
             }
             Text(value)
-                .font(.largeTitle)
-                .bold()
+                .font(.system(size: 34, weight: .semibold))
                 .foregroundColor(.primary)
             if let delta = delta, let positive = deltaPositive {
                 HStack(spacing: 4) {
@@ -99,8 +99,9 @@ struct SummaryCardView: View {
         }
         .padding()
         .background(Color(.secondarySystemBackground))
-        .cornerRadius(16)
-        .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
+        .cornerRadius(8)
+        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 }
 

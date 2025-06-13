@@ -18,7 +18,7 @@ struct SettingsView: View {
                                     .frame(width: 100, height: 100)
                                     .clipShape(Circle())
                                     .overlay(Circle().stroke(Color(.systemBackground), lineWidth: 4))
-                                    .shadow(radius: 7)
+                                    .shadow(radius: 3)
                             } placeholder: {
                                 ProgressView()
                                     .frame(width: 100, height: 100)
@@ -37,11 +37,10 @@ struct SettingsView: View {
                     // Support Section
                     Section(header: Text("SUPPORT").font(.caption).foregroundColor(.secondary).frame(maxWidth: .infinity, alignment: .leading)) {
                         VStack(spacing: 0) {
-                            settingsRow(icon: "heart.fill", color: .red, title: "Rate MyAds")
-                            settingsRow(icon: "square.and.arrow.up", color: .yellow, title: "Share MyAds")
+                            settingsRow(icon: "heart.fill", color: .red, title: "Rate AdTracker")
+                            settingsRow(icon: "square.and.arrow.up", color: .yellow, title: "Share AdTracker")
                             settingsRow(icon: "envelope.fill", color: .blue, title: "Feedback")
-                            settingsRow(icon: "gearshape.fill", color: .gray, title: "Widget Support")
-                            settingsRow(icon: "bird.fill", color: .blue, title: "@MyAds")
+                            settingsRow(icon: "bird.fill", color: .blue, title: "@AdTracker")
                             settingsRow(icon: "lock.fill", color: .purple, title: "Terms & Privacy Policy")
                         }
                         .background(Color(.secondarySystemBackground))

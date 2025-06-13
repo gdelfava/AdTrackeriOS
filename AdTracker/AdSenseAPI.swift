@@ -63,46 +63,52 @@ class AdSenseAPI {
     static let shared = AdSenseAPI()
     private init() {}
     
-    func fetchSummaryData(accessToken: String) async -> Result<AdSenseSummaryData, AdSenseError> {
-        // TODO: Implement real API call
-        // Placeholder: Simulate network delay and return dummy data
+    func fetchSummaryData(accountID: String, accessToken: String, startDate: Date, endDate: Date) async -> Result<AdSenseSummaryData, AdSenseError> {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let start = dateFormatter.string(from: startDate)
+        let end = dateFormatter.string(from: endDate)
+        let urlString = "https://adsense.googleapis.com/v2/\(accountID)/reports:generate?metrics=ESTIMATED_EARNINGS&startDate.year=\(start.prefix(4))&startDate.month=\(start.dropFirst(5).prefix(2))&startDate.day=\(start.suffix(2))&endDate.year=\(end.prefix(4))&endDate.month=\(end.dropFirst(5).prefix(2))&endDate.day=\(end.suffix(2))"
+        guard let url = URL(string: urlString) else {
+            return .failure(.invalidURL)
+        }
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         do {
-            try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
-            
-            // Log the response data for debugging
-            print("Generating dummy summary data")
-            
-            let dummy = AdSenseSummaryData(
-                today: "R 17,92",
-                yesterday: "R 76,55",
-                last7Days: "R 604,84",
-                thisMonth: "R 849,32",
-                lastMonth: "R 2 403,58",
-                lifetime: "R 261 856,93",
-                todayDelta: "+12.5%",
-                todayDeltaPositive: true,
-                yesterdayDelta: "-5.2%",
-                yesterdayDeltaPositive: false,
-                last7DaysDelta: "+8.3%",
-                last7DaysDeltaPositive: true,
-                thisMonthDelta: "+15.7%",
-                thisMonthDeltaPositive: true,
-                lastMonthDelta: "-2.1%",
-                lastMonthDeltaPositive: false
-            )
-            
-            // Log the encoded data for debugging
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = .prettyPrinted
-            if let jsonData = try? encoder.encode(dummy),
-               let jsonString = String(data: jsonData, encoding: .utf8) {
-                print("Encoded summary data: \(jsonString)")
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                return .failure(.requestFailed("Request failed"))
             }
-            
-            return .success(dummy)
+            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+            var earnings: String = "0.00"
+            if let rows = json?["rows"] as? [[String: Any]],
+               let firstRow = rows.first,
+               let cells = firstRow["cells"] as? [[String: Any]],
+               let valueString = cells.first?["value"] as? String {
+                earnings = valueString
+            }
+            // Only fill the last7Days field for this example; others can be nil or empty
+            let summary = AdSenseSummaryData(
+                today: "",
+                yesterday: "",
+                last7Days: earnings,
+                thisMonth: "",
+                lastMonth: "",
+                lifetime: "",
+                todayDelta: nil,
+                todayDeltaPositive: nil,
+                yesterdayDelta: nil,
+                yesterdayDeltaPositive: nil,
+                last7DaysDelta: nil,
+                last7DaysDeltaPositive: nil,
+                thisMonthDelta: nil,
+                thisMonthDeltaPositive: nil,
+                lastMonthDelta: nil,
+                lastMonthDeltaPositive: nil
+            )
+            return .success(summary)
         } catch {
-            print("Error generating summary data: \(error)")
-            return .failure(.decodingError("Failed to generate summary data: \(error.localizedDescription)"))
+            return .failure(.requestFailed("Network error: \(error.localizedDescription)"))
         }
     }
     

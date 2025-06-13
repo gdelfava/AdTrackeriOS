@@ -10,7 +10,7 @@ struct PaymentsView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 24) {
+            VStack(spacing: 36) {
                 if viewModel.isLoading {
                     Spacer()
                     ProgressView("Loading...")
@@ -39,7 +39,7 @@ struct PaymentsView: View {
                     }
                     .padding(.horizontal)
                     Spacer()
-                    Text("AdTracker is not affiliated with Google, Google AdSense or Google AdMob")
+                    Text("AdTracker is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
                         .font(.footnote)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -71,14 +71,13 @@ struct PaymentCardView: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             Text(value)
-                .font(.largeTitle)
-                .bold()
+                .font(.system(size: 34, weight: .semibold))
                 .foregroundColor(.primary)
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(.secondarySystemBackground))
-        .cornerRadius(16)
+        .cornerRadius(8)
         .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
     }
 }
