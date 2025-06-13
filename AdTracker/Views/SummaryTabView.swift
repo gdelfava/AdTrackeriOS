@@ -5,12 +5,12 @@ struct SummaryTabView: View {
         TabView {
             SummaryView()
                 .tabItem {
-                    Image(systemName: "chart.bar.xaxis")
-                    Text("Summary")
+                    Image(systemName: "square.split.2x2")
+                    Text("Dashboard")
                 }
             PaymentsView()
                 .tabItem {
-                    Image(systemName: "dollarsign.circle")
+                    Image(systemName: "creditcard")
                     Text("Payments")
                 }
             SettingsView()
