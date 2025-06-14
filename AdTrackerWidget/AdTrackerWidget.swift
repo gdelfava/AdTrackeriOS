@@ -49,8 +49,10 @@ struct AdSenseAPI {
     }
 
     static func loadLastUpdateDate() -> Date? {
-        let defaults = UserDefaults(suiteName: appGroupID)
-        return defaults?.object(forKey: "summaryLastUpdate") as? Date
+        if let defaults = UserDefaults(suiteName: appGroupID) {
+            return defaults.object(forKey: "summaryLastUpdate") as? Date
+        }
+        return nil
     }
 }
 

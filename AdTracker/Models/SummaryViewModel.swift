@@ -12,6 +12,7 @@ class SummaryViewModel: ObservableObject {
     @Published var thisMonthData: AdSenseSummaryData? = nil
     @Published var lastMonthData: AdSenseSummaryData? = nil
     @Published var isOffline: Bool = false
+    @Published var showOfflineToast: Bool = false
     
     var accessToken: String?
     private var accountID: String?
@@ -84,6 +85,12 @@ class SummaryViewModel: ObservableObject {
         fetchTask = Task {
             if !NetworkMonitor.shared.isConnected {
                 self.isOffline = true
+                self.showOfflineToast = true
+                // Auto-hide after 2 seconds
+                Task { @MainActor in
+                    try? await Task.sleep(nanoseconds: 2_000_000_000)
+                    self.showOfflineToast = false
+                }
                 self.error = "No internet connection."
                 self.isLoading = false
                 return
@@ -206,8 +213,9 @@ class SummaryViewModel: ObservableObject {
                 self.summaryData = summary
                 AdSenseAPI.shared.saveSummaryToSharedContainer(summary)
                 // Save the last update time as well
-                let defaults = UserDefaults(suiteName: AdSenseAPI.appGroupID)
-                defaults?.set(Date(), forKey: "summaryLastUpdate")
+                if let defaults = UserDefaults(suiteName: AdSenseAPI.appGroupID) {
+                    defaults.set(Date(), forKey: "summaryLastUpdate")
+                }
                 self.isLoading = false
                 return
             }

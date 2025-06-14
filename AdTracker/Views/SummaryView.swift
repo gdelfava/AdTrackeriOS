@@ -65,6 +65,28 @@ struct SummaryView: View {
                 Task { await viewModel.fetchSummary() }
             }
         }
+        .overlay(
+            Group {
+                if viewModel.showOfflineToast {
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            Text("No internet connection")
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 24)
+                                .padding(.vertical, 12)
+                                .background(Color.black.opacity(0.85))
+                                .cornerRadius(16)
+                            Spacer()
+                        }
+                        .padding(.bottom, 40)
+                    }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .animation(.easeInOut, value: viewModel.showOfflineToast)
+                }
+            }
+        )
     }
 }
 

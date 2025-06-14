@@ -13,12 +13,22 @@ class AuthViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let keychainService = "com.delteqws.AdTracker"
     private let keychainAccount = "googleAccessToken"
+    private let userNameKey = "userName"
+    private let userEmailKey = "userEmail"
+    private let userProfileImageURLKey = "userProfileImageURL"
     
     init() {
         // Try to load token from Keychain on init
         if let token = loadTokenFromKeychain() {
             self.accessToken = token
             self.isSignedIn = true
+        }
+        // Load user info from UserDefaults
+        let defaults = UserDefaults.standard
+        self.userName = defaults.string(forKey: userNameKey) ?? ""
+        self.userEmail = defaults.string(forKey: userEmailKey) ?? ""
+        if let urlString = defaults.string(forKey: userProfileImageURLKey), let url = URL(string: urlString) {
+            self.userProfileImageURL = url
         }
     }
     
@@ -51,6 +61,15 @@ class AuthViewModel: ObservableObject {
                             self?.userName = profile.name
                             self?.userEmail = profile.email
                             self?.userProfileImageURL = profile.hasImage ? profile.imageURL(withDimension: 200) : nil
+                            // Save to UserDefaults
+                            let defaults = UserDefaults.standard
+                            defaults.set(profile.name, forKey: self?.userNameKey ?? "userName")
+                            defaults.set(profile.email, forKey: self?.userEmailKey ?? "userEmail")
+                            if let url = self?.userProfileImageURL?.absoluteString {
+                                defaults.set(url, forKey: self?.userProfileImageURLKey ?? "userProfileImageURL")
+                            } else {
+                                defaults.removeObject(forKey: self?.userProfileImageURLKey ?? "userProfileImageURL")
+                            }
                         }
                     }
                 }
@@ -66,6 +85,11 @@ class AuthViewModel: ObservableObject {
         userName = ""
         userEmail = ""
         userProfileImageURL = nil
+        // Remove from UserDefaults
+        let defaults = UserDefaults.standard
+        defaults.removeObject(forKey: userNameKey)
+        defaults.removeObject(forKey: userEmailKey)
+        defaults.removeObject(forKey: userProfileImageURLKey)
     }
     
     func refreshTokenIfNeeded() async -> Bool {

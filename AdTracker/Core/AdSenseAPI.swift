@@ -64,6 +64,9 @@ class AdSenseAPI {
     private init() {}
     
     func fetchSummaryData(accountID: String, accessToken: String, startDate: Date, endDate: Date) async -> Result<AdSenseSummaryData, AdSenseError> {
+        guard NetworkMonitor.shared.isConnected else {
+            return .failure(.requestFailed("No internet connection"))
+        }
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let start = dateFormatter.string(from: startDate)
@@ -138,6 +141,9 @@ class AdSenseAPI {
     
     // Fetch the user's AdSense account ID
     static func fetchAccountID(accessToken: String) async -> Result<String, AdSenseError> {
+        guard NetworkMonitor.shared.isConnected else {
+            return .failure(.requestFailed("No internet connection"))
+        }
         guard let url = URL(string: "https://adsense.googleapis.com/v2/accounts") else {
             return .failure(.invalidURL)
         }
@@ -201,6 +207,9 @@ class AdSenseAPI {
     
     // Fetch earnings for a given date range
     func fetchReport(accessToken: String, accountID: String, startDate: String, endDate: String) async -> Result<Double, AdSenseError> {
+        guard NetworkMonitor.shared.isConnected else {
+            return .failure(.requestFailed("No internet connection"))
+        }
         let urlString = "https://adsense.googleapis.com/v2/\(accountID)/reports:generate?metrics=ESTIMATED_EARNINGS&dateRange=REPORTING_DATE_RANGE_UNSPECIFIED&startDate.year=\(startDate.prefix(4))&startDate.month=\(startDate.dropFirst(5).prefix(2))&startDate.day=\(startDate.suffix(2))&endDate.year=\(endDate.prefix(4))&endDate.month=\(endDate.dropFirst(5).prefix(2))&endDate.day=\(endDate.suffix(2))"
         guard let url = URL(string: urlString) else {
             return .failure(.invalidURL)
@@ -231,6 +240,9 @@ class AdSenseAPI {
     
     /// Fetches the user's unpaid earnings from AdSense using the payments endpoint (entry with 'unpaid' in the name).
     func fetchUnpaidEarnings(accessToken: String, accountID: String) async -> Result<Double, AdSenseError> {
+        guard NetworkMonitor.shared.isConnected else {
+            return .failure(.requestFailed("No internet connection"))
+        }
         let urlString = "https://adsense.googleapis.com/v2/\(accountID)/payments"
         guard let url = URL(string: urlString) else { return .failure(.invalidURL) }
         var request = URLRequest(url: url)
@@ -263,6 +275,9 @@ class AdSenseAPI {
     
     /// Fetches the user's previous payment date and amount from AdSense using the payments endpoint.
     func fetchPreviousPayment(accessToken: String, accountID: String) async -> Result<(date: Date, amount: Double)?, AdSenseError> {
+        guard NetworkMonitor.shared.isConnected else {
+            return .failure(.requestFailed("No internet connection"))
+        }
         let urlString = "https://adsense.googleapis.com/v2/\(accountID)/payments"
         guard let url = URL(string: urlString) else { return .failure(.invalidURL) }
         var request = URLRequest(url: url)
@@ -306,35 +321,30 @@ class AdSenseAPI {
 
     static let appGroupID = "group.com.delteqws.AdTracker"
     
-    private var sharedDefaults: UserDefaults? {
-        UserDefaults(suiteName: AdSenseAPI.appGroupID)
-    }
-    
     func saveSummaryToSharedContainer(_ summary: AdSenseSummaryData) {
-        guard let defaults = sharedDefaults else { return }
-        
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(summary) {
-            defaults.set(encoded, forKey: "summaryData")
-            defaults.set(Date(), forKey: "summaryLastUpdate")
-            defaults.synchronize()
+        if let defaults = UserDefaults(suiteName: AdSenseAPI.appGroupID) {
+            let encoder = JSONEncoder()
+            if let encoded = try? encoder.encode(summary) {
+                defaults.set(encoded, forKey: "summaryData")
+                defaults.set(Date(), forKey: "summaryLastUpdate")
+                defaults.synchronize()
+            }
         }
     }
     
     static func loadSummaryFromSharedContainer() -> AdSenseSummaryData? {
-        guard let defaults = UserDefaults(suiteName: appGroupID),
-              let data = defaults.data(forKey: "summaryData") else {
-            return nil
+        if let defaults = UserDefaults(suiteName: appGroupID),
+           let data = defaults.data(forKey: "summaryData") {
+            let decoder = JSONDecoder()
+            return try? decoder.decode(AdSenseSummaryData.self, from: data)
         }
-        
-        let decoder = JSONDecoder()
-        return try? decoder.decode(AdSenseSummaryData.self, from: data)
+        return nil
     }
     
     static func loadLastUpdateDate() -> Date? {
-        guard let defaults = UserDefaults(suiteName: appGroupID) else {
-            return nil
+        if let defaults = UserDefaults(suiteName: appGroupID) {
+            return defaults.object(forKey: "summaryLastUpdate") as? Date
         }
-        return defaults.object(forKey: "summaryLastUpdate") as? Date
+        return nil
     }
 } 
