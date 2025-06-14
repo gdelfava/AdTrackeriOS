@@ -1,3 +1,5 @@
+import Foundation
+
 struct AdSenseDayMetrics: Codable {
     let estimatedEarnings: String
     let clicks: String
@@ -16,6 +18,29 @@ struct AdSenseDayMetrics: Codable {
     var requests: String { pageViews }
     var impressionCTR: String { impressionsCTR }
     var matchedRequests: String { matchedAdRequests }
+    
+    var formattedImpressionsCTR: String {
+        guard let value = Double(impressionsCTR) else { return impressionsCTR }
+        return String(format: "%.2f%%", value * 100)
+    }
+    var formattedPageViewsCTR: String {
+        guard let value = Double(pageViewsCTR) else { return pageViewsCTR }
+        return String(format: "%.2f%%", value * 100)
+    }
+    var formattedCostPerClick: String {
+        guard let value = Double(costPerClick) else { return costPerClick }
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencySymbol = "R " // Change to "$" or use locale if needed
+        return formatter.string(from: NSNumber(value: value)) ?? costPerClick
+    }
+    var formattedEstimatedEarnings: String {
+        guard let value = Double(estimatedEarnings) else { return estimatedEarnings }
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencySymbol = "R " // Change to "$" or use locale if needed
+        return formatter.string(from: NSNumber(value: value)) ?? estimatedEarnings
+    }
     
     enum CodingKeys: String, CodingKey {
         case estimatedEarnings = "ESTIMATED_EARNINGS"

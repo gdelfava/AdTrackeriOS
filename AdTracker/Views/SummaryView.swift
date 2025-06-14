@@ -185,6 +185,7 @@ struct SummaryCardView: View {
 
 struct DayMetricsSheet: View {
     let metrics: AdSenseDayMetrics
+    @Environment(\.dismiss) private var dismiss
     var body: some View {
         VStack(spacing: 0) {
             // Sticky header
@@ -196,38 +197,45 @@ struct DayMetricsSheet: View {
                 Spacer()
             }
             .padding(.top, 8)
+            // Top bar with Done button and centered title
             HStack {
+                Button(action: { dismiss() }) {
+                    Text("Done")
+                        .font(.body)
+                        .foregroundColor(.accentColor)
+                        .padding(.leading)
+                }
+                Spacer()
                 Text("Today")
                     .font(.title2).bold()
                     .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity, alignment: .center)
                 Spacer()
-                Button(action: { dismissSheet() }) {
-                    Text("Done")
-                        .fontWeight(.semibold)
-                        .foregroundColor(.accentColor)
-                }
+                // Invisible button to balance the layout
+                Text("Done")
+                    .font(.largeTitle)
+                    .opacity(0)
+                    .padding(.trailing)
             }
-            .padding([.horizontal, .top])
-            .padding(.bottom, 4)
+            .padding(.vertical, 8)
             // Metrics list
             VStack(spacing: 0) {
-                DayMetricRow(label: "Estimated Gross Revenue", value: metrics.estimatedGrossRevenue, isCurrency: true)
+                DayMetricRow(label: "Estimated Gross Revenue", value: metrics.formattedEstimatedEarnings, isCurrency: true)
                 Divider()
                 DayMetricRow(label: "Requests", value: metrics.requests)
                 Divider()
                 DayMetricRow(label: "Clicks", value: metrics.clicks)
                 Divider()
-                DayMetricRow(label: "Cost Per Click", value: metrics.costPerClick, isCurrency: true)
+                DayMetricRow(label: "Cost Per Click", value: metrics.formattedCostPerClick, isCurrency: true)
                 Divider()
                 DayMetricRow(label: "Impressions", value: metrics.impressions)
                 Divider()
-                DayMetricRow(label: "Impression CTR", value: metrics.impressionCTR, isPercent: true)
+                DayMetricRow(label: "Impression CTR", value: metrics.formattedImpressionsCTR, isPercent: true)
                 Divider()
                 DayMetricRow(label: "Matched Requests", value: metrics.matchedRequests)
-                Divider()
             }
             .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .fill(Color(.secondarySystemGroupedBackground))
             )
             .padding(.horizontal)
@@ -236,9 +244,6 @@ struct DayMetricsSheet: View {
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .presentationDetents([.medium])
-    }
-    private func dismissSheet() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 
