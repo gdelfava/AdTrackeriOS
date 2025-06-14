@@ -18,9 +18,7 @@ struct PaymentsView: View {
                     Spacer()
                 } else if let error = viewModel.error {
                     Spacer()
-                    Text(error)
-                        .foregroundColor(.red)
-                        .padding()
+                    ErrorBannerView(message: error, symbol: errorSymbol(for: error))
                     Spacer()
                 } else if let data = viewModel.paymentsData {
                     VStack(alignment: .leading, spacing: 12) {
@@ -57,6 +55,17 @@ struct PaymentsView: View {
                 }
             }
             .navigationBarHidden(true)
+        }
+    }
+    
+    // Helper to pick an SF Symbol for the error
+    private func errorSymbol(for error: String) -> String {
+        if error.localizedCaseInsensitiveContains("internet") || error.localizedCaseInsensitiveContains("offline") {
+            return "wifi.slash"
+        } else if error.localizedCaseInsensitiveContains("unauthorized") || error.localizedCaseInsensitiveContains("session") {
+            return "person.crop.circle.badge.exclamationmark"
+        } else {
+            return "exclamationmark.triangle"
         }
     }
 }

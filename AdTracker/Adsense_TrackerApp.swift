@@ -13,6 +13,7 @@ struct Adsense_TrackerApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(NetworkMonitor.shared)
         }
     }
 }

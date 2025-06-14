@@ -24,9 +24,7 @@ struct SummaryView: View {
                         Spacer()
                     } else if let error = viewModel.error {
                         Spacer()
-                        Text(error)
-                            .foregroundColor(.red)
-                            .padding()
+                        ErrorBannerView(message: error, symbol: errorSymbol(for: error))
                         Spacer()
                     } else if let data = viewModel.summaryData {
                         Group {
@@ -56,7 +54,7 @@ struct SummaryView: View {
                     await viewModel.fetchSummary()
                 }
             }
-            .navigationTitle("Dashboard")
+            .navigationTitle("Summary")
         }
         .onAppear {
             if let token = authViewModel.accessToken, !viewModel.hasLoaded {
@@ -87,6 +85,28 @@ struct SummaryView: View {
                 }
             }
         )
+        .sheet(isPresented: $viewModel.showNetworkErrorModal) {
+            NetworkErrorModalView(
+                message: "The Internet connection appears to be offline. Please check your Wi-Fi or Cellular settings.",
+                onClose: { viewModel.showNetworkErrorModal = false },
+                onSettings: {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+            )
+        }
+    }
+    
+    // Helper to pick an SF Symbol for the error
+    private func errorSymbol(for error: String) -> String {
+        if error.localizedCaseInsensitiveContains("internet") || error.localizedCaseInsensitiveContains("offline") {
+            return "wifi.slash"
+        } else if error.localizedCaseInsensitiveContains("unauthorized") || error.localizedCaseInsensitiveContains("session") {
+            return "person.crop.circle.badge.exclamationmark"
+        } else {
+            return "exclamationmark.triangle"
+        }
     }
 }
 

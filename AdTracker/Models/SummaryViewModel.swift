@@ -13,6 +13,7 @@ class SummaryViewModel: ObservableObject {
     @Published var lastMonthData: AdSenseSummaryData? = nil
     @Published var isOffline: Bool = false
     @Published var showOfflineToast: Bool = false
+    @Published var showNetworkErrorModal: Bool = false
     @Published var hasLoaded: Bool = false
     
     var accessToken: String?
@@ -88,6 +89,7 @@ class SummaryViewModel: ObservableObject {
             if !NetworkMonitor.shared.isConnected {
                 self.isOffline = true
                 self.showOfflineToast = true
+                self.showNetworkErrorModal = true
                 // Auto-hide after 2 seconds
                 Task { @MainActor in
                     try? await Task.sleep(nanoseconds: 2_000_000_000)
@@ -98,6 +100,7 @@ class SummaryViewModel: ObservableObject {
                 return
             } else {
                 self.isOffline = false
+                self.showNetworkErrorModal = false
             }
 
             let maxRetries = 3

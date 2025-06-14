@@ -6,7 +6,7 @@ struct SummaryTabView: View {
             SummaryView()
                 .tabItem {
                     Image(systemName: "square.split.2x2")
-                    Text("Dashboard")
+                    Text("Summary")
                 }
             PaymentsView()
                 .tabItem {

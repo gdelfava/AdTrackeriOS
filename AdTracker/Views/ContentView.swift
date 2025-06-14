@@ -12,43 +12,57 @@ import GoogleSignIn
 struct ContentView: View {
     @StateObject private var authViewModel = AuthViewModel()
     @State private var showWhyGoogle = false
+    @EnvironmentObject private var networkMonitor: NetworkMonitor
     
     var body: some View {
-        if authViewModel.isSignedIn {
-            SummaryTabView()
-                .environmentObject(authViewModel)
-        } else {
-            ZStack {
-                Color("LoginScreenBackground")
-                    .ignoresSafeArea()
-                VStack {
-                    Spacer()
-                    VStack(spacing: 24) {
-                        Image("LoginScreen", bundle: nil)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 200, height: 200)
-                            .accessibilityHidden(true)
+        ZStack {
+            if authViewModel.isSignedIn {
+                SummaryTabView()
+                    .environmentObject(authViewModel)
+            } else {
+                ZStack {
+                    Color("LoginScreenBackground")
+                        .ignoresSafeArea()
+                    VStack {
+                        Spacer()
+                        VStack(spacing: 24) {
+                            Image("LoginScreen", bundle: nil)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 200, height: 200)
+                                .accessibilityHidden(true)
+                        }
+                        Spacer()
+                        GoogleSignInButtonView {
+                            authViewModel.signIn()
+                        }
+                        .frame(maxWidth: 340)
+                        .padding(.top, 16)
+                        Spacer()
+                        Button(action: { showWhyGoogle = true }) {
+                            Text("Why do I need to sign in with Google?")
+                                .font(.footnote)
+                                .foregroundColor(Color.white.opacity(0.7))
+                        }
+                        .padding(.bottom, 32)
                     }
-                    Spacer()
-                    GoogleSignInButtonView {
-                        authViewModel.signIn()
-                    }
-                    .frame(maxWidth: 340)
-                    .padding(.top, 16)
-                    Spacer()
-                    Button(action: { showWhyGoogle = true }) {
-                        Text("Why do I need to sign in with Google?")
-                            .font(.footnote)
-                            .foregroundColor(Color.white.opacity(0.7))
-                    }
-                    .padding(.bottom, 32)
+                    .padding(.horizontal, 24)
                 }
-                .padding(.horizontal, 24)
             }
-            .sheet(isPresented: $showWhyGoogle) {
-                WhyGoogleModal(isPresented: $showWhyGoogle)
-            }
+        }
+        .sheet(isPresented: $showWhyGoogle) {
+            WhyGoogleModal(isPresented: $showWhyGoogle)
+        }
+        .sheet(isPresented: $networkMonitor.showNetworkErrorModal) {
+            NetworkErrorModalView(
+                message: "The Internet connection appears to be offline. Please check your Wi-Fi or Cellular settings.",
+                onClose: { networkMonitor.showNetworkErrorModal = false },
+                onSettings: {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+            )
         }
     }
 }
