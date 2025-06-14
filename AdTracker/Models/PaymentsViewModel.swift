@@ -53,15 +53,14 @@ class PaymentsViewModel: ObservableObject {
         func formatCurrency(_ value: Double) -> String {
             let formatter = NumberFormatter()
             formatter.numberStyle = .currency
-            formatter.currencyCode = "ZAR"
-            formatter.currencySymbol = "ZAR "
+            formatter.locale = Locale.current
             formatter.minimumFractionDigits = 2
             formatter.maximumFractionDigits = 2
-            return formatter.string(from: NSNumber(value: value)) ?? "ZAR 0.00"
+            return formatter.string(from: NSNumber(value: value)) ?? "0.00"
         }
         func formatDate(_ date: Date) -> String {
             let formatter = DateFormatter()
-            formatter.dateFormat = "d-M-yyyy"
+            formatter.dateFormat = "d MMM yyyy"
             return formatter.string(from: date)
         }
         if case .success(let unpaidEarnings) = unpaid {
