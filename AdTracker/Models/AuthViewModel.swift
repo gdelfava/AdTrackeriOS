@@ -30,6 +30,35 @@ class AuthViewModel: ObservableObject {
         if let urlString = defaults.string(forKey: userProfileImageURLKey), let url = URL(string: urlString) {
             self.userProfileImageURL = url
         }
+        // Restore Google Sign-In session
+        GIDSignIn.sharedInstance.restorePreviousSignIn { [weak self] user, error in
+            guard let self = self else { return }
+            if let user = user, error == nil {
+                user.refreshTokensIfNeeded { auth, error in
+                    if let accessToken = auth?.accessToken.tokenString {
+                        DispatchQueue.main.async {
+                            self.accessToken = accessToken
+                            self.isSignedIn = true
+                            self.saveTokenToKeychain(accessToken)
+                            if let profile = user.profile {
+                                self.userName = profile.name
+                                self.userEmail = profile.email
+                                self.userProfileImageURL = profile.hasImage ? profile.imageURL(withDimension: 200) : nil
+                                // Save to UserDefaults
+                                let defaults = UserDefaults.standard
+                                defaults.set(profile.name, forKey: self.userNameKey)
+                                defaults.set(profile.email, forKey: self.userEmailKey)
+                                if let url = self.userProfileImageURL?.absoluteString {
+                                    defaults.set(url, forKey: self.userProfileImageURLKey)
+                                } else {
+                                    defaults.removeObject(forKey: self.userProfileImageURLKey)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     func signIn() {
