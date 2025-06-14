@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import Network
+import GoogleSignIn
 
 @MainActor
 class SummaryViewModel: ObservableObject {
@@ -15,6 +16,10 @@ class SummaryViewModel: ObservableObject {
     @Published var showOfflineToast: Bool = false
     @Published var showNetworkErrorModal: Bool = false
     @Published var hasLoaded: Bool = false
+    @Published var selectedDay: Date? = nil
+    @Published var selectedDayMetrics: AdSenseDayMetrics? = nil
+    @Published var showDayMetricsSheet: Bool = false
+    @Published var errorMessage: String? = nil
     
     var accessToken: String?
     private var accountID: String?
@@ -227,6 +232,85 @@ class SummaryViewModel: ObservableObject {
             }
             self.error = "Failed to fetch summary data after multiple attempts."
             self.isLoading = false
+        }
+    }
+    
+    enum MetricsCardType {
+        case today, yesterday, last7Days, thisMonth, lastMonth
+    }
+    
+    /// Fetches and stores detailed metrics for a given card type (date range)
+    func fetchMetrics(forCard card: MetricsCardType) async {
+        print("[SummaryViewModel] Starting fetchMetrics for card: \(card)")
+        errorMessage = nil
+        guard let user = GIDSignIn.sharedInstance.currentUser else {
+            print("[SummaryViewModel] No current user found")
+            errorMessage = "Not signed in."
+            return
+        }
+        print("[SummaryViewModel] Found current user, refreshing tokens...")
+        await withCheckedContinuation { continuation in
+            user.refreshTokensIfNeeded { refreshedUser, error in
+                if let error = error {
+                    print("[SummaryViewModel] Token refresh failed: \(error)")
+                    DispatchQueue.main.async {
+                        self.errorMessage = "Token refresh failed: \(error.localizedDescription)"
+                        continuation.resume()
+                    }
+                    return
+                }
+                guard let refreshedUser = refreshedUser else {
+                    print("[SummaryViewModel] No user after token refresh")
+                    DispatchQueue.main.async {
+                        self.errorMessage = "No user after token refresh."
+                        continuation.resume()
+                    }
+                    return
+                }
+                print("[SummaryViewModel] Successfully refreshed tokens")
+                let accessToken = refreshedUser.accessToken.tokenString
+                let accountID = self.accountID ?? ""
+                print("[SummaryViewModel] Using accountID: \(accountID)")
+                let calendar = Calendar.current
+                let today = calendar.startOfDay(for: Date())
+                let startDate: Date
+                let endDate: Date
+                switch card {
+                case .today:
+                    startDate = today
+                    endDate = today
+                case .yesterday:
+                    startDate = calendar.date(byAdding: .day, value: -1, to: today) ?? today
+                    endDate = startDate
+                case .last7Days:
+                    startDate = calendar.date(byAdding: .day, value: -6, to: today) ?? today
+                    endDate = today
+                case .thisMonth:
+                    let comps = calendar.dateComponents([.year, .month], from: today)
+                    startDate = calendar.date(from: comps) ?? today
+                    endDate = today
+                case .lastMonth:
+                    let comps = calendar.dateComponents([.year, .month], from: today)
+                    let firstOfThisMonth = calendar.date(from: comps) ?? today
+                    let lastDayOfLastMonth = calendar.date(byAdding: .day, value: -1, to: firstOfThisMonth) ?? today
+                    let compsLastMonth = calendar.dateComponents([.year, .month], from: lastDayOfLastMonth)
+                    startDate = calendar.date(from: compsLastMonth) ?? today
+                    endDate = lastDayOfLastMonth
+                }
+                Task {
+                    let result = await AdSenseAPI.shared.fetchMetricsForRange(accountID: accountID, accessToken: accessToken, startDate: startDate, endDate: endDate)
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(let metrics):
+                            self.selectedDayMetrics = metrics
+                            self.showDayMetricsSheet = true
+                        case .failure(let error):
+                            self.errorMessage = "Failed to load metrics: \(error.localizedDescription)"
+                        }
+                        continuation.resume()
+                    }
+                }
+            }
         }
     }
 } 

@@ -347,4 +347,83 @@ class AdSenseAPI {
         }
         return nil
     }
+
+    /// Fetches all detailed metrics for a given date range
+    func fetchMetricsForRange(accountID: String, accessToken: String, startDate: Date, endDate: Date) async -> Result<AdSenseDayMetrics, AdSenseError> {
+        guard NetworkMonitor.shared.isConnected else {
+            return .failure(.requestFailed("No internet connection"))
+        }
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let start = dateFormatter.string(from: startDate)
+        let end = dateFormatter.string(from: endDate)
+        
+        let metrics = [
+            "ESTIMATED_EARNINGS",
+            "CLICKS",
+            "PAGE_VIEWS",
+            "IMPRESSIONS",
+            "AD_REQUESTS",
+            "MATCHED_AD_REQUESTS",
+            "COST_PER_CLICK",
+            "IMPRESSIONS_CTR",
+            "IMPRESSIONS_RPM",
+            "PAGE_VIEWS_CTR",
+            "PAGE_VIEWS_RPM"
+        ]
+        let metricsQuery = metrics.map { "metrics=\($0)" }.joined(separator: "&")
+        let urlString = "https://adsense.googleapis.com/v2/\(accountID)/reports:generate?\(metricsQuery)&startDate.year=\(start.prefix(4))&startDate.month=\(start.dropFirst(5).prefix(2))&startDate.day=\(start.suffix(2))&endDate.year=\(end.prefix(4))&endDate.month=\(end.dropFirst(5).prefix(2))&endDate.day=\(end.suffix(2))"
+        guard let url = URL(string: urlString) else {
+            print("[AdSenseAPI] Invalid URL: \(urlString)")
+            return .failure(.invalidResponse)
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        print("[AdSenseAPI] Requesting: \(urlString)")
+        print("[AdSenseAPI] Headers: \(request.allHTTPHeaderFields ?? [:])")
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            if let httpResponse = response as? HTTPURLResponse {
+                print("[AdSenseAPI] HTTP Status: \(httpResponse.statusCode)")
+            }
+            if let raw = String(data: data, encoding: .utf8) {
+                print("[AdSenseAPI] Raw response: \(raw)")
+            }
+            guard let httpResponse = response as? HTTPURLResponse else {
+                return .failure(.invalidResponse)
+            }
+            if httpResponse.statusCode != 200 {
+                return .failure(.requestFailed("HTTP \(httpResponse.statusCode): \(String(data: data, encoding: .utf8) ?? "No body")"))
+            }
+            let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+            guard let rows = json?["rows"] as? [[String: Any]], let row = rows.first, let cells = row["cells"] as? [[String: Any]] else {
+                print("[AdSenseAPI] No rows/cells in response")
+                return .failure(.invalidResponse)
+            }
+            if cells.count != metrics.count {
+                print("[AdSenseAPI] Warning: Expected \(metrics.count) cells, got \(cells.count)")
+            }
+            func cellValue(_ idx: Int) -> String {
+                (cells.indices.contains(idx) ? (cells[idx]["value"] as? String) : nil) ?? "-"
+            }
+            let metricsObj = AdSenseDayMetrics(
+                estimatedEarnings: cellValue(0),
+                clicks: cellValue(1),
+                pageViews: cellValue(2),
+                impressions: cellValue(3),
+                adRequests: cellValue(4),
+                matchedAdRequests: cellValue(5),
+                costPerClick: cellValue(6),
+                impressionsCTR: cellValue(7),
+                impressionsRPM: cellValue(8),
+                pageViewsCTR: cellValue(9),
+                pageViewsRPM: cellValue(10)
+            )
+            return .success(metricsObj)
+        } catch {
+            print("[AdSenseAPI] Network or parsing error: \(error)")
+            return .failure(.requestFailed(error.localizedDescription))
+        }
+    }
 } 

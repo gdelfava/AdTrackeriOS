@@ -12,6 +12,11 @@ struct SummaryView: View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
+                    if let errorMessage = viewModel.errorMessage {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                            .padding()
+                    }
                     if viewModel.isOffline {
                         Text("No internet connection. Please check your network and try again.")
                             .foregroundColor(.red)
@@ -29,11 +34,29 @@ struct SummaryView: View {
                     } else if let data = viewModel.summaryData {
                         Group {
                             SummaryCardView(title: "Today so far", value: data.today, subtitle: "vs yesterday", delta: data.todayDelta, deltaPositive: data.todayDeltaPositive)
+                                .onTapGesture {
+                                    Task { await viewModel.fetchMetrics(forCard: .today) }
+                                }
                             SummaryCardView(title: "Yesterday", value: data.yesterday, subtitle: "vs the same day last week", delta: data.yesterdayDelta, deltaPositive: data.yesterdayDeltaPositive)
+                                .onTapGesture {
+                                    Task { await viewModel.fetchMetrics(forCard: .yesterday) }
+                                }
                             SummaryCardView(title: "Last 7 Days", value: data.last7Days, subtitle: "vs the previous 7 days", delta: data.last7DaysDelta, deltaPositive: data.last7DaysDeltaPositive)
+                                .onTapGesture {
+                                    Task { await viewModel.fetchMetrics(forCard: .last7Days) }
+                                }
                             SummaryCardView(title: "This month", value: data.thisMonth, subtitle: "vs the same day last month", delta: data.thisMonthDelta, deltaPositive: data.thisMonthDeltaPositive)
+                                .onTapGesture {
+                                    Task { await viewModel.fetchMetrics(forCard: .thisMonth) }
+                                }
                             SummaryCardView(title: "Last month", value: data.lastMonth, subtitle: "vs the month before last", delta: data.lastMonthDelta, deltaPositive: data.lastMonthDeltaPositive)
+                                .onTapGesture {
+                                    Task { await viewModel.fetchMetrics(forCard: .lastMonth) }
+                                }
                             SummaryCardView(title: "Last three years", value: data.lifetime, subtitle: nil, delta: nil, deltaPositive: nil)
+                                .onTapGesture {
+                                    // Optionally implement for lifetime if needed
+                                }
                         }
                         .padding(.horizontal)
                         Spacer(minLength: 32)
@@ -96,6 +119,14 @@ struct SummaryView: View {
                 }
             )
         }
+        .sheet(isPresented: $viewModel.showDayMetricsSheet) {
+            if let metrics = viewModel.selectedDayMetrics {
+                DayMetricsSheet(metrics: metrics)
+            } else {
+                ProgressView("Loading metrics...")
+                    .padding()
+            }
+        }
     }
     
     // Helper to pick an SF Symbol for the error
@@ -149,6 +180,91 @@ struct SummaryCardView: View {
         .cornerRadius(8)
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)
         .frame(maxWidth: .infinity, alignment: .center)
+    }
+}
+
+struct DayMetricsSheet: View {
+    let metrics: AdSenseDayMetrics
+    var body: some View {
+        VStack(spacing: 0) {
+            // Sticky header
+            HStack {
+                Spacer()
+                Capsule()
+                    .frame(width: 40, height: 5)
+                    .foregroundColor(Color(.systemGray4))
+                Spacer()
+            }
+            .padding(.top, 8)
+            HStack {
+                Text("Today")
+                    .font(.title2).bold()
+                    .foregroundColor(.primary)
+                Spacer()
+                Button(action: { dismissSheet() }) {
+                    Text("Done")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.accentColor)
+                }
+            }
+            .padding([.horizontal, .top])
+            .padding(.bottom, 4)
+            // Metrics list
+            VStack(spacing: 0) {
+                DayMetricRow(label: "Estimated Gross Revenue", value: metrics.estimatedGrossRevenue, isCurrency: true)
+                Divider()
+                DayMetricRow(label: "Requests", value: metrics.requests)
+                Divider()
+                DayMetricRow(label: "Clicks", value: metrics.clicks)
+                Divider()
+                DayMetricRow(label: "Cost Per Click", value: metrics.costPerClick, isCurrency: true)
+                Divider()
+                DayMetricRow(label: "Impressions", value: metrics.impressions)
+                Divider()
+                DayMetricRow(label: "Impression CTR", value: metrics.impressionCTR, isPercent: true)
+                Divider()
+                DayMetricRow(label: "Matched Requests", value: metrics.matchedRequests)
+                Divider()
+            }
+            .background(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(Color(.secondarySystemGroupedBackground))
+            )
+            .padding(.horizontal)
+            .padding(.top, 8)
+            Spacer(minLength: 0)
+        }
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .presentationDetents([.medium])
+    }
+    private func dismissSheet() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
+struct DayMetricRow: View {
+    let label: String
+    let value: String
+    var isCurrency: Bool = false
+    var isPercent: Bool = false
+    var body: some View {
+        HStack {
+            Text(label)
+                .font(.body)
+                .foregroundColor(.primary)
+            Spacer()
+            Text(formattedValue)
+                .font(.body.weight(.semibold))
+                .foregroundColor(.green)
+        }
+        .padding(.vertical, 12)
+        .padding(.horizontal, 8)
+        .background(Color(.clear))
+    }
+    private var formattedValue: String {
+        if isCurrency { return value }
+        if isPercent, !value.hasSuffix("%") { return value + "%" }
+        return value
     }
 }
 
