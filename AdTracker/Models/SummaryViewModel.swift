@@ -13,6 +13,7 @@ class SummaryViewModel: ObservableObject {
     @Published var lastMonthData: AdSenseSummaryData? = nil
     @Published var isOffline: Bool = false
     @Published var showOfflineToast: Bool = false
+    @Published var hasLoaded: Bool = false
     
     var accessToken: String?
     private var accountID: String?
@@ -81,6 +82,7 @@ class SummaryViewModel: ObservableObject {
     }
     
     func fetchSummary() async {
+        if hasLoaded { return }
         fetchTask?.cancel()
         fetchTask = Task {
             if !NetworkMonitor.shared.isConnected {
@@ -216,6 +218,7 @@ class SummaryViewModel: ObservableObject {
                 if let defaults = UserDefaults(suiteName: AdSenseAPI.appGroupID) {
                     defaults.set(Date(), forKey: "summaryLastUpdate")
                 }
+                self.hasLoaded = true
                 self.isLoading = false
                 return
             }

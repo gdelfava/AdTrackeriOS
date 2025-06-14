@@ -11,6 +11,7 @@ class PaymentsViewModel: ObservableObject {
     @Published var paymentsData: PaymentsData? = nil
     @Published var isLoading: Bool = false
     @Published var error: String? = nil
+    @Published var hasLoaded: Bool = false
     
     var accessToken: String?
     private var accountID: String?
@@ -24,6 +25,7 @@ class PaymentsViewModel: ObservableObject {
     
     @MainActor
     func fetchPayments() async {
+        if hasLoaded { return }
         guard let token = accessToken else { return }
         isLoading = true
         error = nil
@@ -73,6 +75,7 @@ class PaymentsViewModel: ObservableObject {
                 )
                 self.paymentsData = data
                 self.error = nil
+                self.hasLoaded = true
             case .success(nil):
                 // No payments yet
                 let data = PaymentsData(
@@ -82,6 +85,7 @@ class PaymentsViewModel: ObservableObject {
                 )
                 self.paymentsData = data
                 self.error = nil
+                self.hasLoaded = true
             case .failure(let err):
                 self.error = "Failed to load previous payment: \(err)"
             }

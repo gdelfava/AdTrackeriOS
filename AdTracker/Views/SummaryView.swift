@@ -59,7 +59,7 @@ struct SummaryView: View {
             .navigationTitle("Dashboard")
         }
         .onAppear {
-            if let token = authViewModel.accessToken {
+            if let token = authViewModel.accessToken, !viewModel.hasLoaded {
                 viewModel.accessToken = token
                 viewModel.authViewModel = authViewModel
                 Task { await viewModel.fetchSummary() }
