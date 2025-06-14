@@ -33,26 +33,11 @@ struct SummaryView: View {
                         Spacer()
                     } else if let data = viewModel.summaryData {
                         Group {
-                            SummaryCardView(title: "Today so far", value: data.today, subtitle: "vs yesterday", delta: data.todayDelta, deltaPositive: data.todayDeltaPositive)
-                                .onTapGesture {
-                                    Task { await viewModel.fetchMetrics(forCard: .today) }
-                                }
-                            SummaryCardView(title: "Yesterday", value: data.yesterday, subtitle: "vs the same day last week", delta: data.yesterdayDelta, deltaPositive: data.yesterdayDeltaPositive)
-                                .onTapGesture {
-                                    Task { await viewModel.fetchMetrics(forCard: .yesterday) }
-                                }
-                            SummaryCardView(title: "Last 7 Days", value: data.last7Days, subtitle: "vs the previous 7 days", delta: data.last7DaysDelta, deltaPositive: data.last7DaysDeltaPositive)
-                                .onTapGesture {
-                                    Task { await viewModel.fetchMetrics(forCard: .last7Days) }
-                                }
-                            SummaryCardView(title: "This month", value: data.thisMonth, subtitle: "vs the same day last month", delta: data.thisMonthDelta, deltaPositive: data.thisMonthDeltaPositive)
-                                .onTapGesture {
-                                    Task { await viewModel.fetchMetrics(forCard: .thisMonth) }
-                                }
-                            SummaryCardView(title: "Last month", value: data.lastMonth, subtitle: "vs the month before last", delta: data.lastMonthDelta, deltaPositive: data.lastMonthDeltaPositive)
-                                .onTapGesture {
-                                    Task { await viewModel.fetchMetrics(forCard: .lastMonth) }
-                                }
+                            SummaryCardView(title: "Today so far", value: data.today, subtitle: "vs yesterday", delta: data.todayDelta, deltaPositive: data.todayDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .today) } })
+                            SummaryCardView(title: "Yesterday", value: data.yesterday, subtitle: "vs the same day last week", delta: data.yesterdayDelta, deltaPositive: data.yesterdayDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .yesterday) } })
+                            SummaryCardView(title: "Last 7 Days", value: data.last7Days, subtitle: "vs the previous 7 days", delta: data.last7DaysDelta, deltaPositive: data.last7DaysDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .last7Days) } })
+                            SummaryCardView(title: "This month", value: data.thisMonth, subtitle: "vs the same day last month", delta: data.thisMonthDelta, deltaPositive: data.thisMonthDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .thisMonth) } })
+                            SummaryCardView(title: "Last month", value: data.lastMonth, subtitle: "vs the month before last", delta: data.lastMonthDelta, deltaPositive: data.lastMonthDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .lastMonth) } })
                             SummaryCardView(title: "Last three years", value: data.lifetime, subtitle: nil, delta: nil, deltaPositive: nil)
                                 .onTapGesture {
                                     // Optionally implement for lifetime if needed
@@ -147,6 +132,8 @@ struct SummaryCardView: View {
     let subtitle: String?
     let delta: String?
     let deltaPositive: Bool?
+    var onTap: (() -> Void)? = nil
+    @State private var isPressed = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -180,6 +167,18 @@ struct SummaryCardView: View {
         .cornerRadius(8)
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)
         .frame(maxWidth: .infinity, alignment: .center)
+        .scaleEffect(isPressed ? 0.96 : 1.0)
+        .opacity(isPressed ? 0.7 : 1.0)
+        .animation(.easeInOut(duration: 0.12), value: isPressed)
+        .onTapGesture {
+            isPressed = true
+            let generator = UIImpactFeedbackGenerator(style: .light)
+            generator.impactOccurred()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                isPressed = false
+                onTap?()
+            }
+        }
     }
 }
 
