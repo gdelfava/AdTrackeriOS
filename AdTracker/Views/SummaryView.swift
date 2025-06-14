@@ -97,7 +97,7 @@ struct SummaryCardView: View {
                         .foregroundColor(positive ? .green : .red)
                         .font(.body)
                     Text(delta)
-                        .font(.body)
+                        .font(.caption)
                         .foregroundColor(positive ? .green : .red)
                 }
             }

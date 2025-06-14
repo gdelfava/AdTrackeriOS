@@ -72,43 +72,67 @@ class AdSenseAPI {
         guard let url = URL(string: urlString) else {
             return .failure(.invalidURL)
         }
+        
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.timeoutInterval = 30 // Add timeout
+        
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                return .failure(.requestFailed("Request failed"))
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                return .failure(.invalidResponse)
             }
-            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-            var earnings: String = "0.00"
-            if let rows = json?["rows"] as? [[String: Any]],
-               let firstRow = rows.first,
-               let cells = firstRow["cells"] as? [[String: Any]],
-               let valueString = cells.first?["value"] as? String {
-                earnings = valueString
+            
+            switch httpResponse.statusCode {
+            case 200:
+                let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+                var earnings: String = "0.00"
+                if let rows = json?["rows"] as? [[String: Any]],
+                   let firstRow = rows.first,
+                   let cells = firstRow["cells"] as? [[String: Any]],
+                   let valueString = cells.first?["value"] as? String {
+                    earnings = valueString
+                }
+                let summary = AdSenseSummaryData(
+                    today: "",
+                    yesterday: "",
+                    last7Days: earnings,
+                    thisMonth: "",
+                    lastMonth: "",
+                    lifetime: "",
+                    todayDelta: nil,
+                    todayDeltaPositive: nil,
+                    yesterdayDelta: nil,
+                    yesterdayDeltaPositive: nil,
+                    last7DaysDelta: nil,
+                    last7DaysDeltaPositive: nil,
+                    thisMonthDelta: nil,
+                    thisMonthDeltaPositive: nil,
+                    lastMonthDelta: nil,
+                    lastMonthDeltaPositive: nil
+                )
+                return .success(summary)
+            case 401:
+                return .failure(.unauthorized)
+            case 403:
+                return .failure(.requestFailed("Access forbidden"))
+            default:
+                return .failure(.requestFailed("Server returned status code \(httpResponse.statusCode)"))
             }
-            // Only fill the last7Days field for this example; others can be nil or empty
-            let summary = AdSenseSummaryData(
-                today: "",
-                yesterday: "",
-                last7Days: earnings,
-                thisMonth: "",
-                lastMonth: "",
-                lifetime: "",
-                todayDelta: nil,
-                todayDeltaPositive: nil,
-                yesterdayDelta: nil,
-                yesterdayDeltaPositive: nil,
-                last7DaysDelta: nil,
-                last7DaysDeltaPositive: nil,
-                thisMonthDelta: nil,
-                thisMonthDeltaPositive: nil,
-                lastMonthDelta: nil,
-                lastMonthDeltaPositive: nil
-            )
-            return .success(summary)
+        } catch let error as URLError {
+            switch error.code {
+            case .notConnectedToInternet:
+                return .failure(.requestFailed("No internet connection"))
+            case .timedOut:
+                return .failure(.requestFailed("Request timed out"))
+            case .cannotConnectToHost:
+                return .failure(.requestFailed("Cannot connect to server"))
+            default:
+                return .failure(.requestFailed("Network error: \(error.localizedDescription)"))
+            }
         } catch {
-            return .failure(.requestFailed("Network error: \(error.localizedDescription)"))
+            return .failure(.requestFailed("Unexpected error: \(error.localizedDescription)"))
         }
     }
     
@@ -280,22 +304,37 @@ class AdSenseAPI {
         }
     }
 
-    static let appGroupID = "group.com.delteqws.AdTracker" // Replace with your real App Group ID
-    static let summaryKey = "summaryData"
-
+    static let appGroupID = "group.com.delteqws.AdTracker"
+    
+    private var sharedDefaults: UserDefaults? {
+        UserDefaults(suiteName: AdSenseAPI.appGroupID)
+    }
+    
     func saveSummaryToSharedContainer(_ summary: AdSenseSummaryData) {
-        if let data = try? JSONEncoder().encode(summary) {
-            let defaults = UserDefaults(suiteName: Self.appGroupID)
-            defaults?.set(data, forKey: Self.summaryKey)
+        guard let defaults = sharedDefaults else { return }
+        
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(summary) {
+            defaults.set(encoded, forKey: "summaryData")
+            defaults.set(Date(), forKey: "summaryLastUpdate")
+            defaults.synchronize()
         }
     }
-
-    func loadSummaryFromSharedContainer() -> AdSenseSummaryData? {
-        let defaults = UserDefaults(suiteName: Self.appGroupID)
-        if let data = defaults?.data(forKey: Self.summaryKey),
-           let summary = try? JSONDecoder().decode(AdSenseSummaryData.self, from: data) {
-            return summary
+    
+    static func loadSummaryFromSharedContainer() -> AdSenseSummaryData? {
+        guard let defaults = UserDefaults(suiteName: appGroupID),
+              let data = defaults.data(forKey: "summaryData") else {
+            return nil
         }
-        return nil
+        
+        let decoder = JSONDecoder()
+        return try? decoder.decode(AdSenseSummaryData.self, from: data)
+    }
+    
+    static func loadLastUpdateDate() -> Date? {
+        guard let defaults = UserDefaults(suiteName: appGroupID) else {
+            return nil
+        }
+        return defaults.object(forKey: "summaryLastUpdate") as? Date
     }
 } 
