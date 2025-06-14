@@ -3,6 +3,7 @@ import SwiftUI
 struct SummaryView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var viewModel: SummaryViewModel
+    @State private var cardAppearances: [Bool] = Array(repeating: false, count: 6)
     
     init() {
         _viewModel = StateObject(wrappedValue: SummaryViewModel(accessToken: nil))
@@ -34,16 +35,40 @@ struct SummaryView: View {
                     } else if let data = viewModel.summaryData {
                         Group {
                             SummaryCardView(title: "Today so far", value: data.today, subtitle: "vs yesterday", delta: data.todayDelta, deltaPositive: data.todayDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .today) } })
+                                .opacity(cardAppearances[0] ? 1 : 0)
+                                .offset(y: cardAppearances[0] ? 0 : 20)
                             SummaryCardView(title: "Yesterday", value: data.yesterday, subtitle: "vs the same day last week", delta: data.yesterdayDelta, deltaPositive: data.yesterdayDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .yesterday) } })
+                                .opacity(cardAppearances[1] ? 1 : 0)
+                                .offset(y: cardAppearances[1] ? 0 : 20)
                             SummaryCardView(title: "Last 7 Days", value: data.last7Days, subtitle: "vs the previous 7 days", delta: data.last7DaysDelta, deltaPositive: data.last7DaysDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .last7Days) } })
+                                .opacity(cardAppearances[2] ? 1 : 0)
+                                .offset(y: cardAppearances[2] ? 0 : 20)
                             SummaryCardView(title: "This month", value: data.thisMonth, subtitle: "vs the same day last month", delta: data.thisMonthDelta, deltaPositive: data.thisMonthDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .thisMonth) } })
+                                .opacity(cardAppearances[3] ? 1 : 0)
+                                .offset(y: cardAppearances[3] ? 0 : 20)
                             SummaryCardView(title: "Last month", value: data.lastMonth, subtitle: "vs the month before last", delta: data.lastMonthDelta, deltaPositive: data.lastMonthDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .lastMonth) } })
+                                .opacity(cardAppearances[4] ? 1 : 0)
+                                .offset(y: cardAppearances[4] ? 0 : 20)
                             SummaryCardView(title: "Last three years", value: data.lifetime, subtitle: nil, delta: nil, deltaPositive: nil)
+                                .opacity(cardAppearances[5] ? 1 : 0)
+                                .offset(y: cardAppearances[5] ? 0 : 20)
                                 .onTapGesture {
                                     // Optionally implement for lifetime if needed
                                 }
                         }
                         .padding(.horizontal)
+                        .onAppear {
+                            // Animate cards when they appear
+                            for i in 0..<cardAppearances.count {
+                                withAnimation(.easeOut(duration: 0.5).delay(Double(i) * 0.1)) {
+                                    cardAppearances[i] = true
+                                }
+                            }
+                        }
+                        .onDisappear {
+                            // Reset animation state when view disappears
+                            cardAppearances = Array(repeating: false, count: 6)
+                        }
                         Spacer(minLength: 32)
                         Text("AdTracker is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
                             .font(.footnote)
