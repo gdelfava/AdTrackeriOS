@@ -27,6 +27,7 @@ struct SummaryView: View {
                         Text("Last updated: \(lastUpdate.formatted(.relative(presentation: .named))) on \(lastUpdate.formatted(.dateTime.weekday(.wide)))")
                             .font(.caption)
                             .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal)
                             .padding(.top, 8)
                     }
@@ -56,13 +57,11 @@ struct SummaryView: View {
                             SummaryCardView(title: "Last month", value: data.lastMonth, subtitle: "vs the month before last", delta: data.lastMonthDelta, deltaPositive: data.lastMonthDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .lastMonth) } })
                                 .opacity(cardAppearances[4] ? 1 : 0)
                                 .offset(y: cardAppearances[4] ? 0 : 20)
-                            SummaryCardView(title: "Last three years", value: data.lifetime, subtitle: nil, delta: nil, deltaPositive: nil)
-                                .opacity(cardAppearances[5] ? 1 : 0)
-                                .offset(y: cardAppearances[5] ? 0 : 20)
-                                .onTapGesture {
-                                    // Optionally implement for lifetime if needed
-                                }
+                            //SummaryCardView(title: "Last three years", value: data.lifetime, subtitle: nil, delta: nil, deltaPositive: nil)
+                              //  .opacity(cardAppearances[5] ? 1 : 0)
+                                //.offset(y: cardAppearances[5] ? 0 : 20)
                         }
+                        .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.horizontal)
                         .onAppear {
                             // Animate cards when they appear
