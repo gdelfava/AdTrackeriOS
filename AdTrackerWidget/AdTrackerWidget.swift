@@ -82,64 +82,74 @@ struct Provider: TimelineProvider {
 
 struct AdTrackerWidgetEntryView: View {
     var entry: AdTrackerWidgetEntry
-
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
         ZStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Today")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.green)
-                if let today = entry.summary?.today {
-                    Text(today)
-                        .font(.headline)
-                        .fontWeight(.regular)
-                        .foregroundColor(.primary)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.5)
-                } else {
-                    Text("--")
-                        .font(.largeTitle)
-                        .fontWeight(.regular)
+            // Set background color based on color scheme
+            (colorScheme == .dark ? Color.black : Color.white)
+                .ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 8) {
+                // Header
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text("Today")
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(.secondary)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.5)
-                }
-                Text("Last update: \(formattedTime(entry.date))")
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                HStack {
-                    if let delta = entry.summary?.todayDelta, let positive = entry.summary?.todayDeltaPositive {
-                        HStack(spacing: 4) {
-                            Image(systemName: positive ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
-                                .foregroundColor(positive ? .green : .red)
-                                .font(.caption2)
-                            Text(delta)
-                                .font(.caption2)
-                                .foregroundColor(positive ? .green : .red)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.5)
-                        }
-                    } else {
-                        Text("-")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
+                        .minimumScaleFactor(0.7)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    HStack(spacing: 2) {
+                        Image(systemName: "clock")
+                            .font(.system(size: 10))
+                        Text(entry.lastUpdate)
+                            .font(.system(size: 10))
                     }
-                    Spacer()
-                    //ZStack {
-                      //  Circle()
-                        //    .fill(Color.green)
-                          //  .frame(width: 24, height: 24)
-                        //Image(systemName: "chart.bar.fill")
-                          //  .foregroundColor(.white)
-                    //}
+                    .foregroundColor(.secondary)
                 }
+                // Main value
+                if let today = entry.summary?.today {
+                    Text(today)
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                } else {
+                    Text("--")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                // Delta indicator
+                if let delta = entry.summary?.todayDelta, let positive = entry.summary?.todayDeltaPositive {
+                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                        Image(systemName: positive ? "arrow.up.right" : "arrow.down.right")
+                            .font(.system(size: 11, weight: .semibold))
+                        Text(delta)
+                            .font(.system(size: 11, weight: .medium))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                    }
+                    .foregroundColor(positive ? .green : .red)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background((positive ? Color.green : Color.red).opacity(0.15))
+                    .clipShape(Capsule())
+                }
+                Spacer(minLength: 0)
+                // App icon and name
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text("AdsenseTracker")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.secondary)
+                }
+                .padding(.top, 2)
             }
-            .padding()
+            .padding(12)
         }
-        .containerBackground(.fill.tertiary, for: .widget)
+        .containerBackground(colorScheme == .dark ? Color.black : Color.white, for: .widget)
     }
 }
 
