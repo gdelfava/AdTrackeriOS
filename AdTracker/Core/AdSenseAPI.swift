@@ -319,6 +319,112 @@ class AdSenseAPI {
         }
     }
 
+    /// Fetches the user's payment history from AdSense using the payments endpoint.
+    func fetchPaymentHistory(accessToken: String, accountID: String) async -> Result<[(date: Date, amount: Double)], AdSenseError> {
+        guard NetworkMonitor.shared.isConnected else {
+            return .failure(.requestFailed("No internet connection"))
+        }
+        let urlString = "https://adsense.googleapis.com/v2/\(accountID)/payments"
+        guard let url = URL(string: urlString) else { return .failure(.invalidURL) }
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            print("Payments JSON: \(String(data: data, encoding: .utf8) ?? "<no data>")")
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                return .failure(.requestFailed("Request failed"))
+            }
+            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+            if let payments = json?["payments"] as? [[String: Any]] {
+                // Filter for paid payments only - according to docs, paid payments have names like:
+                // accounts/{account}/payments/yyyy-MM-dd
+                let paidPayments = payments.compactMap { payment -> (date: Date, amount: Double)? in
+                    guard let amountString = payment["amount"] as? String,
+                          let dateDict = payment["date"] as? [String: Any],
+                          let year = dateDict["year"] as? Int,
+                          let month = dateDict["month"] as? Int,
+                          let day = dateDict["day"] as? Int else {
+                        return nil
+                    }
+                    
+                    // Clean the amount string - remove currency symbol and any non-numeric characters except decimal point
+                    let cleaned = amountString.replacingOccurrences(of: "[^0-9.-]", with: "", options: .regularExpression)
+                    guard let amount = Double(cleaned) else { return nil }
+                    
+                    var dateComponents = DateComponents()
+                    dateComponents.year = year
+                    dateComponents.month = month
+                    dateComponents.day = day
+                    let calendar = Calendar.current
+                    guard let date = calendar.date(from: dateComponents) else { return nil }
+                    
+                    return (date: date, amount: amount)
+                }
+                
+                // Sort by date descending (most recent first)
+                let sortedPayments = paidPayments.sorted { $0.date > $1.date }
+                
+                // Take only the last 3 payments
+                let lastThreePayments = Array(sortedPayments.prefix(3))
+                
+                return .success(lastThreePayments)
+            } else {
+                return .success([])
+            }
+        } catch {
+            return .failure(.requestFailed("Network error: \(error.localizedDescription)"))
+        }
+    }
+
+    /// Lists all payments available in the user's AdSense account
+    func listAllPayments(accessToken: String, accountID: String) async -> Result<[(name: String, date: Date?, amount: String)], AdSenseError> {
+        guard NetworkMonitor.shared.isConnected else {
+            return .failure(.requestFailed("No internet connection"))
+        }
+        let urlString = "https://adsense.googleapis.com/v2/\(accountID)/payments"
+        guard let url = URL(string: urlString) else { return .failure(.invalidURL) }
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            print("Payments JSON: \(String(data: data, encoding: .utf8) ?? "<no data>")")
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                return .failure(.requestFailed("Request failed"))
+            }
+            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+            if let payments = json?["payments"] as? [[String: Any]] {
+                let allPayments = payments.compactMap { payment -> (name: String, date: Date?, amount: String)? in
+                    guard let name = payment["name"] as? String,
+                          let amount = payment["amount"] as? String else {
+                        return nil
+                    }
+                    
+                    // Parse date if it exists
+                    var date: Date? = nil
+                    if let dateDict = payment["date"] as? [String: Any],
+                       let year = dateDict["year"] as? Int,
+                       let month = dateDict["month"] as? Int,
+                       let day = dateDict["day"] as? Int {
+                        var dateComponents = DateComponents()
+                        dateComponents.year = year
+                        dateComponents.month = month
+                        dateComponents.day = day
+                        let calendar = Calendar.current
+                        date = calendar.date(from: dateComponents)
+                    }
+                    
+                    return (name: name, date: date, amount: amount)
+                }
+                
+                return .success(allPayments)
+            } else {
+                return .success([])
+            }
+        } catch {
+            return .failure(.requestFailed("Network error: \(error.localizedDescription)"))
+        }
+    }
+
     static let appGroupID = "group.com.delteqws.AdTracker"
     
     func saveSummaryToSharedContainer(_ summary: AdSenseSummaryData) {

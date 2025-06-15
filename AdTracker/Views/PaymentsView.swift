@@ -35,13 +35,6 @@ struct PaymentsView: View {
                         }
                         .padding(.horizontal)
                         Spacer()
-                        Spacer()
-                        Spacer()
-                        Spacer()
-                        Spacer()
-                        Spacer()
-                        Spacer()
-                        Spacer()
                         Text("AdTracker is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
                             .font(.footnote)
                             .foregroundColor(.secondary)
@@ -87,7 +80,7 @@ struct PaymentCardView: View {
                 .foregroundColor(.secondary)
             Text(value)
                 .font(.system(size: 34, weight: .semibold))
-                .foregroundColor(.primary)
+                .foregroundColor(.secondary)
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -111,13 +104,13 @@ struct UnpaidEarningsCardView: View {
                 HStack(alignment: .center) {
                     Image(systemName: "creditcard.fill")
                         .font(.system(size: 22))
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                         //.padding(2)
                         //.background(Color(.systemGray3))
                         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                     Text("Unpaid Earnings")
                         .font(.caption2.weight(.regular))
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                     Spacer()
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
@@ -125,7 +118,7 @@ struct UnpaidEarningsCardView: View {
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .fontDesign(.rounded)
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                         .minimumScaleFactor(0.5)
                         .lineLimit(1)
                 }
@@ -162,7 +155,7 @@ struct PreviousPaymentCardView: View {
                 HStack(alignment: .center) {
                     Text("Previous Payment")
                         .font(.caption2.weight(.regular))
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                     Spacer()
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
@@ -170,13 +163,13 @@ struct PreviousPaymentCardView: View {
                         .font(.title2)
                         .fontWeight(.bold)
                         .fontDesign(.rounded)
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                         .minimumScaleFactor(0.5)
                         .lineLimit(1)
                 }
                 Text(date)
                     .font(.caption)
-                    .foregroundColor(Color.white.opacity(0.7))
+                    .foregroundColor(Color.primary.opacity(0.7))
             }
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
