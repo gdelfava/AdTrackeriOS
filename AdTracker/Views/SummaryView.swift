@@ -164,7 +164,7 @@ struct SummaryCardView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(title)
-                    .font(.subheadline)
+                    .font(.caption)
                     .foregroundColor(.secondary)
                 if let subtitle = subtitle {
                     Spacer()
@@ -174,7 +174,9 @@ struct SummaryCardView: View {
                 }
             }
             Text(value)
-                .font(.system(size: 34, weight: .semibold))
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .fontDesign(.rounded)
                 .foregroundColor(.primary)
             if let delta = delta, let positive = deltaPositive {
                 HStack(spacing: 4) {

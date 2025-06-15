@@ -35,6 +35,13 @@ struct PaymentsView: View {
                         }
                         .padding(.horizontal)
                         Spacer()
+                        Spacer()
+                        Spacer()
+                        Spacer()
+                        Spacer()
+                        Spacer()
+                        Spacer()
+                        Spacer()
                         Text("AdTracker is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
                             .font(.footnote)
                             .foregroundColor(.secondary)
@@ -42,7 +49,6 @@ struct PaymentsView: View {
                             .padding(.horizontal)
                             .padding(.bottom, 16)
                     } else {
-                        Spacer()
                     }
                 }
                 .padding(.top)
@@ -110,13 +116,15 @@ struct UnpaidEarningsCardView: View {
                         //.background(Color(.systemGray3))
                         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                     Text("Unpaid Earnings")
-                        .font(.headline.weight(.regular))
+                        .font(.caption2.weight(.regular))
                         .foregroundColor(.white)
                     Spacer()
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(amount)
-                        .font(.system(size: 44, weight: .bold))
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .fontDesign(.rounded)
                         .foregroundColor(.white)
                         .minimumScaleFactor(0.5)
                         .lineLimit(1)
@@ -127,7 +135,7 @@ struct UnpaidEarningsCardView: View {
             // Status pill
             HStack {
                 Text(isPaid ? "Paid" : "Unpaid")
-                    .font(.headline.weight(.medium))
+                    .font(.caption.weight(.medium))
                     .foregroundColor(isPaid ? .white : .red)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
@@ -136,7 +144,7 @@ struct UnpaidEarningsCardView: View {
             }
             .padding(18)
         }
-        .frame(height: 120)
+        //.frame(height: 110)
         .padding(.horizontal, 2)
     }
 }
@@ -153,19 +161,21 @@ struct PreviousPaymentCardView: View {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .center) {
                     Text("Previous Payment")
-                        .font(.headline.weight(.regular))
+                        .font(.caption2.weight(.regular))
                         .foregroundColor(.white)
                     Spacer()
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(amount)
-                        .font(.system(size: 44, weight: .bold))
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .fontDesign(.rounded)
                         .foregroundColor(.white)
                         .minimumScaleFactor(0.5)
                         .lineLimit(1)
                 }
                 Text(date)
-                    .font(.body)
+                    .font(.caption)
                     .foregroundColor(Color.white.opacity(0.7))
             }
             .padding(12)
@@ -173,7 +183,7 @@ struct PreviousPaymentCardView: View {
             // Status pill
             HStack {
                 Text("Paid")
-                    .font(.headline.weight(.medium))
+                    .font(.caption.weight(.medium))
                     .foregroundColor(.green)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
@@ -182,7 +192,7 @@ struct PreviousPaymentCardView: View {
             }
             .padding(18)
         }
-        .frame(height: 110)
+        //.frame(height: 110)
         .padding(.horizontal, 2)
     }
 }
