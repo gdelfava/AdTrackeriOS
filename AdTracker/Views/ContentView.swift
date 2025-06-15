@@ -85,10 +85,10 @@ struct WhyGoogleModal: View {
                         .font(.title2).bold()
                         .foregroundColor(.black)
                         .padding(.top, 0)
-                    Text("AdsenseTracker requires you to sign in to your Google account to allow it to receive the relevant AdSense data.\n\nWithout this, AdTracker cannot provide you with any information.\n\nAdTracker does not store any personal information. It is used only to display your data.")
+                    Text("AdsenseTracker requires you to sign in to your Google account to allow it to receive the relevant AdSense data.\n\nWithout this, AdsenseTracker cannot provide you with any information.\n\nAdsenseTracker does not store any personal information. It is used only to display your data.")
                         .font(.body)
                         .foregroundColor(.black)
-                        .multilineTextAlignment(.center)
+                        .multilineTextAlignment(.leading)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 8)
@@ -100,7 +100,7 @@ struct WhyGoogleModal: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.loginScreenBackground)
+                    .background(Color.accentColor)
                     .cornerRadius(24)
             }
             .padding([.horizontal, .bottom], 24)
