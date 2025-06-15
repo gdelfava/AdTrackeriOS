@@ -315,7 +315,7 @@ struct DayMetricsSheet: View {
             }
             .background(Color(.systemGroupedBackground))
         }
-        .presentationDetents([.large])
+        .presentationDetents([.height(600)])
         .presentationDragIndicator(.visible)
     }
 }
