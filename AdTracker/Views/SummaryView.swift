@@ -70,7 +70,7 @@ struct SummaryView: View {
                             cardAppearances = Array(repeating: false, count: 6)
                         }
                         Spacer(minLength: 32)
-                        Text("AdTracker is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
+                        Text("AdsenseTracker is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
                             .font(.footnote)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)

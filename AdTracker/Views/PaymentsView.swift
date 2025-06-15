@@ -3,6 +3,7 @@ import SwiftUI
 struct PaymentsView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var viewModel: PaymentsViewModel
+    @Environment(\.colorScheme) private var uiColorScheme
     
     init() {
         _viewModel = StateObject(wrappedValue: PaymentsViewModel(accessToken: nil))
@@ -32,10 +33,16 @@ struct PaymentsView: View {
                                 amount: data.previousPaymentAmount,
                                 date: data.previousPaymentDate
                             )
+                            
+                            Image(uiColorScheme == .dark ? "moneyjumpblk2" : "moneyjumpwht2")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxWidth: .infinity)
+                                .padding(.horizontal)
+                                .padding(.top, 8)
                         }
                         .padding(.horizontal)
-                        Spacer()
-                        Text("AdTracker is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
+                        Text("AdsenseTracker is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
                             .font(.footnote)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
