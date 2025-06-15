@@ -1,5 +1,18 @@
 import SwiftUI
 import MessageUI
+import WebKit
+
+struct WebView: UIViewRepresentable {
+    let url: URL
+    
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = WKWebView()
+        webView.load(URLRequest(url: url))
+        return webView
+    }
+    
+    func updateUIView(_ uiView: WKWebView, context: Context) {}
+}
 
 struct SettingsView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
@@ -7,6 +20,7 @@ struct SettingsView: View {
     @State private var isShareSheetPresented = false
     @State private var isWidgetSupportSheetPresented = false
     @State private var isMailSheetPresented = false
+    @State private var isTermsSheetPresented = false
     
     var body: some View {
         NavigationView {
@@ -52,14 +66,16 @@ struct SettingsView: View {
                             .padding(.horizontal, 4)
                         
                         VStack(spacing: 0) {
-                            AnimatedSettingsRow(icon: "heart.fill", color: .red, title: "Rate AdTracker") {
-                                // Add rate action here
-                            }
-                            Divider()
-                            AnimatedSettingsRow(icon: "square.and.arrow.up", color: .blue, title: "Share AdTracker") {
-                                isShareSheetPresented = true
-                            }
-                            Divider()
+                            // AnimatedSettingsRow(icon: "heart.fill", color: .red, title: "Rate AdTracker") {
+                            //     if let url = URL(string: "itms-apps://itunes.apple.com/app/id1481431267?action=write-review") {
+                            //         UIApplication.shared.open(url)
+                            //     }
+                            // }
+                            // Divider()
+                            // AnimatedSettingsRow(icon: "square.and.arrow.up", color: .blue, title: "Share AdTracker") {
+                            //     isShareSheetPresented = true
+                            // }
+                            // Divider()
                             AnimatedSettingsRow(icon: "square.grid.2x2.fill", color: .orange, title: "Widget Support") {
                                 isWidgetSupportSheetPresented = true
                             }
@@ -69,11 +85,13 @@ struct SettingsView: View {
                             }
                             Divider()
                             AnimatedSettingsRow(icon: "bird.fill", color: .blue, title: "@AdTracker") {
-                                // Add Twitter action here
+                                if let url = URL(string: "https://x.com/gdelfava") {
+                                    UIApplication.shared.open(url)
+                                }
                             }
                             Divider()
                             AnimatedSettingsRow(icon: "lock.fill", color: .purple, title: "Terms & Privacy Policy") {
-                                // Add terms action here
+                                isTermsSheetPresented = true
                             }
                         }
                         .background(Color(.secondarySystemBackground))
@@ -187,6 +205,20 @@ struct SettingsView: View {
                     subject: "AdsenseTracker: User feedback",
                     messageBody: "Any feeback or questions are more than welcome, please enter your message below:"
                 )
+            }
+            .sheet(isPresented: $isTermsSheetPresented) {
+                NavigationView {
+                    WebView(url: URL(string: "https://delteqis.co.za/adsensetracker-terms-and-conditions")!)
+                        .navigationTitle("Terms & Privacy Policy")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button("Done") {
+                                    isTermsSheetPresented = false
+                                }
+                            }
+                        }
+                }
             }
         }
     }
