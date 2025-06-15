@@ -23,6 +23,13 @@ struct SummaryView: View {
                             .foregroundColor(.red)
                             .padding()
                     }
+                    if let lastUpdate = viewModel.lastUpdateTime {
+                        Text("Last updated: \(lastUpdate.formatted(.relative(presentation: .named))) on \(lastUpdate.formatted(.dateTime.weekday(.wide)))")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal)
+                            .padding(.top, 8)
+                    }
                     if viewModel.isLoading {
                         Spacer()
                         ProgressView("Loading...")

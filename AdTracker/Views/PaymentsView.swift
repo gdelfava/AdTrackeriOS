@@ -12,7 +12,7 @@ struct PaymentsView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(spacing: 36) {
+                VStack(spacing: 24) {
                     if viewModel.isLoading {
                         Spacer()
                         ProgressView("Loading...")
@@ -175,7 +175,7 @@ struct PreviousPaymentCardView: View {
                         .lineLimit(1)
                 }
                 Text(date)
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundColor(Color.primary.opacity(0.7))
             }
             .padding(12)
