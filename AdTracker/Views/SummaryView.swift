@@ -191,9 +191,16 @@ struct SummaryCardView: View {
         }
         .padding()
         .background(Color(.secondarySystemBackground))
-        .cornerRadius(8)
+        .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)
         .frame(maxWidth: .infinity, alignment: .center)
+        .overlay(
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(.secondary)
+                .padding(.trailing, 16),
+            alignment: .trailing
+        )
         .scaleEffect(isPressed ? 0.96 : 1.0)
         .opacity(isPressed ? 0.7 : 1.0)
         .animation(.easeInOut(duration: 0.12), value: isPressed)
@@ -212,90 +219,167 @@ struct SummaryCardView: View {
 struct DayMetricsSheet: View {
     let metrics: AdSenseDayMetrics
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
         VStack(spacing: 0) {
-            // Sticky header
-            HStack {
-                Spacer()
+            // Sticky header with drag indicator
+            VStack(spacing: 8) {
                 Capsule()
-                    .frame(width: 40, height: 5)
-                    .foregroundColor(Color(.systemGray4))
-                Spacer()
-            }
-            .padding(.top, 8)
-            // Top bar with Done button and centered title
-            HStack {
-                Button(action: { dismiss() }) {
+                    .fill(Color(.systemGray4))
+                    .frame(width: 36, height: 5)
+                    .padding(.top, 8)
+                
+                // Header with date and close button
+                HStack {
+                    Button(action: { dismiss() }) {
+                        Text("Done")
+                            .font(.body.weight(.medium))
+                            .foregroundColor(.accentColor)
+                    }
+                    Spacer()
+                    Text("Today")
+                        .font(.title3.weight(.semibold))
+                    Spacer()
+                    // Invisible button to balance the layout
                     Text("Done")
                         .font(.body)
-                        .foregroundColor(.accentColor)
-                        .padding(.leading)
+                        .opacity(0)
                 }
-                Spacer()
-                Text("Today")
-                    .font(.title2).bold()
-                    .foregroundColor(.primary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                Spacer()
-                // Invisible button to balance the layout
-                Text("Done")
-                    .font(.largeTitle)
-                    .opacity(0)
-                    .padding(.trailing)
+                .padding(.horizontal)
             }
-            .padding(.vertical, 8)
+            .background(Color(.systemGroupedBackground))
+            
             // Metrics list
-            VStack(spacing: 0) {
-                DayMetricRow(label: "Estimated Gross Revenue", value: metrics.formattedEstimatedEarnings, isCurrency: true)
-                Divider()
-                DayMetricRow(label: "Requests", value: metrics.requests)
-                Divider()
-                DayMetricRow(label: "Clicks", value: metrics.clicks)
-                Divider()
-                DayMetricRow(label: "Cost Per Click", value: metrics.formattedCostPerClick, isCurrency: true)
-                Divider()
-                DayMetricRow(label: "Impressions", value: metrics.impressions)
-                Divider()
-                DayMetricRow(label: "Impression CTR", value: metrics.formattedImpressionsCTR, isPercent: true)
-                Divider()
-                DayMetricRow(label: "Matched Requests", value: metrics.matchedRequests)
+            ScrollView {
+                VStack(spacing: 16) {
+                    // Revenue section
+                    MetricSection(title: "Revenue", icon: "dollarsign.circle.fill", color: .green) {
+                        MetricRow(
+                            icon: "chart.line.uptrend.xyaxis.circle.fill",
+                            title: "Estimated Earnings",
+                            value: metrics.formattedEstimatedEarnings,
+                            color: .green
+                        )
+                    }
+                    
+                    // Performance section
+                    MetricSection(title: "Performance", icon: "chart.bar.fill", color: .blue) {
+                        MetricRow(
+                            icon: "cursorarrow.click",
+                            title: "Clicks",
+                            value: metrics.clicks,
+                            color: .blue
+                        )
+                        MetricRow(
+                            icon: "eye.fill",
+                            title: "Impressions",
+                            value: metrics.impressions,
+                            color: .blue
+                        )
+                        MetricRow(
+                            icon: "percent",
+                            title: "Impression CTR",
+                            value: metrics.formattedImpressionsCTR,
+                            color: .blue
+                        )
+                    }
+                    
+                    // Requests section
+                    MetricSection(title: "Requests", icon: "arrow.triangle.2.circlepath", color: .orange) {
+                        MetricRow(
+                            icon: "doc.text.fill",
+                            title: "Page Views",
+                            value: metrics.requests,
+                            color: .orange
+                        )
+                        MetricRow(
+                            icon: "checkmark.circle.fill",
+                            title: "Matched Requests",
+                            value: metrics.matchedRequests,
+                            color: .orange
+                        )
+                    }
+                    
+                    // Cost section
+                    MetricSection(title: "Cost", icon: "creditcard.fill", color: .purple) {
+                        MetricRow(
+                            icon: "dollarsign.circle.fill",
+                            title: "Cost Per Click",
+                            value: metrics.formattedCostPerClick,
+                            color: .purple
+                        )
+                    }
+                }
+                .padding()
             }
-            .background(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(Color(.secondarySystemGroupedBackground))
-            )
-            .padding(.horizontal)
-            .padding(.top, 8)
-            Spacer(minLength: 0)
+            .background(Color(.systemGroupedBackground))
         }
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
-        .presentationDetents([.medium])
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
     }
 }
 
-struct DayMetricRow: View {
-    let label: String
-    let value: String
-    var isCurrency: Bool = false
-    var isPercent: Bool = false
+struct MetricSection<Content: View>: View {
+    let title: String
+    let icon: String
+    let color: Color
+    let content: Content
+    
+    init(title: String, icon: String, color: Color, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.icon = icon
+        self.color = color
+        self.content = content()
+    }
+    
     var body: some View {
-        HStack {
-            Text(label)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(color)
+                Text(title)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+            }
+            .padding(.horizontal, 4)
+            
+            VStack(spacing: 0) {
+                content
+            }
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+    }
+}
+
+struct MetricRow: View {
+    let icon: String
+    let title: String
+    let value: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 24, height: 24)
+            
+            Text(title)
                 .font(.body)
                 .foregroundColor(.primary)
+            
             Spacer()
-            Text(formattedValue)
+            
+            Text(value)
                 .font(.body.weight(.semibold))
-                .foregroundColor(.green)
+                .foregroundColor(.primary)
         }
+        .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .padding(.horizontal, 8)
-        .background(Color(.clear))
-    }
-    private var formattedValue: String {
-        if isCurrency { return value }
-        if isPercent, !value.hasSuffix("%") { return value + "%" }
-        return value
+        .background(Color(.secondarySystemGroupedBackground))
     }
 }
 
