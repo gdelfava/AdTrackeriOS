@@ -428,30 +428,52 @@ class AdSenseAPI {
     static let appGroupID = "group.com.delteqws.AdRadar"
     
     func saveSummaryToSharedContainer(_ summary: AdSenseSummaryData) {
-        if let defaults = UserDefaults(suiteName: AdSenseAPI.appGroupID) {
-            let encoder = JSONEncoder()
-            if let encoded = try? encoder.encode(summary) {
-                defaults.set(encoded, forKey: "summaryData")
-                defaults.set(Date(), forKey: "summaryLastUpdate")
-                defaults.synchronize()
-            }
+        guard let defaults = UserDefaults(suiteName: AdSenseAPI.appGroupID) else {
+            print("[AdSenseAPI] Failed to access shared UserDefaults container")
+            return
+        }
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(summary) {
+            defaults.set(encoded, forKey: "summaryData")
+            defaults.set(Date(), forKey: "summaryLastUpdate")
+            defaults.synchronize()
+            print("[AdSenseAPI] Successfully saved summary data to shared container")
+        } else {
+            print("[AdSenseAPI] Failed to encode summary data")
         }
     }
     
     static func loadSummaryFromSharedContainer() -> AdSenseSummaryData? {
-        if let defaults = UserDefaults(suiteName: appGroupID),
-           let data = defaults.data(forKey: "summaryData") {
-            let decoder = JSONDecoder()
-            return try? decoder.decode(AdSenseSummaryData.self, from: data)
+        guard let defaults = UserDefaults(suiteName: appGroupID) else {
+            print("[AdSenseAPI] Failed to access shared UserDefaults container")
+            return nil
         }
-        return nil
+        guard let data = defaults.data(forKey: "summaryData") else {
+            print("[AdSenseAPI] No summary data found in shared container")
+            return nil
+        }
+        let decoder = JSONDecoder()
+        if let summary = try? decoder.decode(AdSenseSummaryData.self, from: data) {
+            print("[AdSenseAPI] Successfully loaded summary data from shared container")
+            return summary
+        } else {
+            print("[AdSenseAPI] Failed to decode summary data")
+            return nil
+        }
     }
     
     static func loadLastUpdateDate() -> Date? {
-        if let defaults = UserDefaults(suiteName: appGroupID) {
-            return defaults.object(forKey: "summaryLastUpdate") as? Date
+        guard let defaults = UserDefaults(suiteName: appGroupID) else {
+            print("[AdSenseAPI] Failed to access shared UserDefaults container")
+            return nil
         }
-        return nil
+        if let date = defaults.object(forKey: "summaryLastUpdate") as? Date {
+            print("[AdSenseAPI] Successfully loaded last update date: \(date)")
+            return date
+        } else {
+            print("[AdSenseAPI] No last update date found in shared container")
+            return nil
+        }
     }
 
     /// Fetches all detailed metrics for a given date range
@@ -531,5 +553,44 @@ class AdSenseAPI {
             print("[AdSenseAPI] Network or parsing error: \(error)")
             return .failure(.requestFailed(error.localizedDescription))
         }
+    }
+
+    private func makeRequest<T: Decodable>(_ request: URLRequest) async throws -> T {
+        let maxRetries = 3
+        var currentRetry = 0
+        var lastError: Error?
+        
+        while currentRetry < maxRetries {
+            do {
+                let (data, response) = try await URLSession.shared.data(for: request)
+                
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    throw AdSenseError.invalidResponse
+                }
+                
+                if httpResponse.statusCode == 401 {
+                    throw AdSenseError.unauthorized
+                }
+                
+                if httpResponse.statusCode != 200 {
+                    throw AdSenseError.requestFailed("HTTP \(httpResponse.statusCode)")
+                }
+                
+                let decoder = JSONDecoder()
+                return try decoder.decode(T.self, from: data)
+            } catch {
+                lastError = error
+                currentRetry += 1
+                
+                if currentRetry < maxRetries {
+                    // Exponential backoff
+                    let delay = pow(2.0, Double(currentRetry))
+                    try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                    continue
+                }
+            }
+        }
+        
+        throw lastError ?? AdSenseError.requestFailed("Failed after \(maxRetries) retries")
     }
 } 

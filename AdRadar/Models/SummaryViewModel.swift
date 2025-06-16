@@ -14,10 +14,6 @@ class SummaryViewModel: ObservableObject {
     @Published var isRefreshing: Bool = false
     @Published var refreshingCards: Set<MetricsCardType> = []
     @Published var error: String? = nil
-    @Published var last7DaysData: AdSenseSummaryData? = nil
-    @Published var last30DaysData: AdSenseSummaryData? = nil
-    @Published var thisMonthData: AdSenseSummaryData? = nil
-    @Published var lastMonthData: AdSenseSummaryData? = nil
     @Published var isOffline: Bool = false
     @Published var showOfflineToast: Bool = false
     @Published var showNetworkErrorModal: Bool = false
@@ -35,6 +31,9 @@ class SummaryViewModel: ObservableObject {
     private var fetchTask: Task<Void, Never>?
     private var metricsTask: Task<Void, Never>?
     
+    // Remove redundant data storage
+    private var cachedData: [MetricsCardType: AdSenseSummaryData] = [:]
+    
     init(accessToken: String?, authViewModel: AuthViewModel? = nil) {
         self.accessToken = accessToken
         self.authViewModel = authViewModel
@@ -50,6 +49,23 @@ class SummaryViewModel: ObservableObject {
     deinit {
         fetchTask?.cancel()
         metricsTask?.cancel()
+        // Clear cached data
+        cachedData.removeAll()
+    }
+    
+    // Add method to clear cached data
+    func clearCache() {
+        cachedData.removeAll()
+    }
+    
+    // Add method to get data for a specific card type
+    func getData(for card: MetricsCardType) -> AdSenseSummaryData? {
+        return cachedData[card]
+    }
+    
+    // Add method to set data for a specific card type
+    func setData(_ data: AdSenseSummaryData, for card: MetricsCardType) {
+        cachedData[card] = data
     }
     
     private func formatCurrency(_ value: String) -> String {

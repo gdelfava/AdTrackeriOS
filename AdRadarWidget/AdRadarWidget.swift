@@ -41,18 +41,28 @@ struct AdSenseAPI {
     static let summaryKey = "summaryData"
     static func loadSummaryFromSharedContainer() -> AdSenseSummaryData? {
         let defaults = UserDefaults(suiteName: appGroupID)
-        if let data = defaults?.data(forKey: summaryKey),
-           let summary = try? JSONDecoder().decode(AdSenseSummaryData.self, from: data) {
-            return summary
+        guard let data = defaults?.data(forKey: summaryKey) else {
+            print("[AdRadarWidget] No summary data found in shared container")
+            return nil
         }
-        return nil
+        if let summary = try? JSONDecoder().decode(AdSenseSummaryData.self, from: data) {
+            print("[AdRadarWidget] Successfully loaded summary data from shared container")
+            return summary
+        } else {
+            print("[AdRadarWidget] Failed to decode summary data")
+            return nil
+        }
     }
 
     static func loadLastUpdateDate() -> Date? {
-        if let defaults = UserDefaults(suiteName: appGroupID) {
-            return defaults.object(forKey: "summaryLastUpdate") as? Date
+        let defaults = UserDefaults(suiteName: appGroupID)
+        if let date = defaults?.object(forKey: "summaryLastUpdate") as? Date {
+            print("[AdRadarWidget] Successfully loaded last update date: \(date)")
+            return date
+        } else {
+            print("[AdRadarWidget] No last update date found in shared container")
+            return nil
         }
-        return nil
     }
 }
 

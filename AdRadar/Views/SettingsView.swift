@@ -30,7 +30,8 @@ struct SettingsView: View {
                     VStack(spacing: 16) {
                         if let url = viewModel.imageURL {
                             AsyncImage(url: url) { image in
-                                image.resizable()
+                                image
+                                    .resizable()
                                     .aspectRatio(contentMode: .fill)
                                     .frame(width: 100, height: 100)
                                     .clipShape(Circle())
@@ -39,6 +40,11 @@ struct SettingsView: View {
                                             .stroke(Color(.systemBackground), lineWidth: 4)
                                             .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
                                     )
+                                    .onAppear {
+                                        Task {
+                                            await ImageCache.shared.setImage(image, for: url)
+                                        }
+                                    }
                             } placeholder: {
                                 ProgressView()
                                     .frame(width: 100, height: 100)
