@@ -150,7 +150,7 @@ struct SummaryView: View {
         }
         .sheet(isPresented: $viewModel.showDayMetricsSheet) {
             if let metrics = viewModel.selectedDayMetrics {
-                DayMetricsSheet(metrics: metrics)
+                DayMetricsSheet(metrics: metrics, title: viewModel.selectedCardTitle)
             } else {
                 ProgressView("Loading metrics...")
                     .padding()
@@ -237,6 +237,7 @@ struct SummaryCardView: View {
 
 struct DayMetricsSheet: View {
     let metrics: AdSenseDayMetrics
+    let title: String
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     
@@ -257,7 +258,7 @@ struct DayMetricsSheet: View {
                             .foregroundColor(.accentColor)
                     }
                     Spacer()
-                    Text("Today")
+                    Text(title)
                         .font(.title3.weight(.semibold))
                     Spacer()
                     // Invisible button to balance the layout

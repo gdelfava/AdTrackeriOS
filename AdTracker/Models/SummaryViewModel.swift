@@ -21,6 +21,7 @@ class SummaryViewModel: ObservableObject {
     @Published var showDayMetricsSheet: Bool = false
     @Published var errorMessage: String? = nil
     @Published var lastUpdateTime: Date? = nil
+    @Published var selectedCardTitle: String = ""
     
     var accessToken: String?
     private var accountID: String?
@@ -255,6 +256,21 @@ class SummaryViewModel: ObservableObject {
             errorMessage = "Not signed in."
             return
         }
+        
+        // Set the card title based on the card type
+        switch card {
+        case .today:
+            selectedCardTitle = "Today so far"
+        case .yesterday:
+            selectedCardTitle = "Yesterday"
+        case .last7Days:
+            selectedCardTitle = "Last 7 Days"
+        case .thisMonth:
+            selectedCardTitle = "This month"
+        case .lastMonth:
+            selectedCardTitle = "Last month"
+        }
+        
         print("[SummaryViewModel] Found current user, refreshing tokens...")
         await withCheckedContinuation { continuation in
             user.refreshTokensIfNeeded { refreshedUser, error in
