@@ -12,7 +12,7 @@ struct SummaryView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .center, spacing: 24) {
                     if let errorMessage = viewModel.errorMessage {
                         Text(errorMessage)
                             .foregroundColor(.red)
@@ -94,6 +94,19 @@ struct SummaryView: View {
                 }
             }
             .navigationTitle("Summary")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    ProfileImageView(url: authViewModel.userProfileImageURL)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                authViewModel.signOut()
+                            } label: {
+                                Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
+                            }
+                            Button("Cancel", role: .cancel) { }
+                        }
+                }
+            }
         }
         .onAppear {
             if let token = authViewModel.accessToken, !viewModel.hasLoaded {
@@ -260,7 +273,7 @@ struct DayMetricsSheet: View {
             ScrollView {
                 VStack(spacing: 16) {
                     // Revenue section
-                    MetricSection(title: "Revenue", icon: "dollarsign.circle.fill", color: .green) {
+                    MetricSection(title: "Revenue", color: .green) {
                         MetricRow(
                             icon: "chart.line.uptrend.xyaxis.circle.fill",
                             title: "Estimated Earnings",
@@ -270,7 +283,7 @@ struct DayMetricsSheet: View {
                     }
                     
                     // Performance section
-                    MetricSection(title: "Performance", icon: "chart.bar.fill", color: .blue) {
+                    MetricSection(title: "Performance", color: .blue) {
                         MetricRow(
                             icon: "cursorarrow.click",
                             title: "Clicks",
@@ -292,7 +305,7 @@ struct DayMetricsSheet: View {
                     }
                     
                     // Requests section
-                    MetricSection(title: "Requests", icon: "arrow.triangle.2.circlepath", color: .orange) {
+                    MetricSection(title: "Requests", color: .orange) {
                         MetricRow(
                             icon: "doc.text.fill",
                             title: "Page Views",
@@ -308,7 +321,7 @@ struct DayMetricsSheet: View {
                     }
                     
                     // Cost section
-                    MetricSection(title: "Cost", icon: "creditcard.fill", color: .purple) {
+                    MetricSection(title: "Cost", color: .purple) {
                         MetricRow(
                             icon: "dollarsign.circle.fill",
                             title: "Cost Per Click",
@@ -328,28 +341,21 @@ struct DayMetricsSheet: View {
 
 struct MetricSection<Content: View>: View {
     let title: String
-    let icon: String
     let color: Color
     let content: Content
     
-    init(title: String, icon: String, color: Color, @ViewBuilder content: () -> Content) {
+    init(title: String, color: Color, @ViewBuilder content: () -> Content) {
         self.title = title
-        self.icon = icon
         self.color = color
         self.content = content()
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: icon)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(color)
-                Text(title)
-                    .font(.headline)
-                    .foregroundColor(.primary)
-            }
-            .padding(.horizontal, 4)
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.primary)
+                .padding(.horizontal, 4)
             
             VStack(spacing: 0) {
                 content

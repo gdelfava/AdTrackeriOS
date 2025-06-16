@@ -61,6 +61,19 @@ struct PaymentsView: View {
                 }
             }
             .navigationTitle("Payments")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    ProfileImageView(url: authViewModel.userProfileImageURL)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                authViewModel.signOut()
+                            } label: {
+                                Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
+                            }
+                            Button("Cancel", role: .cancel) { }
+                        }
+                }
+            }
         }
     }
     
