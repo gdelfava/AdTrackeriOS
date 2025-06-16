@@ -66,13 +66,13 @@ struct SettingsView: View {
                             .padding(.horizontal, 4)
                         
                         VStack(spacing: 0) {
-                            // AnimatedSettingsRow(icon: "heart.fill", color: .red, title: "Rate AdTracker") {
+                            // AnimatedSettingsRow(icon: "heart.fill", color: .red, title: "Rate AdRadar") {
                             //     if let url = URL(string: "itms-apps://itunes.apple.com/app/id1481431267?action=write-review") {
                             //         UIApplication.shared.open(url)
                             //     }
                             // }
                             // Divider()
-                            // AnimatedSettingsRow(icon: "square.and.arrow.up", color: .blue, title: "Share AdTracker") {
+                            // AnimatedSettingsRow(icon: "square.and.arrow.up", color: .blue, title: "Share AdRadar") {
                             //     isShareSheetPresented = true
                             // }
                             // Divider()
@@ -84,7 +84,7 @@ struct SettingsView: View {
                                 isMailSheetPresented = true
                             }
                             Divider()
-                            AnimatedSettingsRow(icon: "bird.fill", color: .blue, title: "@AdTracker") {
+                            AnimatedSettingsRow(icon: "bird.fill", color: .blue, title: "@AdRadar") {
                                 if let url = URL(string: "https://x.com/gdelfava") {
                                     UIApplication.shared.open(url)
                                 }
@@ -144,8 +144,8 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $isShareSheetPresented) {
                 ShareSheet(activityItems: [
-                    "Check out AdTracker - the best way to track your AdSense earnings!",
-                    "https://example.com/adtracker" // Placeholder URL until App Store submission
+                    "Check out AdRadar - the best way to track your AdSense earnings!",
+                    "https://example.com/adradar" // Placeholder URL until App Store submission
                 ])
                 .presentationDetents([.medium])
             }
@@ -202,13 +202,13 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $isMailSheetPresented) {
                 MailView(
-                    subject: "AdsenseTracker: User feedback",
+                    subject: "AdRadar: User feedback",
                     messageBody: "Any feeback or questions are more than welcome, please enter your message below:"
                 )
             }
             .sheet(isPresented: $isTermsSheetPresented) {
                 NavigationView {
-                    WebView(url: URL(string: "https://delteqis.co.za/adsensetracker-terms-and-conditions")!)
+                    WebView(url: URL(string: "https://delteqis.co.za/adradar-terms-and-conditions")!)
                         .navigationTitle("Terms & Privacy Policy")
                         .navigationBarTitleDisplayMode(.inline)
                         .toolbar {

@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.delteqws.AdTracker</string>
+		<string>group.com.delteqws.AdRadar</string>
 	</array>
 </dict>
 </plist>

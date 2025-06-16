@@ -85,7 +85,7 @@ struct WhyGoogleModal: View {
                         .font(.title2).bold()
                         .foregroundColor(.black)
                         .padding(.top, 0)
-                    Text("AdsenseTracker requires you to sign in to your Google account to allow it to receive the relevant AdSense data.\n\nWithout this, AdsenseTracker cannot provide you with any information.\n\nAdsenseTracker does not store any personal information. It is used only to display your data.")
+                    Text("AdRadar requires you to sign in to your Google account to allow it to receive the relevant AdSense data.\n\nWithout this, AdRadar cannot provide you with any information.\n\nAdRadar does not store any personal information. It is used only to display your data.")
                         .font(.body)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.leading)

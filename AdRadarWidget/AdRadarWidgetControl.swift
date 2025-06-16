@@ -1,6 +1,6 @@
 //
-//  AdTrackerWidgetControl.swift
-//  AdTrackerWidget
+//  AdRadarWidgetControl.swift
+//  AdRadarWidget
 //
 //  Created by Guilio Del Fava on 2025/06/12.
 //
@@ -9,8 +9,8 @@ import AppIntents
 import SwiftUI
 import WidgetKit
 
-struct AdTrackerWidgetControl: ControlWidget {
-    static let kind: String = "com.delteqws.AdTracker.AdTrackerWidget"
+struct AdRadarWidgetControl: ControlWidget {
+    static let kind: String = "com.delteqws.AdRadar.AdRadarWidget"
 
     var body: some ControlWidgetConfiguration {
         AppIntentControlConfiguration(
@@ -30,7 +30,7 @@ struct AdTrackerWidgetControl: ControlWidget {
     }
 }
 
-extension AdTrackerWidgetControl {
+extension AdRadarWidgetControl {
     struct Value {
         var isRunning: Bool
         var name: String
@@ -38,12 +38,12 @@ extension AdTrackerWidgetControl {
 
     struct Provider: AppIntentControlValueProvider {
         func previewValue(configuration: TimerConfiguration) -> Value {
-            AdTrackerWidgetControl.Value(isRunning: false, name: configuration.timerName)
+            AdRadarWidgetControl.Value(isRunning: false, name: configuration.timerName)
         }
 
         func currentValue(configuration: TimerConfiguration) async throws -> Value {
             let isRunning = true // Check if the timer is running
-            return AdTrackerWidgetControl.Value(isRunning: isRunning, name: configuration.timerName)
+            return AdRadarWidgetControl.Value(isRunning: isRunning, name: configuration.timerName)
         }
     }
 }

@@ -12,7 +12,7 @@ struct PaymentsView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(spacing: 22) {
+                VStack(spacing: 16) {
                     if viewModel.isLoading {
                         Spacer()
                         ProgressView("Loading...")
@@ -42,12 +42,12 @@ struct PaymentsView: View {
                                 .padding(.top, 8)
                         }
                         .padding(.horizontal)
-                        Text("AdsenseTracker is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
+                        Text("AdRadar is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
                             .font(.footnote)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
-                            .padding(.bottom, 16)
+                            .padding(.bottom, 20)
                     } else {
                     }
                 }

@@ -1,6 +1,6 @@
 //
-//  AdTrackerWidgetLiveActivity.swift
-//  AdTrackerWidget
+//  AdRadarWidgetLiveActivity.swift
+//  AdRadarWidget
 //
 //  Created by Guilio Del Fava on 2025/06/12.
 //
@@ -9,7 +9,7 @@ import ActivityKit
 import WidgetKit
 import SwiftUI
 
-struct AdTrackerWidgetAttributes: ActivityAttributes {
+struct AdRadarWidgetAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         // Dynamic stateful properties about your activity go here!
         var emoji: String
@@ -19,9 +19,9 @@ struct AdTrackerWidgetAttributes: ActivityAttributes {
     var name: String
 }
 
-struct AdTrackerWidgetLiveActivity: Widget {
+struct AdRadarWidgetLiveActivity: Widget {
     var body: some WidgetConfiguration {
-        ActivityConfiguration(for: AdTrackerWidgetAttributes.self) { context in
+        ActivityConfiguration(for: AdRadarWidgetAttributes.self) { context in
             // Lock screen/banner UI goes here
             VStack {
                 Text("Hello \(context.state.emoji)")
@@ -56,25 +56,25 @@ struct AdTrackerWidgetLiveActivity: Widget {
     }
 }
 
-extension AdTrackerWidgetAttributes {
-    fileprivate static var preview: AdTrackerWidgetAttributes {
-        AdTrackerWidgetAttributes(name: "World")
+extension AdRadarWidgetAttributes {
+    fileprivate static var preview: AdRadarWidgetAttributes {
+        AdRadarWidgetAttributes(name: "World")
     }
 }
 
-extension AdTrackerWidgetAttributes.ContentState {
-    fileprivate static var smiley: AdTrackerWidgetAttributes.ContentState {
-        AdTrackerWidgetAttributes.ContentState(emoji: "😀")
+extension AdRadarWidgetAttributes.ContentState {
+    fileprivate static var smiley: AdRadarWidgetAttributes.ContentState {
+        AdRadarWidgetAttributes.ContentState(emoji: "😀")
      }
      
-     fileprivate static var starEyes: AdTrackerWidgetAttributes.ContentState {
-         AdTrackerWidgetAttributes.ContentState(emoji: "🤩")
+     fileprivate static var starEyes: AdRadarWidgetAttributes.ContentState {
+         AdRadarWidgetAttributes.ContentState(emoji: "🤩")
      }
 }
 
-#Preview("Notification", as: .content, using: AdTrackerWidgetAttributes.preview) {
-   AdTrackerWidgetLiveActivity()
+#Preview("Notification", as: .content, using: AdRadarWidgetAttributes.preview) {
+   AdRadarWidgetLiveActivity()
 } contentStates: {
-    AdTrackerWidgetAttributes.ContentState.smiley
-    AdTrackerWidgetAttributes.ContentState.starEyes
+    AdRadarWidgetAttributes.ContentState.smiley
+    AdRadarWidgetAttributes.ContentState.starEyes
 }

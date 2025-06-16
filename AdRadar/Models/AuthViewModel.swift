@@ -11,7 +11,7 @@ class AuthViewModel: ObservableObject {
     @Published var userProfileImageURL: URL? = nil
     
     private var cancellables = Set<AnyCancellable>()
-    private let keychainService = "com.delteqws.AdTracker"
+    private let keychainService = "com.delteqws.AdRadar"
     private let keychainAccount = "googleAccessToken"
     private let userNameKey = "userName"
     private let userEmailKey = "userEmail"

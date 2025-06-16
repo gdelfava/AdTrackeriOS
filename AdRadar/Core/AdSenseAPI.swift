@@ -425,7 +425,7 @@ class AdSenseAPI {
         }
     }
 
-    static let appGroupID = "group.com.delteqws.AdTracker"
+    static let appGroupID = "group.com.delteqws.AdRadar"
     
     func saveSummaryToSharedContainer(_ summary: AdSenseSummaryData) {
         if let defaults = UserDefaults(suiteName: AdSenseAPI.appGroupID) {

@@ -1,6 +1,6 @@
 //
-//  AdTrackerWidget.swift
-//  AdTrackerWidget
+//  AdRadarWidget.swift
+//  AdRadarWidget
 //
 //  Created by Guilio Del Fava on 2025/06/12.
 //
@@ -29,7 +29,7 @@ struct AdSenseSummaryData: Codable {
     let lastMonthDeltaPositive: Bool?
 }
 
-struct AdTrackerWidgetEntry: TimelineEntry {
+struct AdRadarWidgetEntry: TimelineEntry {
     let date: Date
     let summary: AdSenseSummaryData?
     let lastUpdate: String
@@ -37,7 +37,7 @@ struct AdTrackerWidgetEntry: TimelineEntry {
 
 // Minimal AdSenseAPI for widget data loading
 struct AdSenseAPI {
-    static let appGroupID = "group.com.delteqws.AdTracker" // Must match main app
+    static let appGroupID = "group.com.delteqws.AdRadar" // Must match main app
     static let summaryKey = "summaryData"
     static func loadSummaryFromSharedContainer() -> AdSenseSummaryData? {
         let defaults = UserDefaults(suiteName: appGroupID)
@@ -57,21 +57,21 @@ struct AdSenseAPI {
 }
 
 struct Provider: TimelineProvider {
-    func placeholder(in context: Context) -> AdTrackerWidgetEntry {
-        AdTrackerWidgetEntry(date: Date(), summary: nil, lastUpdate: "--:--")
+    func placeholder(in context: Context) -> AdRadarWidgetEntry {
+        AdRadarWidgetEntry(date: Date(), summary: nil, lastUpdate: "--:--")
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (AdTrackerWidgetEntry) -> ()) {
+    func getSnapshot(in context: Context, completion: @escaping (AdRadarWidgetEntry) -> ()) {
         let summary = AdSenseAPI.loadSummaryFromSharedContainer()
         let lastUpdateDate = AdSenseAPI.loadLastUpdateDate() ?? Date()
-        let entry = AdTrackerWidgetEntry(date: lastUpdateDate, summary: summary, lastUpdate: formattedTime(lastUpdateDate))
+        let entry = AdRadarWidgetEntry(date: lastUpdateDate, summary: summary, lastUpdate: formattedTime(lastUpdateDate))
         completion(entry)
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<AdTrackerWidgetEntry>) -> ()) {
+    func getTimeline(in context: Context, completion: @escaping (Timeline<AdRadarWidgetEntry>) -> ()) {
         let summary = AdSenseAPI.loadSummaryFromSharedContainer()
         let lastUpdateDate = AdSenseAPI.loadLastUpdateDate() ?? Date()
-        let entry = AdTrackerWidgetEntry(date: lastUpdateDate, summary: summary, lastUpdate: formattedTime(lastUpdateDate))
+        let entry = AdRadarWidgetEntry(date: lastUpdateDate, summary: summary, lastUpdate: formattedTime(lastUpdateDate))
         
         // Update every 15 minutes
         let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date()
@@ -149,8 +149,8 @@ struct WidgetCellView: View {
     }
 }
 
-struct AdTrackerWidgetEntryView: View {
-    var entry: AdTrackerWidgetEntry
+struct AdRadarWidgetEntryView: View {
+    var entry: AdRadarWidgetEntry
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.widgetFamily) private var family
     
@@ -217,7 +217,7 @@ struct AdTrackerWidgetEntryView: View {
                             }
                             Spacer()
                             HStack(alignment: .lastTextBaseline, spacing: 2) {
-                                Text("AdsenseTracker")
+                                Text("AdRadar")
                                     .font(.system(size: 12))
                             }
                             .foregroundColor(.secondary)
@@ -323,7 +323,7 @@ struct AdTrackerWidgetEntryView: View {
                         }
                         Spacer(minLength: 0)
                         HStack(alignment: .firstTextBaseline, spacing: 6) {
-                            Text("AdsenseTracker")
+                            Text("AdRadar")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(.secondary)
                         }
@@ -344,14 +344,14 @@ private func formattedTime(_ date: Date) -> String {
     return formatter.string(from: date)
 }
 
-struct AdTrackerWidget: Widget {
-    let kind: String = "AdTrackerWidget"
+struct AdRadarWidget: Widget {
+    let kind: String = "AdRadarWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            AdTrackerWidgetEntryView(entry: entry)
+            AdRadarWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("AdTracker Summary")
+        .configurationDisplayName("AdRadar Summary")
         .description("Shows today's earnings and delta.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }

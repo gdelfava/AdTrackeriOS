@@ -11,7 +11,7 @@
 		7C82EBA32DFAABDD001A8B8D /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 7C82EBA22DFAABDD001A8B8D /* GoogleSignInSwift */; };
 		7CEB39492DFAF6B1002884DB /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CEB39482DFAF6B1002884DB /* WidgetKit.framework */; };
 		7CEB394B2DFAF6B2002884DB /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CEB394A2DFAF6B2002884DB /* SwiftUI.framework */; };
-		7CEB395C2DFAF6B3002884DB /* AdTrackerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7CEB39462DFAF6B1002884DB /* AdTrackerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		7CEB395C2DFAF6B3002884DB /* AdRadarWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7CEB39462DFAF6B1002884DB /* AdRadarWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -20,7 +20,7 @@
 			containerPortal = 7C82EB892DFAAA5F001A8B8D /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 7CEB39452DFAF6B1002884DB;
-			remoteInfo = AdTrackerWidgetExtension;
+			remoteInfo = AdRadarWidgetExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -31,7 +31,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				7CEB395C2DFAF6B3002884DB /* AdTrackerWidgetExtension.appex in Embed Foundation Extensions */,
+				7CEB395C2DFAF6B3002884DB /* AdRadarWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -39,45 +39,45 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		7C82EB912DFAAA5F001A8B8D /* AdTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AdTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		7CEB39462DFAF6B1002884DB /* AdTrackerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AdTrackerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		7C82EB912DFAAA5F001A8B8D /* AdRadar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AdRadar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7CEB39462DFAF6B1002884DB /* AdRadarWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AdRadarWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7CEB39482DFAF6B1002884DB /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		7CEB394A2DFAF6B2002884DB /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		7CEB39632DFAF942002884DB /* AdTrackerWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AdTrackerWidgetExtension.entitlements; sourceTree = "<group>"; };
+		7CEB39632DFAF942002884DB /* AdRadarWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AdRadarWidgetExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		7C82EBB72DFAB554001A8B8D /* Exceptions for "AdTracker" folder in "AdTracker" target */ = {
+		7C82EBB72DFAB554001A8B8D /* Exceptions for "AdRadar" folder in "AdRadar" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 7C82EB902DFAAA5F001A8B8D /* AdTracker */;
+			target = 7C82EB902DFAAA5F001A8B8D /* AdRadar */;
 		};
-		7CEB39602DFAF6B3002884DB /* Exceptions for "AdTrackerWidget" folder in "AdTrackerWidgetExtension" target */ = {
+		7CEB39602DFAF6B3002884DB /* Exceptions for "AdRadarWidget" folder in "AdRadarWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 7CEB39452DFAF6B1002884DB /* AdTrackerWidgetExtension */;
+			target = 7CEB39452DFAF6B1002884DB /* AdRadarWidgetExtension */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		7C82EB932DFAAA5F001A8B8D /* AdTracker */ = {
+		7C82EB932DFAAA5F001A8B8D /* AdRadar */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				7C82EBB72DFAB554001A8B8D /* Exceptions for "AdTracker" folder in "AdTracker" target */,
+				7C82EBB72DFAB554001A8B8D /* Exceptions for "AdRadar" folder in "AdRadar" target */,
 			);
-			path = AdTracker;
+			path = AdRadar;
 			sourceTree = "<group>";
 		};
-		7CEB394C2DFAF6B2002884DB /* AdTrackerWidget */ = {
+		7CEB394C2DFAF6B2002884DB /* AdRadarWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				7CEB39602DFAF6B3002884DB /* Exceptions for "AdTrackerWidget" folder in "AdTrackerWidgetExtension" target */,
+				7CEB39602DFAF6B3002884DB /* Exceptions for "AdRadarWidget" folder in "AdRadarWidgetExtension" target */,
 			);
-			path = AdTrackerWidget;
+			path = AdRadarWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -107,9 +107,9 @@
 		7C82EB882DFAAA5F001A8B8D = {
 			isa = PBXGroup;
 			children = (
-				7CEB39632DFAF942002884DB /* AdTrackerWidgetExtension.entitlements */,
-				7C82EB932DFAAA5F001A8B8D /* AdTracker */,
-				7CEB394C2DFAF6B2002884DB /* AdTrackerWidget */,
+				7CEB39632DFAF942002884DB /* AdRadarWidgetExtension.entitlements */,
+				7C82EB932DFAAA5F001A8B8D /* AdRadar */,
+				7CEB394C2DFAF6B2002884DB /* AdRadarWidget */,
 				7CEB39472DFAF6B1002884DB /* Frameworks */,
 				7C82EB922DFAAA5F001A8B8D /* Products */,
 			);
@@ -118,8 +118,8 @@
 		7C82EB922DFAAA5F001A8B8D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7C82EB912DFAAA5F001A8B8D /* AdTracker.app */,
-				7CEB39462DFAF6B1002884DB /* AdTrackerWidgetExtension.appex */,
+				7C82EB912DFAAA5F001A8B8D /* AdRadar.app */,
+				7CEB39462DFAF6B1002884DB /* AdRadarWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -136,9 +136,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		7C82EB902DFAAA5F001A8B8D /* AdTracker */ = {
+		7C82EB902DFAAA5F001A8B8D /* AdRadar */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7C82EB9C2DFAAA5F001A8B8D /* Build configuration list for PBXNativeTarget "AdTracker" */;
+			buildConfigurationList = 7C82EB9C2DFAAA5F001A8B8D /* Build configuration list for PBXNativeTarget "AdRadar" */;
 			buildPhases = (
 				7C82EB8D2DFAAA5F001A8B8D /* Sources */,
 				7C82EB8E2DFAAA5F001A8B8D /* Frameworks */,
@@ -151,20 +151,20 @@
 				7CEB395B2DFAF6B3002884DB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				7C82EB932DFAAA5F001A8B8D /* AdTracker */,
+				7C82EB932DFAAA5F001A8B8D /* AdRadar */,
 			);
-			name = AdTracker;
+			name = AdRadar;
 			packageProductDependencies = (
 				7C82EBA02DFAABDD001A8B8D /* GoogleSignIn */,
 				7C82EBA22DFAABDD001A8B8D /* GoogleSignInSwift */,
 			);
-			productName = "Adsense Tracker";
-			productReference = 7C82EB912DFAAA5F001A8B8D /* AdTracker.app */;
+			productName = "AdRadar";
+			productReference = 7C82EB912DFAAA5F001A8B8D /* AdRadar.app */;
 			productType = "com.apple.product-type.application";
 		};
-		7CEB39452DFAF6B1002884DB /* AdTrackerWidgetExtension */ = {
+		7CEB39452DFAF6B1002884DB /* AdRadarWidgetExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7CEB395D2DFAF6B3002884DB /* Build configuration list for PBXNativeTarget "AdTrackerWidgetExtension" */;
+			buildConfigurationList = 7CEB395D2DFAF6B3002884DB /* Build configuration list for PBXNativeTarget "AdRadarWidgetExtension" */;
 			buildPhases = (
 				7CEB39422DFAF6B1002884DB /* Sources */,
 				7CEB39432DFAF6B1002884DB /* Frameworks */,
@@ -175,13 +175,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				7CEB394C2DFAF6B2002884DB /* AdTrackerWidget */,
+				7CEB394C2DFAF6B2002884DB /* AdRadarWidget */,
 			);
-			name = AdTrackerWidgetExtension;
+			name = AdRadarWidgetExtension;
 			packageProductDependencies = (
 			);
-			productName = AdTrackerWidgetExtension;
-			productReference = 7CEB39462DFAF6B1002884DB /* AdTrackerWidgetExtension.appex */;
+			productName = AdRadarWidgetExtension;
+			productReference = 7CEB39462DFAF6B1002884DB /* AdRadarWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -202,7 +202,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 7C82EB8C2DFAAA5F001A8B8D /* Build configuration list for PBXProject "AdTracker" */;
+			buildConfigurationList = 7C82EB8C2DFAAA5F001A8B8D /* Build configuration list for PBXProject "AdRadar" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -219,8 +219,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				7C82EB902DFAAA5F001A8B8D /* AdTracker */,
-				7CEB39452DFAF6B1002884DB /* AdTrackerWidgetExtension */,
+				7C82EB902DFAAA5F001A8B8D /* AdRadar */,
+				7CEB39452DFAF6B1002884DB /* AdRadarWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -262,7 +262,7 @@
 /* Begin PBXTargetDependency section */
 		7CEB395B2DFAF6B3002884DB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 7CEB39452DFAF6B1002884DB /* AdTrackerWidgetExtension */;
+			target = 7CEB39452DFAF6B1002884DB /* AdRadarWidgetExtension */;
 			targetProxy = 7CEB395A2DFAF6B3002884DB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -394,14 +394,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = AdTracker/AdTracker.entitlements;
+				CODE_SIGN_ENTITLEMENTS = AdRadar/AdRadar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AdTracker/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = AdTracker;
+				INFOPLIST_FILE = AdRadar/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AdRadar;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -413,7 +413,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdTracker;
+				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -426,14 +426,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = AdTracker/AdTracker.entitlements;
+				CODE_SIGN_ENTITLEMENTS = AdRadar/AdRadar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AdTracker/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = AdTracker;
+				INFOPLIST_FILE = AdRadar/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AdRadar;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -445,7 +445,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdTracker;
+				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -458,13 +458,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = AdTrackerWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = AdRadarWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AdTrackerWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = AdTrackerWidget;
+				INFOPLIST_FILE = AdRadarWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AdRadarWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -472,7 +472,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdTracker.AdTrackerWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar.AdRadarWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -486,13 +486,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = AdTrackerWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = AdRadarWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AdTrackerWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = AdTrackerWidget;
+				INFOPLIST_FILE = AdRadarWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AdRadarWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -500,7 +500,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdTracker.AdTrackerWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar.AdRadarWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -512,7 +512,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7C82EB8C2DFAAA5F001A8B8D /* Build configuration list for PBXProject "AdTracker" */ = {
+		7C82EB8C2DFAAA5F001A8B8D /* Build configuration list for PBXProject "AdRadar" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7C82EB9A2DFAAA5F001A8B8D /* Debug */,
@@ -521,7 +521,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7C82EB9C2DFAAA5F001A8B8D /* Build configuration list for PBXNativeTarget "AdTracker" */ = {
+		7C82EB9C2DFAAA5F001A8B8D /* Build configuration list for PBXNativeTarget "AdRadar" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7C82EB9D2DFAAA5F001A8B8D /* Debug */,
@@ -530,7 +530,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7CEB395D2DFAF6B3002884DB /* Build configuration list for PBXNativeTarget "AdTrackerWidgetExtension" */ = {
+		7CEB395D2DFAF6B3002884DB /* Build configuration list for PBXNativeTarget "AdRadarWidgetExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7CEB395E2DFAF6B3002884DB /* Debug */,
