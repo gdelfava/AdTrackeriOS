@@ -12,7 +12,7 @@ struct PaymentsView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: 22) {
                     if viewModel.isLoading {
                         Spacer()
                         ProgressView("Loading...")
@@ -122,7 +122,7 @@ struct UnpaidEarningsCardView: View {
                 .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
             VStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .center) {
-                    Image(systemName: "creditcard.fill")
+                    Image(systemName: "calendar.badge.clock")
                         .font(.system(size: 22))
                         .foregroundColor(.primary)
                         //.padding(2)
@@ -134,13 +134,19 @@ struct UnpaidEarningsCardView: View {
                     Spacer()
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text(amount)
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .fontDesign(.rounded)
-                        .foregroundColor(.primary)
-                        .minimumScaleFactor(0.5)
-                        .lineLimit(1)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(amount)
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .fontDesign(.rounded)
+                            .foregroundColor(.primary)
+                            .minimumScaleFactor(0.5)
+                            .lineLimit(1)
+                        Text("Pending")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
                 }
             }
             .padding(12)
@@ -180,7 +186,7 @@ struct PreviousPaymentCardView: View {
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(amount)
-                        .font(.title2)
+                        .font(.largeTitle)
                         .fontWeight(.bold)
                         .fontDesign(.rounded)
                         .foregroundColor(.primary)
