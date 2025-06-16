@@ -30,9 +30,10 @@ class SummaryViewModel: ObservableObject {
     @Published var selectedCardTitle: String = ""
     
     var accessToken: String?
-    private var accountID: String?
+    @MainActor private var accountID: String?
     var authViewModel: AuthViewModel?
     private var fetchTask: Task<Void, Never>?
+    private var metricsTask: Task<Void, Never>?
     
     init(accessToken: String?, authViewModel: AuthViewModel? = nil) {
         self.accessToken = accessToken
@@ -48,6 +49,7 @@ class SummaryViewModel: ObservableObject {
     
     deinit {
         fetchTask?.cancel()
+        metricsTask?.cancel()
     }
     
     private func formatCurrency(_ value: String) -> String {
@@ -270,6 +272,9 @@ class SummaryViewModel: ObservableObject {
     
     /// Fetches and stores detailed metrics for a given card type (date range)
     func fetchMetrics(forCard card: MetricsCardType) async {
+        // Cancel any existing metrics task
+        metricsTask?.cancel()
+        
         print("[SummaryViewModel] Starting fetchMetrics for card: \(card)")
         errorMessage = nil
         guard let user = GIDSignIn.sharedInstance.currentUser else {
@@ -277,6 +282,9 @@ class SummaryViewModel: ObservableObject {
             errorMessage = "Not signed in."
             return
         }
+        
+        // Capture accountID before the closure
+        let localAccountID = accountID ?? ""
         
         // Set the card title based on the card type
         switch card {
@@ -296,7 +304,12 @@ class SummaryViewModel: ObservableObject {
         
         print("[SummaryViewModel] Found current user, refreshing tokens...")
         await withCheckedContinuation { continuation in
-            user.refreshTokensIfNeeded { refreshedUser, error in
+            user.refreshTokensIfNeeded { [weak self] refreshedUser, error in
+                guard let self = self else {
+                    continuation.resume()
+                    return
+                }
+                
                 if let error = error {
                     print("[SummaryViewModel] Token refresh failed: \(error)")
                     DispatchQueue.main.async {
@@ -315,8 +328,7 @@ class SummaryViewModel: ObservableObject {
                 }
                 print("[SummaryViewModel] Successfully refreshed tokens")
                 let accessToken = refreshedUser.accessToken.tokenString
-                let accountID = self.accountID ?? ""
-                print("[SummaryViewModel] Using accountID: \(accountID)")
+                print("[SummaryViewModel] Using accountID: \(localAccountID)")
                 let calendar = Calendar.current
                 let today = calendar.startOfDay(for: Date())
                 let startDate: Date
@@ -346,9 +358,16 @@ class SummaryViewModel: ObservableObject {
                     startDate = calendar.date(byAdding: .year, value: -3, to: today) ?? today
                     endDate = today
                 }
-                Task {
-                    let result = await AdSenseAPI.shared.fetchMetricsForRange(accountID: accountID, accessToken: accessToken, startDate: startDate, endDate: endDate)
-                    DispatchQueue.main.async {
+                
+                // Create a new task and store it in a local variable first
+                let newTask = Task {
+                    let result = await AdSenseAPI.shared.fetchMetricsForRange(accountID: localAccountID, accessToken: accessToken, startDate: startDate, endDate: endDate)
+                    // Check if task was cancelled
+                    if Task.isCancelled {
+                        continuation.resume()
+                        return
+                    }
+                    await MainActor.run {
                         switch result {
                         case .success(let metrics):
                             self.selectedDayMetrics = metrics
@@ -358,6 +377,11 @@ class SummaryViewModel: ObservableObject {
                         }
                         continuation.resume()
                     }
+                }
+                
+                // Assign the task on the main actor
+                Task { @MainActor in
+                    self.metricsTask = newTask
                 }
             }
         }

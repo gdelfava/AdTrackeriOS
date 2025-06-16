@@ -31,6 +31,18 @@ struct ContentView: View {
                                 .scaledToFit()
                                 .frame(width: 200, height: 200)
                                 .accessibilityHidden(true)
+                            VStack {
+                                Text("AdRadar")
+                                    .font(.largeTitle)
+                                    .fontWeight(.bold)
+                                    .fontDesign(.rounded)
+                                    .foregroundColor(.white)
+                                Text("for Adsense")
+                                    .font(.caption)
+                                    .fontWeight(.regular)
+                                    .fontDesign(.rounded)
+                                    .foregroundColor(.white)
+                            }
                         }
                         Spacer()
                         GoogleSignInButtonView {

@@ -158,7 +158,7 @@
 				7C82EBA02DFAABDD001A8B8D /* GoogleSignIn */,
 				7C82EBA22DFAABDD001A8B8D /* GoogleSignInSwift */,
 			);
-			productName = "AdRadar";
+			productName = AdRadar;
 			productReference = 7C82EB912DFAAA5F001A8B8D /* AdRadar.app */;
 			productType = "com.apple.product-type.application";
 		};
