@@ -42,24 +42,65 @@ struct SummaryView: View {
                         Spacer()
                     } else if let data = viewModel.summaryData {
                         Group {
-                            SummaryCardView(title: "Today so far", value: data.today, subtitle: "vs yesterday", delta: data.todayDelta, deltaPositive: data.todayDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .today) } })
-                                .opacity(cardAppearances[0] ? 1 : 0)
-                                .offset(y: cardAppearances[0] ? 0 : 20)
-                            SummaryCardView(title: "Yesterday", value: data.yesterday, subtitle: "vs the same day last week", delta: data.yesterdayDelta, deltaPositive: data.yesterdayDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .yesterday) } })
-                                .opacity(cardAppearances[1] ? 1 : 0)
-                                .offset(y: cardAppearances[1] ? 0 : 20)
-                            SummaryCardView(title: "Last 7 Days", value: data.last7Days, subtitle: "vs the previous 7 days", delta: data.last7DaysDelta, deltaPositive: data.last7DaysDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .last7Days) } })
-                                .opacity(cardAppearances[2] ? 1 : 0)
-                                .offset(y: cardAppearances[2] ? 0 : 20)
-                            SummaryCardView(title: "This month", value: data.thisMonth, subtitle: "vs the same day last month", delta: data.thisMonthDelta, deltaPositive: data.thisMonthDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .thisMonth) } })
-                                .opacity(cardAppearances[3] ? 1 : 0)
-                                .offset(y: cardAppearances[3] ? 0 : 20)
-                            SummaryCardView(title: "Last month", value: data.lastMonth, subtitle: "vs the month before last", delta: data.lastMonthDelta, deltaPositive: data.lastMonthDeltaPositive, onTap: { Task { await viewModel.fetchMetrics(forCard: .lastMonth) } })
-                                .opacity(cardAppearances[4] ? 1 : 0)
-                                .offset(y: cardAppearances[4] ? 0 : 20)
-                            //SummaryCardView(title: "Last three years", value: data.lifetime, subtitle: nil, delta: nil, deltaPositive: nil)
-                              //  .opacity(cardAppearances[5] ? 1 : 0)
-                                //.offset(y: cardAppearances[5] ? 0 : 20)
+                            SummaryCardView(
+                                title: "Today so far",
+                                value: data.today,
+                                subtitle: "vs yesterday",
+                                delta: data.todayDelta,
+                                deltaPositive: data.todayDeltaPositive,
+                                onTap: { Task { await viewModel.fetchMetrics(forCard: .today) } },
+                                isRefreshing: viewModel.refreshingCards.contains(.today)
+                            )
+                            .opacity(cardAppearances[0] ? 1 : 0)
+                            .offset(y: cardAppearances[0] ? 0 : 20)
+                            
+                            SummaryCardView(
+                                title: "Yesterday",
+                                value: data.yesterday,
+                                subtitle: "vs the same day last week",
+                                delta: data.yesterdayDelta,
+                                deltaPositive: data.yesterdayDeltaPositive,
+                                onTap: { Task { await viewModel.fetchMetrics(forCard: .yesterday) } },
+                                isRefreshing: viewModel.refreshingCards.contains(.yesterday)
+                            )
+                            .opacity(cardAppearances[1] ? 1 : 0)
+                            .offset(y: cardAppearances[1] ? 0 : 20)
+                            
+                            SummaryCardView(
+                                title: "Last 7 Days",
+                                value: data.last7Days,
+                                subtitle: "vs the previous 7 days",
+                                delta: data.last7DaysDelta,
+                                deltaPositive: data.last7DaysDeltaPositive,
+                                onTap: { Task { await viewModel.fetchMetrics(forCard: .last7Days) } },
+                                isRefreshing: viewModel.refreshingCards.contains(.last7Days)
+                            )
+                            .opacity(cardAppearances[2] ? 1 : 0)
+                            .offset(y: cardAppearances[2] ? 0 : 20)
+                            
+                            SummaryCardView(
+                                title: "This month",
+                                value: data.thisMonth,
+                                subtitle: "vs the same day last month",
+                                delta: data.thisMonthDelta,
+                                deltaPositive: data.thisMonthDeltaPositive,
+                                onTap: { Task { await viewModel.fetchMetrics(forCard: .thisMonth) } },
+                                isRefreshing: viewModel.refreshingCards.contains(.thisMonth)
+                            )
+                            .opacity(cardAppearances[3] ? 1 : 0)
+                            .offset(y: cardAppearances[3] ? 0 : 20)
+                            
+                            SummaryCardView(
+                                title: "Last three years",
+                                value: data.lifetime,
+                                subtitle: "AdRadar for Adsense",
+                                delta: nil,
+                                deltaPositive: nil,
+                                onTap: { Task { await viewModel.fetchMetrics(forCard: .lastThreeYears) } },
+                                isRefreshing: viewModel.refreshingCards.contains(.lastThreeYears)
+                            )
+                            .opacity(cardAppearances[4] ? 1 : 0)
+                            .offset(y: cardAppearances[4] ? 0 : 20)
                         }
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.horizontal)
@@ -90,7 +131,7 @@ struct SummaryView: View {
                 if let token = authViewModel.accessToken {
                     viewModel.accessToken = token
                     viewModel.authViewModel = authViewModel
-                    await viewModel.fetchSummary()
+                    await viewModel.fetchSummary(isRefresh: true)
                 }
             }
             .navigationTitle("Summary")
@@ -177,6 +218,7 @@ struct SummaryCardView: View {
     let delta: String?
     let deltaPositive: Bool?
     var onTap: (() -> Void)? = nil
+    let isRefreshing: Bool
     @State private var isPressed = false
     
     var body: some View {
@@ -192,11 +234,23 @@ struct SummaryCardView: View {
                         .foregroundColor(.secondary)
                 }
             }
-            Text(value)
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .fontDesign(.rounded)
-                .foregroundColor(.primary)
+            if isRefreshing {
+                HStack {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                    Text("Loading...")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .fontDesign(.rounded)
+                        .foregroundColor(.secondary)
+                }
+            } else {
+                Text(value)
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .fontDesign(.rounded)
+                    .foregroundColor(.primary)
+            }
             if let delta = delta, let positive = deltaPositive {
                 HStack(spacing: 4) {
                     Image(systemName: positive ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
