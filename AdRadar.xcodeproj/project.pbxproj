@@ -256,10 +256,11 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"$(PROJECT_DIR)/last_build_number.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/AdRadar/update_build_number.sh\"\n";
+			shellScript = "# Get the current date in YYYYMMDD format\nDATE=$(date +%Y%m%d)\necho \"Current date: $DATE\"\n\n# Get the number of commits for today\nCOMMIT_COUNT=$(git rev-list --count --since=\"midnight\" HEAD)\necho \"Today's commit count: $COMMIT_COUNT\"\n\n# Combine date and commit count to create build number\nBUILD_NUMBER=\"${DATE}${COMMIT_COUNT}\"\necho \"Generated build number: $BUILD_NUMBER\"\n\n# Debug information\necho \"PROJECT_DIR: $PROJECT_DIR\"\necho \"INFOPLIST_FILE: $INFOPLIST_FILE\"\n\n# Update the build number in the project\nif [ -f \"${PROJECT_DIR}/${INFOPLIST_FILE}\" ]; then\n    echo \"Updating Info.plist at: ${PROJECT_DIR}/${INFOPLIST_FILE}\"\n    /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $BUILD_NUMBER\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"\n    echo \"Successfully updated build number to $BUILD_NUMBER\"\n    \n    # Create a file to track the last build number\n    echo \"$BUILD_NUMBER\" > \"${PROJECT_DIR}/last_build_number.txt\"\nelse\n    echo \"Error: Info.plist not found at ${PROJECT_DIR}/${INFOPLIST_FILE}\"\n    exit 1\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
