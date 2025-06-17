@@ -30,6 +30,7 @@ struct ErrorMessageView: View {
 // MARK: - Main Content View
 struct SummaryView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
+    @EnvironmentObject var settingsViewModel: SettingsViewModel
     @StateObject private var viewModel: SummaryViewModel
     @State private var cardAppearances: [Bool] = Array(repeating: false, count: 6)
     
@@ -62,6 +63,7 @@ struct SummaryView: View {
                         Spacer()
                     } else if let data = viewModel.summaryData {
                         SummaryCardsView(data: data, viewModel: viewModel, cardAppearances: $cardAppearances)
+                            .environmentObject(settingsViewModel)
                     }
                 }
             }
@@ -99,6 +101,7 @@ struct SummaryCardsView: View {
     let data: AdSenseSummaryData
     let viewModel: SummaryViewModel
     @Binding var cardAppearances: [Bool]
+    @EnvironmentObject private var settingsViewModel: SettingsViewModel
     
     var body: some View {
         Group {
@@ -186,6 +189,7 @@ struct SummaryCardView: View {
     var onTap: (() -> Void)? = nil
     let isRefreshing: Bool
     @State private var isPressed = false
+    @EnvironmentObject private var settingsViewModel: SettingsViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -245,8 +249,10 @@ struct SummaryCardView: View {
         .animation(.easeInOut(duration: 0.12), value: isPressed)
         .onTapGesture {
             isPressed = true
-            let generator = UIImpactFeedbackGenerator(style: .light)
-            generator.impactOccurred()
+            if settingsViewModel.isHapticFeedbackEnabled {
+                let generator = UIImpactFeedbackGenerator(style: .light)
+                generator.impactOccurred()
+            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
                 isPressed = false
                 onTap?()

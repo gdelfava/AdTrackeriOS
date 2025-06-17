@@ -24,4 +24,5 @@ struct SummaryTabView: View {
 
 #Preview {
     SummaryTabView()
+        .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
 } 

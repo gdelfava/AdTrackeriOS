@@ -16,7 +16,7 @@ struct WebView: UIViewRepresentable {
 
 struct SettingsView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
-    @StateObject private var viewModel = SettingsViewModel(authViewModel: AuthViewModel())
+    @EnvironmentObject var settingsViewModel: SettingsViewModel
     @State private var isShareSheetPresented = false
     @State private var isWidgetSupportSheetPresented = false
     @State private var isMailSheetPresented = false
@@ -28,7 +28,7 @@ struct SettingsView: View {
                 VStack(spacing: 32) {
                     // User Profile Section
                     VStack(spacing: 16) {
-                        if let url = viewModel.imageURL {
+                        if let url = settingsViewModel.imageURL {
                             AsyncImage(url: url) { image in
                                 image
                                     .resizable()
@@ -52,11 +52,11 @@ struct SettingsView: View {
                         }
                         
                         VStack(spacing: 4) {
-                            Text(viewModel.name)
+                            Text(settingsViewModel.name)
                                 .font(.title2)
                                 .fontWeight(.bold)
                                 .foregroundColor(.primary)
-                            Text(viewModel.email)
+                            Text(settingsViewModel.email)
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                         }
@@ -99,6 +99,26 @@ struct SettingsView: View {
                             AnimatedSettingsRow(icon: "lock.fill", color: .purple, title: "Terms & Privacy Policy") {
                                 isTermsSheetPresented = true
                             }
+                            Divider()
+                            Toggle(isOn: Binding(
+                                get: { settingsViewModel.isHapticFeedbackEnabled },
+                                set: { settingsViewModel.isHapticFeedbackEnabled = $0 }
+                            )) {
+                                HStack(spacing: 12) {
+                                    Image(systemName: "hand.tap.fill")
+                                        .font(.system(size: 18, weight: .medium))
+                                        .foregroundColor(.blue)
+                                        .frame(width: 28, height: 28)
+                                        .background(Color.blue.opacity(0.1))
+                                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                    
+                                    Text("Haptic Feedback")
+                                        .font(.body)
+                                        .foregroundColor(.primary)
+                                }
+                            }
+                            .padding()
+                            .background(Color(.secondarySystemBackground))
                         }
                         .background(Color(.secondarySystemBackground))
                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
@@ -117,7 +137,7 @@ struct SettingsView: View {
                         Button(action: {
                             let generator = UIImpactFeedbackGenerator(style: .medium)
                             generator.impactOccurred()
-                            viewModel.signOut(authViewModel: authViewModel)
+                            settingsViewModel.signOut(authViewModel: authViewModel)
                         }) {
                             HStack {
                                 Image(systemName: "person.crop.circle.fill.badge.xmark")
@@ -138,15 +158,15 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
             .background(Color(.systemBackground).ignoresSafeArea())
-            .onChange(of: viewModel.isSignedOut) { signedOut, _ in
+            .onChange(of: settingsViewModel.isSignedOut) { signedOut, _ in
                 if signedOut {
                     authViewModel.isSignedIn = false
                 }
             }
             .onAppear {
-                viewModel.name = authViewModel.userName
-                viewModel.email = authViewModel.userEmail
-                viewModel.imageURL = authViewModel.userProfileImageURL
+                settingsViewModel.name = authViewModel.userName
+                settingsViewModel.email = authViewModel.userEmail
+                settingsViewModel.imageURL = authViewModel.userProfileImageURL
             }
             .sheet(isPresented: $isShareSheetPresented) {
                 ShareSheet(activityItems: [
@@ -333,9 +353,11 @@ struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsView()
             .environmentObject(AuthViewModel())
+            .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
             .preferredColorScheme(.light)
         SettingsView()
             .environmentObject(AuthViewModel())
+            .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
             .preferredColorScheme(.dark)
     }
 } 
