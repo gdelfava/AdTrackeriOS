@@ -214,7 +214,7 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $isTermsSheetPresented) {
                 NavigationView {
-                    WebView(url: URL(string: "https://delteqis.co.za/adradar-terms-and-conditions")!)
+                    WebView(url: URL(string: "https://www.notion.so/AdRadar-Terms-Privacy-Policy-21539fba0e268090a327da6296c3c99a?source=copy_link")!)
                         .navigationTitle("Terms & Privacy Policy")
                         .navigationBarTitleDisplayMode(.inline)
                         .toolbar {

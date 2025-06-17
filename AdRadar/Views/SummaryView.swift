@@ -1,25 +1,4 @@
 import SwiftUI
-import GoogleMobileAds
-
-// MARK: - AdBannerView
-struct AdBannerView: UIViewRepresentable {
-    let adUnitID: String
-
-    func makeUIView(context: Context) -> BannerView {
-        let bannerView = BannerView(adSize: AdSizeBanner)
-        bannerView.adUnitID = adUnitID
-        
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let rootViewController = windowScene.windows.first?.rootViewController {
-            bannerView.rootViewController = rootViewController
-        }
-        
-        bannerView.load(Request())
-        return bannerView
-    }
-
-    func updateUIView(_ uiView: BannerView, context: Context) {}
-}
 
 // MARK: - SummaryHeaderView
 struct SummaryHeaderView: View {
@@ -53,7 +32,6 @@ struct SummaryView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var viewModel: SummaryViewModel
     @State private var cardAppearances: [Bool] = Array(repeating: false, count: 6)
-    @State private var canShowAds = false
     
     init() {
         // Initialize the ViewModel with a properly typed nil value
@@ -64,12 +42,6 @@ struct SummaryView: View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .center, spacing: 24) {
-                    if canShowAds {
-                        AdBannerView(adUnitID: "ca-app-pub-3940256099942544/2934735716") // Test ad unit ID
-                            .frame(height: 50)
-                            .padding(.horizontal)
-                    }
-                    
                     if let errorMessage = viewModel.errorMessage {
                         ErrorMessageView(message: errorMessage)
                     }
@@ -92,107 +64,29 @@ struct SummaryView: View {
                         SummaryCardsView(data: data, viewModel: viewModel, cardAppearances: $cardAppearances)
                     }
                 }
-                .padding(.top)
-            }
-            .refreshable {
-                if let token = authViewModel.accessToken {
-                    viewModel.accessToken = token
-                    viewModel.authViewModel = authViewModel
-                    await viewModel.fetchSummary(isRefresh: true)
-                }
             }
             .navigationTitle("Summary")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    ProfileImageView(url: authViewModel.userProfileImageURL)
-                        .contextMenu {
-                            Button(role: .destructive) {
-                                authViewModel.signOut()
-                            } label: {
-                                Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
-                            }
-                            Button("Cancel", role: .cancel) { }
-                        }
-                }
-            }
-        }
-        .onAppear {
-            print("SummaryView appeared")
-            
-            // Initialize MobileAds SDK first
-            print("Initializing MobileAds SDK...")
-            MobileAds.shared.start { status in
-                print("MobileAds SDK initialization status: \(status)")
+            .onAppear {
+                print("SummaryView appeared")
                 
-                // Request consent after SDK initialization
-                print("Requesting consent...")
-                ConsentManager.shared.requestConsent { granted in
-                    DispatchQueue.main.async {
-                        print("Consent request completed. Granted: \(granted)")
-                        self.canShowAds = granted
-                        if granted {
-                            print("Consent granted, ads can be shown")
-                        } else {
-                            print("Consent not granted, ads will not be shown")
-                        }
-                    }
+                if let token = authViewModel.accessToken, !viewModel.hasLoaded {
+                    viewModel.accessToken = token
+                    viewModel.authViewModel = authViewModel
+                    Task { await viewModel.fetchSummary() }
                 }
             }
-            
-            if let token = authViewModel.accessToken, !viewModel.hasLoaded {
-                viewModel.accessToken = token
-                viewModel.authViewModel = authViewModel
-                Task { await viewModel.fetchSummary() }
-            }
-        }
-        .overlay(
-            Group {
-                if viewModel.showOfflineToast {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            Text("No internet connection")
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 24)
-                                .padding(.vertical, 12)
-                                .background(Color.black.opacity(0.85))
-                                .cornerRadius(16)
-                            Spacer()
-                        }
-                        .padding(.bottom, 40)
-                    }
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .animation(.easeInOut, value: viewModel.showOfflineToast)
+            .sheet(isPresented: $viewModel.showDayMetricsSheet) {
+                if let metrics = viewModel.selectedDayMetrics {
+                    DayMetricsSheet(metrics: metrics, title: viewModel.selectedCardTitle)
                 }
-            }
-        )
-        .sheet(isPresented: $viewModel.showNetworkErrorModal) {
-            NetworkErrorModalView(
-                message: "The Internet connection appears to be offline. Please check your Wi-Fi or Cellular settings.",
-                onClose: { viewModel.showNetworkErrorModal = false },
-                onSettings: {
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        UIApplication.shared.open(url)
-                    }
-                }
-            )
-        }
-        .sheet(isPresented: $viewModel.showDayMetricsSheet) {
-            if let metrics = viewModel.selectedDayMetrics {
-                DayMetricsSheet(metrics: metrics, title: viewModel.selectedCardTitle)
-            } else {
-                ProgressView("Loading metrics...")
-                    .padding()
             }
         }
     }
     
-    // Helper to pick an SF Symbol for the error
     private func errorSymbol(for error: String) -> String {
-        if error.localizedCaseInsensitiveContains("internet") || error.localizedCaseInsensitiveContains("offline") {
+        if error.contains("internet") || error.contains("connection") {
             return "wifi.slash"
-        } else if error.localizedCaseInsensitiveContains("unauthorized") || error.localizedCaseInsensitiveContains("session") {
+        } else if error.contains("authentication") || error.contains("sign in") {
             return "person.crop.circle.badge.exclamationmark"
         } else {
             return "exclamationmark.triangle"
