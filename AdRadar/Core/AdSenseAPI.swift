@@ -30,7 +30,7 @@ struct Account: Codable {
     let name: String
     let displayName: String
     let pendingTasks: [String]?
-    let timeZone: TimeZone?
+    let timeZone: AdSenseTimeZone?
     let createTime: String?
     let premium: Bool?
     
@@ -44,7 +44,7 @@ struct Account: Codable {
     }
 }
 
-struct TimeZone: Codable {
+struct AdSenseTimeZone: Codable {
     let id: String
 }
 
@@ -543,6 +543,51 @@ class AdSenseAPI {
         } catch {
             print("[AdSenseAPI] Network or parsing error: \(error)")
             return .failure(.requestFailed(error.localizedDescription))
+        }
+    }
+
+    // Fetch account information
+    func fetchAccountInfo(accessToken: String) async -> Result<Account, AdSenseError> {
+        guard NetworkMonitor.shared.isConnected else {
+            return .failure(.requestFailed("No internet connection"))
+        }
+        guard let url = URL(string: "https://adsense.googleapis.com/v2/accounts") else {
+            return .failure(.invalidURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                return .failure(.invalidResponse)
+            }
+            
+            switch httpResponse.statusCode {
+            case 200:
+                do {
+                    let decoder = JSONDecoder()
+                    let accounts = try decoder.decode(AccountsResponse.self, from: data)
+                    if let firstAccount = accounts.accounts.first {
+                        return .success(firstAccount)
+                    } else {
+                        return .failure(.noAccountID)
+                    }
+                } catch {
+                    return .failure(.decodingError(error.localizedDescription))
+                }
+            case 401:
+                return .failure(.unauthorized)
+            case 403:
+                return .failure(.requestFailed("Access forbidden"))
+            default:
+                return .failure(.requestFailed("Server returned status code \(httpResponse.statusCode)"))
+            }
+        } catch {
+            return .failure(.requestFailed("Unexpected error: \(error.localizedDescription)"))
         }
     }
 } 

@@ -2,6 +2,25 @@ import SwiftUI
 import MessageUI
 import WebKit
 
+// Toast View
+struct Toast: View {
+    let message: String
+    @Binding var isShowing: Bool
+    
+    var body: some View {
+        Text(message)
+            .font(.subheadline)
+            .foregroundColor(.white)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(Color.green)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+            .zIndex(1)
+    }
+}
+
 struct WebView: UIViewRepresentable {
     let url: URL
     
@@ -21,140 +40,191 @@ struct SettingsView: View {
     @State private var isWidgetSupportSheetPresented = false
     @State private var isMailSheetPresented = false
     @State private var isTermsSheetPresented = false
+    @State private var showToast = false
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 32) {
-                    // User Profile Section
-                    VStack(spacing: 16) {
-                        if let url = settingsViewModel.imageURL {
-                            AsyncImage(url: url) { image in
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 100, height: 100)
-                                    .clipShape(Circle())
-                                    .overlay(
-                                        Circle()
-                                            .stroke(Color(.systemBackground), lineWidth: 4)
-                                            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
-                                    )
-                                    .onAppear {
-                                        Task {
-                                            await ImageCache.shared.setImage(image, for: url)
+            ZStack {
+                ScrollView {
+                    VStack(spacing: 32) {
+                        // User Profile Section
+                        VStack(spacing: 16) {
+                            if let url = settingsViewModel.imageURL {
+                                AsyncImage(url: url) { image in
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 100, height: 100)
+                                        .clipShape(Circle())
+                                        .overlay(
+                                            Circle()
+                                                .stroke(Color(.systemBackground), lineWidth: 4)
+                                                .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+                                        )
+                                        .onAppear {
+                                            Task {
+                                                await ImageCache.shared.setImage(image, for: url)
+                                            }
+                                        }
+                                } placeholder: {
+                                    ProgressView()
+                                        .frame(width: 100, height: 100)
+                                }
+                            }
+                            
+                            VStack(spacing: 4) {
+                                Text(settingsViewModel.name)
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.primary)
+                                Text(settingsViewModel.email)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.top, 24)
+                        
+                        // Account Information Section
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("ACCOUNT INFORMATION")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 4)
+                            
+                            VStack(spacing: 0) {
+                                AccountInfoRow(
+                                    title: "Publisher ID",
+                                    value: settingsViewModel.publisherId,
+                                    isCopyable: true,
+                                    onCopy: {
+                                        UIPasteboard.general.string = settingsViewModel.publisherId
+                                        withAnimation {
+                                            showToast = true
+                                        }
+                                        // Dismiss toast after 2 seconds
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                            withAnimation {
+                                                showToast = false
+                                            }
                                         }
                                     }
-                            } placeholder: {
-                                ProgressView()
-                                    .frame(width: 100, height: 100)
+                                )
+                                Divider()
+                                AccountInfoRow(title: "Publisher Name", value: settingsViewModel.publisherName)
+                                Divider()
+                                AccountInfoRow(title: "Time Zone", value: settingsViewModel.timeZone)
+                                Divider()
+                                AccountInfoRow(title: "Currency", value: settingsViewModel.currency)
                             }
-                        }
-                        
-                        VStack(spacing: 4) {
-                            Text(settingsViewModel.name)
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundColor(.primary)
-                            Text(settingsViewModel.email)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .padding(.top, 24)
-                    
-                    // Support Section
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("SUPPORT")
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal, 4)
-                        
-                        VStack(spacing: 0) {
-                            // AnimatedSettingsRow(icon: "heart.fill", color: .red, title: "Rate AdRadar") {
-                            //     if let url = URL(string: "itms-apps://itunes.apple.com/app/id1481431267?action=write-review") {
-                            //         UIApplication.shared.open(url)
-                            //     }
-                            // }
-                            // Divider()
-                            // AnimatedSettingsRow(icon: "square.and.arrow.up", color: .blue, title: "Share AdRadar") {
-                            //     isShareSheetPresented = true
-                            // }
-                            // Divider()
-                            AnimatedSettingsRow(icon: "square.grid.2x2.fill", color: .orange, title: "Widget Support") {
-                                isWidgetSupportSheetPresented = true
-                            }
-                            Divider()
-                            AnimatedSettingsRow(icon: "envelope.fill", color: .green, title: "Feedback") {
-                                isMailSheetPresented = true
-                            }
-                            Divider()
-                            AnimatedSettingsRow(icon: "bird.fill", color: .blue, title: "@AdRadar") {
-                                if let url = URL(string: "https://x.com/gdelfava") {
-                                    UIApplication.shared.open(url)
-                                }
-                            }
-                            Divider()
-                            AnimatedSettingsRow(icon: "lock.fill", color: .purple, title: "Terms & Privacy Policy") {
-                                isTermsSheetPresented = true
-                            }
-                            Divider()
-                            Toggle(isOn: Binding(
-                                get: { settingsViewModel.isHapticFeedbackEnabled },
-                                set: { settingsViewModel.isHapticFeedbackEnabled = $0 }
-                            )) {
-                                HStack(spacing: 12) {
-                                    Image(systemName: "hand.tap.fill")
-                                        .font(.system(size: 18, weight: .medium))
-                                        .foregroundColor(.blue)
-                                        .frame(width: 28, height: 28)
-                                        .background(Color.blue.opacity(0.1))
-                                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                                    
-                                    Text("Haptic Feedback")
-                                        .font(.body)
-                                        .foregroundColor(.primary)
-                                }
-                            }
-                            .padding()
-                            .background(Color(.secondarySystemBackground))
-                        }
-                        .background(Color(.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                        .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
-                    }
-                    .padding(.horizontal)
-                    
-                    // General Section
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("GENERAL")
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal, 4)
-                        
-                        Button(action: {
-                            let generator = UIImpactFeedbackGenerator(style: .medium)
-                            generator.impactOccurred()
-                            settingsViewModel.signOut(authViewModel: authViewModel)
-                        }) {
-                            HStack {
-                                Image(systemName: "person.crop.circle.fill.badge.xmark")
-                                    .foregroundColor(.red)
-                                Text("Sign Out")
-                                    .foregroundColor(.red)
-                                Spacer()
-                            }
-                            .padding()
                             .background(Color(.secondarySystemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                             .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
                         }
+                        .padding(.horizontal)
+                        
+                        // Support Section
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("SUPPORT")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 4)
+                            
+                            VStack(spacing: 0) {
+                                // AnimatedSettingsRow(icon: "heart.fill", color: .red, title: "Rate AdRadar") {
+                                //     if let url = URL(string: "itms-apps://itunes.apple.com/app/id1481431267?action=write-review") {
+                                //         UIApplication.shared.open(url)
+                                //     }
+                                // }
+                                // Divider()
+                                // AnimatedSettingsRow(icon: "square.and.arrow.up", color: .blue, title: "Share AdRadar") {
+                                //     isShareSheetPresented = true
+                                // }
+                                // Divider()
+                                AnimatedSettingsRow(icon: "square.grid.2x2.fill", color: .orange, title: "Widget Support") {
+                                    isWidgetSupportSheetPresented = true
+                                }
+                                Divider()
+                                AnimatedSettingsRow(icon: "envelope.fill", color: .green, title: "Feedback") {
+                                    isMailSheetPresented = true
+                                }
+                                Divider()
+                                AnimatedSettingsRow(icon: "bird.fill", color: .blue, title: "@AdRadar") {
+                                    if let url = URL(string: "https://x.com/gdelfava") {
+                                        UIApplication.shared.open(url)
+                                    }
+                                }
+                                Divider()
+                                AnimatedSettingsRow(icon: "lock.fill", color: .purple, title: "Terms & Privacy Policy") {
+                                    isTermsSheetPresented = true
+                                }
+                                Divider()
+                                Toggle(isOn: Binding(
+                                    get: { settingsViewModel.isHapticFeedbackEnabled },
+                                    set: { settingsViewModel.isHapticFeedbackEnabled = $0 }
+                                )) {
+                                    HStack(spacing: 12) {
+                                        Image(systemName: "hand.tap.fill")
+                                            .font(.system(size: 18, weight: .medium))
+                                            .foregroundColor(.blue)
+                                            .frame(width: 28, height: 28)
+                                            .background(Color.blue.opacity(0.1))
+                                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                        
+                                        Text("Haptic Feedback")
+                                            .font(.body)
+                                            .foregroundColor(.primary)
+                                    }
+                                }
+                                .padding()
+                                .background(Color(.secondarySystemBackground))
+                            }
+                            .background(Color(.secondarySystemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+                        }
+                        .padding(.horizontal)
+                        
+                        // General Section
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("GENERAL")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 4)
+                            
+                            Button(action: {
+                                let generator = UIImpactFeedbackGenerator(style: .medium)
+                                generator.impactOccurred()
+                                settingsViewModel.signOut(authViewModel: authViewModel)
+                            }) {
+                                HStack {
+                                    Image(systemName: "person.crop.circle.fill.badge.xmark")
+                                        .foregroundColor(.red)
+                                    Text("Sign Out")
+                                        .foregroundColor(.red)
+                                    Spacer()
+                                }
+                                .padding()
+                                .background(Color(.secondarySystemBackground))
+                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+                            }
+                        }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
+                    .padding(.bottom, 32)
                 }
-                .padding(.bottom, 32)
+                
+                // Toast overlay
+                VStack {
+                    Spacer()
+                    if showToast {
+                        Toast(message: "Copied to clipboard", isShowing: $showToast)
+                            .padding(.bottom, 32)
+                    }
+                }
             }
             .navigationTitle("Settings")
             .background(Color(.systemBackground).ignoresSafeArea())
@@ -359,5 +429,45 @@ struct SettingsView_Previews: PreviewProvider {
             .environmentObject(AuthViewModel())
             .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
             .preferredColorScheme(.dark)
+    }
+}
+
+struct AccountInfoRow: View {
+    let title: String
+    let value: String
+    var isCopyable: Bool = false
+    var onCopy: (() -> Void)? = nil
+    
+    var body: some View {
+        Button(action: {
+            if isCopyable {
+                onCopy?()
+            }
+        }) {
+            HStack(spacing: 12) {
+                Text(title)
+                    .font(.body)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                HStack(spacing: 8) {
+                    Text(value)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                    
+                    if isCopyable {
+                        Image(systemName: "doc.on.doc")
+                            .font(.system(size: 14))
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            .padding()
+            .background(Color(.secondarySystemBackground))
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 } 

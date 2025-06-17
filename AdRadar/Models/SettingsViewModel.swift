@@ -12,9 +12,18 @@ class SettingsViewModel: ObservableObject {
         }
     }
     
+    // Account Information
+    @Published var publisherId: String = ""
+    @Published var publisherName: String = ""
+    @Published var timeZone: String = ""
+    @Published var currency: String = ""
+    
     private var cancellables = Set<AnyCancellable>()
+    private let authViewModel: AuthViewModel
     
     init(authViewModel: AuthViewModel) {
+        self.authViewModel = authViewModel
+        
         // Initialize isHapticFeedbackEnabled with a default value if not set
         if !UserDefaults.standard.contains(key: "isHapticFeedbackEnabled") {
             UserDefaults.standard.set(true, forKey: "isHapticFeedbackEnabled")
@@ -24,11 +33,62 @@ class SettingsViewModel: ObservableObject {
         authViewModel.$userName.assign(to: &$name)
         authViewModel.$userEmail.assign(to: &$email)
         authViewModel.$userProfileImageURL.assign(to: &$imageURL)
+        
+        // Initialize account information from UserDefaults
+        self.publisherId = UserDefaults.standard.string(forKey: "publisherId") ?? ""
+        self.publisherName = UserDefaults.standard.string(forKey: "publisherName") ?? ""
+        self.timeZone = UserDefaults.standard.string(forKey: "timeZone") ?? TimeZone.current.identifier
+        
+        // Get currency from UserDefaults or use the user's locale currency
+        if let savedCurrency = UserDefaults.standard.string(forKey: "currency") {
+            self.currency = savedCurrency
+        } else {
+            // Get the currency code from the user's locale
+            let locale = Locale.current
+            if let currencyCode = locale.currency?.identifier {
+                self.currency = currencyCode
+                // Save it to UserDefaults for future use
+                UserDefaults.standard.set(currencyCode, forKey: "currency")
+            } else {
+                // Fallback to ZAR if currency code can't be determined
+                self.currency = "ZAR"
+            }
+        }
+        
+        // Fetch account information when initialized
+        Task {
+            await fetchAccountInfo()
+        }
     }
     
     func signOut(authViewModel: AuthViewModel) {
         authViewModel.signOut()
         self.isSignedOut = true
+    }
+    
+    @MainActor
+    func fetchAccountInfo() async {
+        guard let accessToken = authViewModel.accessToken else { return }
+        
+        switch await AdSenseAPI.shared.fetchAccountInfo(accessToken: accessToken) {
+        case .success(let account):
+            // Extract publisher ID from account name (format: accounts/pub-XXXXXXXX)
+            if let publisherId = account.name.split(separator: "/").last {
+                self.publisherId = String(publisherId)
+                UserDefaults.standard.set(self.publisherId, forKey: "publisherId")
+            }
+            
+            self.publisherName = account.displayName
+            UserDefaults.standard.set(self.publisherName, forKey: "publisherName")
+            
+            if let timeZone = account.timeZone?.id {
+                self.timeZone = timeZone
+                UserDefaults.standard.set(self.timeZone, forKey: "timeZone")
+            }
+            
+        case .failure(let error):
+            print("Failed to fetch account info: \(error)")
+        }
     }
 }
 
