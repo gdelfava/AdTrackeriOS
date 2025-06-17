@@ -1,35 +1,83 @@
 import SwiftUI
+import GoogleMobileAds
 
+// MARK: - AdBannerView
+struct AdBannerView: UIViewRepresentable {
+    let adUnitID: String
+
+    func makeUIView(context: Context) -> BannerView {
+        let bannerView = BannerView(adSize: AdSizeBanner)
+        bannerView.adUnitID = adUnitID
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootViewController = windowScene.windows.first?.rootViewController {
+            bannerView.rootViewController = rootViewController
+        }
+        
+        bannerView.load(Request())
+        return bannerView
+    }
+
+    func updateUIView(_ uiView: BannerView, context: Context) {}
+}
+
+// MARK: - SummaryHeaderView
+struct SummaryHeaderView: View {
+    let lastUpdate: Date?
+    
+    var body: some View {
+        if let lastUpdate = lastUpdate {
+            Text("Last updated: \(lastUpdate.formatted(.relative(presentation: .named))) on \(lastUpdate.formatted(.dateTime.weekday(.wide)))")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
+                .padding(.top, 8)
+        }
+    }
+}
+
+// MARK: - ErrorMessageView
+struct ErrorMessageView: View {
+    let message: String
+    
+    var body: some View {
+        Text(message)
+            .foregroundColor(.red)
+            .padding()
+    }
+}
+
+// MARK: - Main Content View
 struct SummaryView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var viewModel: SummaryViewModel
     @State private var cardAppearances: [Bool] = Array(repeating: false, count: 6)
+    @State private var canShowAds = false
     
     init() {
-        _viewModel = StateObject(wrappedValue: SummaryViewModel(accessToken: nil))
+        // Initialize the ViewModel with a properly typed nil value
+        _viewModel = StateObject(wrappedValue: SummaryViewModel(accessToken: String?.none))
     }
     
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .center, spacing: 24) {
+                    if canShowAds {
+                        AdBannerView(adUnitID: "ca-app-pub-3940256099942544/2934735716") // Test ad unit ID
+                            .frame(height: 50)
+                            .padding(.horizontal)
+                    }
+                    
                     if let errorMessage = viewModel.errorMessage {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .padding()
+                        ErrorMessageView(message: errorMessage)
                     }
                     if viewModel.isOffline {
-                        Text("No internet connection. Please check your network and try again.")
-                            .foregroundColor(.red)
-                            .padding()
+                        ErrorMessageView(message: "No internet connection. Please check your network and try again.")
                     }
                     if let lastUpdate = viewModel.lastUpdateTime {
-                        Text("Last updated: \(lastUpdate.formatted(.relative(presentation: .named))) on \(lastUpdate.formatted(.dateTime.weekday(.wide)))")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal)
-                            .padding(.top, 8)
+                        SummaryHeaderView(lastUpdate: lastUpdate)
                     }
                     if viewModel.isLoading {
                         Spacer()
@@ -41,88 +89,7 @@ struct SummaryView: View {
                         ErrorBannerView(message: error, symbol: errorSymbol(for: error))
                         Spacer()
                     } else if let data = viewModel.summaryData {
-                        Group {
-                            SummaryCardView(
-                                title: "Today so far",
-                                value: data.today,
-                                subtitle: "vs yesterday",
-                                delta: data.todayDelta,
-                                deltaPositive: data.todayDeltaPositive,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .today) } },
-                                isRefreshing: viewModel.refreshingCards.contains(.today)
-                            )
-                            .opacity(cardAppearances[0] ? 1 : 0)
-                            .offset(y: cardAppearances[0] ? 0 : 20)
-                            
-                            SummaryCardView(
-                                title: "Yesterday",
-                                value: data.yesterday,
-                                subtitle: "vs the same day last week",
-                                delta: data.yesterdayDelta,
-                                deltaPositive: data.yesterdayDeltaPositive,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .yesterday) } },
-                                isRefreshing: viewModel.refreshingCards.contains(.yesterday)
-                            )
-                            .opacity(cardAppearances[1] ? 1 : 0)
-                            .offset(y: cardAppearances[1] ? 0 : 20)
-                            
-                            SummaryCardView(
-                                title: "Last 7 Days",
-                                value: data.last7Days,
-                                subtitle: "vs the previous 7 days",
-                                delta: data.last7DaysDelta,
-                                deltaPositive: data.last7DaysDeltaPositive,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .last7Days) } },
-                                isRefreshing: viewModel.refreshingCards.contains(.last7Days)
-                            )
-                            .opacity(cardAppearances[2] ? 1 : 0)
-                            .offset(y: cardAppearances[2] ? 0 : 20)
-                            
-                            SummaryCardView(
-                                title: "This month",
-                                value: data.thisMonth,
-                                subtitle: "vs the same day last month",
-                                delta: data.thisMonthDelta,
-                                deltaPositive: data.thisMonthDeltaPositive,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .thisMonth) } },
-                                isRefreshing: viewModel.refreshingCards.contains(.thisMonth)
-                            )
-                            .opacity(cardAppearances[3] ? 1 : 0)
-                            .offset(y: cardAppearances[3] ? 0 : 20)
-                            
-                            SummaryCardView(
-                                title: "Last three years",
-                                value: data.lifetime,
-                                subtitle: "AdRadar for Adsense",
-                                delta: nil,
-                                deltaPositive: nil,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .lastThreeYears) } },
-                                isRefreshing: viewModel.refreshingCards.contains(.lastThreeYears)
-                            )
-                            .opacity(cardAppearances[4] ? 1 : 0)
-                            .offset(y: cardAppearances[4] ? 0 : 20)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.horizontal)
-                        .onAppear {
-                            // Animate cards when they appear
-                            for i in 0..<cardAppearances.count {
-                                withAnimation(.easeOut(duration: 0.5).delay(Double(i) * 0.1)) {
-                                    cardAppearances[i] = true
-                                }
-                            }
-                        }
-                        .onDisappear {
-                            // Reset animation state when view disappears
-                            cardAppearances = Array(repeating: false, count: 6)
-                        }
-                        Spacer(minLength: 32)
-                        Text("AdRadar is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
-                            .padding(.bottom, 16)
+                        SummaryCardsView(data: data, viewModel: viewModel, cardAppearances: $cardAppearances)
                     }
                 }
                 .padding(.top)
@@ -150,6 +117,28 @@ struct SummaryView: View {
             }
         }
         .onAppear {
+            print("SummaryView appeared")
+            
+            // Initialize MobileAds SDK first
+            print("Initializing MobileAds SDK...")
+            MobileAds.shared.start { status in
+                print("MobileAds SDK initialization status: \(status)")
+                
+                // Request consent after SDK initialization
+                print("Requesting consent...")
+                ConsentManager.shared.requestConsent { granted in
+                    DispatchQueue.main.async {
+                        print("Consent request completed. Granted: \(granted)")
+                        self.canShowAds = granted
+                        if granted {
+                            print("Consent granted, ads can be shown")
+                        } else {
+                            print("Consent not granted, ads will not be shown")
+                        }
+                    }
+                }
+            }
+            
             if let token = authViewModel.accessToken, !viewModel.hasLoaded {
                 viewModel.accessToken = token
                 viewModel.authViewModel = authViewModel
@@ -207,6 +196,89 @@ struct SummaryView: View {
             return "person.crop.circle.badge.exclamationmark"
         } else {
             return "exclamationmark.triangle"
+        }
+    }
+}
+
+// MARK: - SummaryCardsView
+struct SummaryCardsView: View {
+    let data: AdSenseSummaryData
+    let viewModel: SummaryViewModel
+    @Binding var cardAppearances: [Bool]
+    
+    var body: some View {
+        Group {
+            SummaryCardView(
+                title: "Today so far",
+                value: data.today,
+                subtitle: "vs yesterday",
+                delta: data.todayDelta,
+                deltaPositive: data.todayDeltaPositive,
+                onTap: { Task { await viewModel.fetchMetrics(forCard: .today) } },
+                isRefreshing: viewModel.refreshingCards.contains(.today)
+            )
+            .opacity(cardAppearances[0] ? 1 : 0)
+            .offset(y: cardAppearances[0] ? 0 : 20)
+            
+            SummaryCardView(
+                title: "Yesterday",
+                value: data.yesterday,
+                subtitle: "vs the same day last week",
+                delta: data.yesterdayDelta,
+                deltaPositive: data.yesterdayDeltaPositive,
+                onTap: { Task { await viewModel.fetchMetrics(forCard: .yesterday) } },
+                isRefreshing: viewModel.refreshingCards.contains(.yesterday)
+            )
+            .opacity(cardAppearances[1] ? 1 : 0)
+            .offset(y: cardAppearances[1] ? 0 : 20)
+            
+            SummaryCardView(
+                title: "Last 7 Days",
+                value: data.last7Days,
+                subtitle: "vs the previous 7 days",
+                delta: data.last7DaysDelta,
+                deltaPositive: data.last7DaysDeltaPositive,
+                onTap: { Task { await viewModel.fetchMetrics(forCard: .last7Days) } },
+                isRefreshing: viewModel.refreshingCards.contains(.last7Days)
+            )
+            .opacity(cardAppearances[2] ? 1 : 0)
+            .offset(y: cardAppearances[2] ? 0 : 20)
+            
+            SummaryCardView(
+                title: "This month",
+                value: data.thisMonth,
+                subtitle: "vs the same day last month",
+                delta: data.thisMonthDelta,
+                deltaPositive: data.thisMonthDeltaPositive,
+                onTap: { Task { await viewModel.fetchMetrics(forCard: .thisMonth) } },
+                isRefreshing: viewModel.refreshingCards.contains(.thisMonth)
+            )
+            .opacity(cardAppearances[3] ? 1 : 0)
+            .offset(y: cardAppearances[3] ? 0 : 20)
+            
+            SummaryCardView(
+                title: "Last three years",
+                value: data.lifetime,
+                subtitle: "AdRadar for Adsense",
+                delta: nil,
+                deltaPositive: nil,
+                onTap: { Task { await viewModel.fetchMetrics(forCard: .lastThreeYears) } },
+                isRefreshing: viewModel.refreshingCards.contains(.lastThreeYears)
+            )
+            .opacity(cardAppearances[4] ? 1 : 0)
+            .offset(y: cardAppearances[4] ? 0 : 20)
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.horizontal)
+        .onAppear {
+            for i in 0..<cardAppearances.count {
+                withAnimation(.easeOut(duration: 0.5).delay(Double(i) * 0.1)) {
+                    cardAppearances[i] = true
+                }
+            }
+        }
+        .onDisappear {
+            cardAppearances = Array(repeating: false, count: 6)
         }
     }
 }
