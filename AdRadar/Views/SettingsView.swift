@@ -142,6 +142,10 @@ struct SettingsView: View {
                                 //     isShareSheetPresented = true
                                 // }
                                 // Divider()
+                                AnimatedSettingsRow(icon: "info.circle.fill", color: .blue, title: "Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown")") {
+                                    // No action needed for version
+                                }
+                                Divider()
                                 AnimatedSettingsRow(icon: "square.grid.2x2.fill", color: .orange, title: "Widget Support") {
                                     isWidgetSupportSheetPresented = true
                                 }

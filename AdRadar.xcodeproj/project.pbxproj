@@ -144,6 +144,7 @@
 				7C82EB8E2DFAAA5F001A8B8D /* Frameworks */,
 				7C82EB8F2DFAAA5F001A8B8D /* Resources */,
 				7CEB39612DFAF6B3002884DB /* Embed Foundation Extensions */,
+				7C55F34B2E016E8B001A9EA8 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -241,6 +242,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7C55F34B2E016E8B001A9EA8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/AdRadar/update_build_number.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		7C82EB8D2DFAAA5F001A8B8D /* Sources */ = {
