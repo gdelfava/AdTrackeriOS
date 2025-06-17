@@ -142,9 +142,9 @@
 			buildPhases = (
 				7C82EB8D2DFAAA5F001A8B8D /* Sources */,
 				7C82EB8E2DFAAA5F001A8B8D /* Frameworks */,
+				7C55F34B2E016E8B001A9EA8 /* ShellScript */,
 				7C82EB8F2DFAAA5F001A8B8D /* Resources */,
 				7CEB39612DFAF6B3002884DB /* Embed Foundation Extensions */,
-				7C55F34B2E016E8B001A9EA8 /* ShellScript */,
 			);
 			buildRules = (
 			);
