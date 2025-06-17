@@ -246,7 +246,8 @@
 /* Begin PBXShellScriptBuildPhase section */
 		7C55F34B2E016E8B001A9EA8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			alwaysOutOfDate = 1;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
@@ -256,11 +257,10 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(PROJECT_DIR)/last_build_number.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Get the current date in YYYYMMDD format\nDATE=$(date +%Y%m%d)\necho \"Current date: $DATE\"\n\n# Get the number of commits for today\nCOMMIT_COUNT=$(git rev-list --count --since=\"midnight\" HEAD)\necho \"Today's commit count: $COMMIT_COUNT\"\n\n# Combine date and commit count to create build number\nBUILD_NUMBER=\"${DATE}${COMMIT_COUNT}\"\necho \"Generated build number: $BUILD_NUMBER\"\n\n# Debug information\necho \"PROJECT_DIR: $PROJECT_DIR\"\necho \"INFOPLIST_FILE: $INFOPLIST_FILE\"\n\n# Update the build number in the project\nif [ -f \"${PROJECT_DIR}/${INFOPLIST_FILE}\" ]; then\n    echo \"Updating Info.plist at: ${PROJECT_DIR}/${INFOPLIST_FILE}\"\n    /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $BUILD_NUMBER\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"\n    echo \"Successfully updated build number to $BUILD_NUMBER\"\n    \n    # Create a file to track the last build number\n    echo \"$BUILD_NUMBER\" > \"${PROJECT_DIR}/last_build_number.txt\"\nelse\n    echo \"Error: Info.plist not found at ${PROJECT_DIR}/${INFOPLIST_FILE}\"\n    exit 1\nfi\n";
+			shellScript = "# Get the current date in YYYYMMDD format\nDATE=$(date +%Y%m%d)\necho \"Current date: $DATE\"\n\n# Get the number of commits for today\nCOMMIT_COUNT=$(git rev-list --count --since=\"midnight\" HEAD)\necho \"Today's commit count: $COMMIT_COUNT\"\n\n# Combine date and commit count to create build number\nBUILD_NUMBER=\"${DATE}${COMMIT_COUNT}\"\necho \"Generated build number: $BUILD_NUMBER\"\n\n# Set the Info.plist path\nINFOPLIST_PATH=\"${SRCROOT}/AdRadar/Info.plist\"\necho \"Info.plist path: $INFOPLIST_PATH\"\n\n# Update both build number and version in the project\nif [ -f \"$INFOPLIST_PATH\" ]; then\n    echo \"Updating Info.plist\"\n    \n    # Update CFBundleVersion (Build number)\n    /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $BUILD_NUMBER\" \"$INFOPLIST_PATH\"\n    \n    # Also update CFBundleShortVersionString if it exists\n    /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $BUILD_NUMBER\" \"$INFOPLIST_PATH\" 2>/dev/null || true\n    \n    # Update the build number using agvtool\n    agvtool new-version -all $BUILD_NUMBER\n    \n    echo \"Successfully updated build number to $BUILD_NUMBER\"\n    \n    # Create a file to track the last build number\n    echo \"$BUILD_NUMBER\" > \"${SRCROOT}/last_build_number.txt\"\nelse\n    echo \"Error: Info.plist not found at $INFOPLIST_PATH\"\n    exit 1\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
