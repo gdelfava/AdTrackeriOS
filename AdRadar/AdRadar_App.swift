@@ -1,7 +1,7 @@
-// App entry point for Adsense Tracker
+// App entry point for AdRadar
 //
-//  Adsense_TrackerApp.swift
-//  Adsense Tracker
+//  AdRadar_App.swift
+//  AdRadar
 //
 //  Created by Guilio Del Fava on 2025/06/12.
 //
@@ -9,11 +9,11 @@
 import SwiftUI
 
 @main
-struct Adsense_TrackerApp: App {
+struct AdRadar_App: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(NetworkMonitor.shared)
         }
     }
-}
+} 

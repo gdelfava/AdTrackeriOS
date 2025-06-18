@@ -19,7 +19,7 @@ class SettingsViewModel: ObservableObject {
     @Published var currency: String = ""
     
     private var cancellables = Set<AnyCancellable>()
-    private let authViewModel: AuthViewModel
+    var authViewModel: AuthViewModel
     
     init(authViewModel: AuthViewModel) {
         self.authViewModel = authViewModel
@@ -37,7 +37,7 @@ class SettingsViewModel: ObservableObject {
         // Initialize account information from UserDefaults
         self.publisherId = UserDefaults.standard.string(forKey: "publisherId") ?? ""
         self.publisherName = UserDefaults.standard.string(forKey: "publisherName") ?? ""
-        self.timeZone = UserDefaults.standard.string(forKey: "timeZone") ?? TimeZone.current.identifier
+        self.timeZone = UserDefaults.standard.string(forKey: "timeZone") ?? Foundation.TimeZone.current.identifier
         
         // Get currency from UserDefaults or use the user's locale currency
         if let savedCurrency = UserDefaults.standard.string(forKey: "currency") {

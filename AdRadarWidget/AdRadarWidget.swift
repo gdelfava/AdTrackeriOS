@@ -39,46 +39,29 @@ struct AdRadarWidgetEntry: TimelineEntry {
 struct AdSenseAPI {
     static let appGroupID = "group.com.delteqws.AdRadar" // Must match main app
     static let summaryKey = "summaryData"
-    
     static func loadSummaryFromSharedContainer() -> AdSenseSummaryData? {
-        guard let defaults = UserDefaults(suiteName: appGroupID) else {
-            print("[AdRadarWidget] Failed to access shared container")
+        let defaults = UserDefaults(suiteName: appGroupID)
+        guard let data = defaults?.data(forKey: summaryKey) else {
+            print("[AdRadarWidget] No summary data found in shared container")
             return nil
         }
-        
-        // Use a background queue for UserDefaults access
-        return DispatchQueue.global(qos: .userInitiated).sync {
-            guard let data = defaults.data(forKey: summaryKey) else {
-                print("[AdRadarWidget] No summary data found in shared container")
-                return nil
-            }
-            
-            do {
-                let summary = try JSONDecoder().decode(AdSenseSummaryData.self, from: data)
-                print("[AdRadarWidget] Successfully loaded summary data from shared container")
-                return summary
-            } catch {
-                print("[AdRadarWidget] Failed to decode summary data: \(error)")
-                return nil
-            }
+        if let summary = try? JSONDecoder().decode(AdSenseSummaryData.self, from: data) {
+            print("[AdRadarWidget] Successfully loaded summary data from shared container")
+            return summary
+        } else {
+            print("[AdRadarWidget] Failed to decode summary data")
+            return nil
         }
     }
 
     static func loadLastUpdateDate() -> Date? {
-        guard let defaults = UserDefaults(suiteName: appGroupID) else {
-            print("[AdRadarWidget] Failed to access shared container")
+        let defaults = UserDefaults(suiteName: appGroupID)
+        if let date = defaults?.object(forKey: "summaryLastUpdate") as? Date {
+            print("[AdRadarWidget] Successfully loaded last update date: \(date)")
+            return date
+        } else {
+            print("[AdRadarWidget] No last update date found in shared container")
             return nil
-        }
-        
-        // Use a background queue for UserDefaults access
-        return DispatchQueue.global(qos: .userInitiated).sync {
-            if let date = defaults.object(forKey: "summaryLastUpdate") as? Date {
-                print("[AdRadarWidget] Successfully loaded last update date: \(date)")
-                return date
-            } else {
-                print("[AdRadarWidget] No last update date found in shared container")
-                return nil
-            }
         }
     }
 }
@@ -89,27 +72,21 @@ struct Provider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (AdRadarWidgetEntry) -> ()) {
-        // Always return placeholder for snapshot
-        let entry = AdRadarWidgetEntry(date: Date(), summary: nil, lastUpdate: "--:--")
+        let summary = AdSenseAPI.loadSummaryFromSharedContainer()
+        let lastUpdateDate = AdSenseAPI.loadLastUpdateDate() ?? Date()
+        let entry = AdRadarWidgetEntry(date: lastUpdateDate, summary: summary, lastUpdate: formattedTime(lastUpdateDate))
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<AdRadarWidgetEntry>) -> ()) {
-        // Use a background queue for data loading
-        DispatchQueue.global(qos: .userInitiated).async {
-            let summary = AdSenseAPI.loadSummaryFromSharedContainer()
-            let lastUpdateDate = AdSenseAPI.loadLastUpdateDate() ?? Date()
-            let entry = AdRadarWidgetEntry(date: lastUpdateDate, summary: summary, lastUpdate: formattedTime(lastUpdateDate))
-            
-            // Update every hour instead of 30 minutes to reduce load
-            let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date()
-            let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
-            
-            // Ensure we call completion on the main queue
-            DispatchQueue.main.async {
-                completion(timeline)
-            }
-        }
+        let summary = AdSenseAPI.loadSummaryFromSharedContainer()
+        let lastUpdateDate = AdSenseAPI.loadLastUpdateDate() ?? Date()
+        let entry = AdRadarWidgetEntry(date: lastUpdateDate, summary: summary, lastUpdate: formattedTime(lastUpdateDate))
+        
+        // Update every 15 minutes
+        let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date()
+        let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+        completion(timeline)
     }
 }
 
@@ -211,8 +188,11 @@ struct AdRadarWidgetEntryView: View {
                 }
                 Spacer()
                 HStack(alignment: .lastTextBaseline, spacing: 2) {
-                    Text("AdRadar for Adsense")
-                        .font(.caption2)
+                    Image("WidgetIcon")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 24, height: 24)
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
                 }
                 .foregroundColor(.secondary)
             }

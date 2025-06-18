@@ -11,7 +11,6 @@ import GoogleSignIn
 
 struct ContentView: View {
     @StateObject private var authViewModel = AuthViewModel()
-    @StateObject private var settingsViewModel = SettingsViewModel(authViewModel: AuthViewModel())
     @State private var showWhyGoogle = false
     @EnvironmentObject private var networkMonitor: NetworkMonitor
     
@@ -20,7 +19,6 @@ struct ContentView: View {
             if authViewModel.isSignedIn {
                 SummaryTabView()
                     .environmentObject(authViewModel)
-                    .environmentObject(settingsViewModel)
             } else {
                 ZStack {
                     Color("LoginScreenBackground")

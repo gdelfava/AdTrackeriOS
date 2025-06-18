@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleShortVersionString</key>
-	<string>1.0.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -14,8 +12,6 @@
 			</array>
 		</dict>
 	</array>
-	<key>CFBundleVersion</key>
-	<string>20250617.1</string>
 	<key>GIDClientID</key>
 	<string>879262946985-3ift7vrnevq4n81phges74q1hufg2r4l.apps.googleusercontent.com</string>
 	<key>LSApplicationQueriesSchemes</key>
