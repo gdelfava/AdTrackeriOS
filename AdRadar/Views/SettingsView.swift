@@ -163,26 +163,6 @@ struct SettingsView: View {
                                 AnimatedSettingsRow(icon: "lock.fill", color: .purple, title: "Terms & Privacy Policy") {
                                     isTermsSheetPresented = true
                                 }
-                                Divider()
-                                Toggle(isOn: Binding(
-                                    get: { settingsViewModel.isHapticFeedbackEnabled },
-                                    set: { settingsViewModel.isHapticFeedbackEnabled = $0 }
-                                )) {
-                                    HStack(spacing: 12) {
-                                        Image(systemName: "hand.tap.fill")
-                                            .font(.system(size: 18, weight: .medium))
-                                            .foregroundColor(.blue)
-                                            .frame(width: 28, height: 28)
-                                            .background(Color.blue.opacity(0.1))
-                                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                                        
-                                        Text("Haptic Feedback")
-                                            .font(.body)
-                                            .foregroundColor(.primary)
-                                    }
-                                }
-                                .padding()
-                                .background(Color(.secondarySystemBackground))
                             }
                             .background(Color(.secondarySystemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
@@ -199,8 +179,6 @@ struct SettingsView: View {
                                 .padding(.horizontal, 4)
                             
                             Button(action: {
-                                let generator = UIImpactFeedbackGenerator(style: .medium)
-                                generator.impactOccurred()
                                 settingsViewModel.signOut(authViewModel: authViewModel)
                             }) {
                                 HStack {

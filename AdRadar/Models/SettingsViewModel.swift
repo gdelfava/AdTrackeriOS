@@ -6,11 +6,6 @@ class SettingsViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var imageURL: URL? = nil
     @Published var isSignedOut: Bool = false
-    @Published var isHapticFeedbackEnabled: Bool {
-        didSet {
-            UserDefaults.standard.set(isHapticFeedbackEnabled, forKey: "isHapticFeedbackEnabled")
-        }
-    }
     
     // Account Information
     @Published var publisherId: String = ""
@@ -23,12 +18,6 @@ class SettingsViewModel: ObservableObject {
     
     init(authViewModel: AuthViewModel) {
         self.authViewModel = authViewModel
-        
-        // Initialize isHapticFeedbackEnabled with a default value if not set
-        if !UserDefaults.standard.contains(key: "isHapticFeedbackEnabled") {
-            UserDefaults.standard.set(true, forKey: "isHapticFeedbackEnabled")
-        }
-        self.isHapticFeedbackEnabled = UserDefaults.standard.bool(forKey: "isHapticFeedbackEnabled")
         
         authViewModel.$userName.assign(to: &$name)
         authViewModel.$userEmail.assign(to: &$email)
