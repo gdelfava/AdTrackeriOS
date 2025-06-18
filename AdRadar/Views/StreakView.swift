@@ -57,24 +57,7 @@ struct StreakView: View {
                             .padding(.horizontal)
                             .chartOverlay { proxy in
                                 GeometryReader { geometry in
-                                    Rectangle()
-                                        .fill(Color.clear)
-                                        .contentShape(Rectangle())
-                                        .gesture(
-                                            DragGesture(minimumDistance: 0)
-                                                .onChanged { value in
-                                                    let x = value.location.x - geometry[proxy.plotAreaFrame].origin.x
-                                                    guard let date = proxy.value(atX: x) as Date? else { return }
-                                                    
-                                                    // Find the closest day
-                                                    selectedDay = viewModel.streakData.min(by: {
-                                                        abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date))
-                                                    })
-                                                }
-                                                .onEnded { _ in
-                                                    selectedDay = nil
-                                                }
-                                        )
+                                    ChartOverlayView(proxy: proxy, geometry: geometry, viewModel: viewModel, selectedDay: $selectedDay)
                                 }
                             }
                         }
@@ -196,6 +179,35 @@ struct MetricView: View {
                 .foregroundColor(.primary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+struct ChartOverlayView: View {
+    let proxy: ChartProxy
+    let geometry: GeometryProxy
+    let viewModel: StreakViewModel
+    @Binding var selectedDay: StreakDayData?
+    
+    var body: some View {
+        Rectangle()
+            .fill(Color.clear)
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        guard let plotFrame = proxy.plotFrame else { return }
+                        let x = value.location.x - geometry[plotFrame].origin.x
+                        guard let date = proxy.value(atX: x) as Date? else { return }
+                        
+                        // Find the closest day
+                        selectedDay = viewModel.streakData.min(by: {
+                            abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date))
+                        })
+                    }
+                    .onEnded { _ in
+                        selectedDay = nil
+                    }
+            )
     }
 }
 
