@@ -427,6 +427,10 @@ class AdSenseAPI {
 
     static let appGroupID = "group.com.delteqws.AdRadar"
     
+    private static var sharedDefaults: UserDefaults? {
+        return UserDefaults(suiteName: appGroupID)
+    }
+    
     func fetchAccountInfo(accessToken: String) async -> Result<Account, AdSenseError> {
         guard NetworkMonitor.shared.isConnected else {
             return .failure(.requestFailed("No internet connection"))
@@ -473,12 +477,12 @@ class AdSenseAPI {
     }
     
     func saveSummaryToSharedContainer(_ summary: AdSenseSummaryData) {
-        let defaults = UserDefaults(suiteName: AdSenseAPI.appGroupID)
+        guard let defaults = Self.sharedDefaults else { return }
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(summary) {
-            defaults?.set(encoded, forKey: "summaryData")
-            defaults?.set(Date(), forKey: "summaryLastUpdate")
-            defaults?.synchronize()
+            defaults.set(encoded, forKey: "summaryData")
+            defaults.set(Date(), forKey: "summaryLastUpdate")
+            defaults.synchronize()
             print("[AdSenseAPI] Successfully saved summary data to shared container")
         } else {
             print("[AdSenseAPI] Failed to encode summary data")
@@ -486,8 +490,8 @@ class AdSenseAPI {
     }
     
     static func loadSummaryFromSharedContainer() -> AdSenseSummaryData? {
-        let defaults = UserDefaults(suiteName: appGroupID)
-        guard let data = defaults?.data(forKey: "summaryData") else {
+        guard let defaults = sharedDefaults,
+              let data = defaults.data(forKey: "summaryData") else {
             print("[AdSenseAPI] No summary data found in shared container")
             return nil
         }
@@ -502,14 +506,13 @@ class AdSenseAPI {
     }
     
     static func loadLastUpdateDate() -> Date? {
-        let defaults = UserDefaults(suiteName: appGroupID)
-        if let date = defaults?.object(forKey: "summaryLastUpdate") as? Date {
-            print("[AdSenseAPI] Successfully loaded last update date: \(date)")
-            return date
-        } else {
+        guard let defaults = sharedDefaults,
+              let date = defaults.object(forKey: "summaryLastUpdate") as? Date else {
             print("[AdSenseAPI] No last update date found in shared container")
             return nil
         }
+        print("[AdSenseAPI] Successfully loaded last update date: \(date)")
+        return date
     }
 
     /// Fetches all detailed metrics for a given date range

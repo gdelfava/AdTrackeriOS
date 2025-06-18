@@ -39,9 +39,14 @@ struct AdRadarWidgetEntry: TimelineEntry {
 struct AdSenseAPI {
     static let appGroupID = "group.com.delteqws.AdRadar" // Must match main app
     static let summaryKey = "summaryData"
+    
+    private static var sharedDefaults: UserDefaults? {
+        return UserDefaults(suiteName: appGroupID)
+    }
+    
     static func loadSummaryFromSharedContainer() -> AdSenseSummaryData? {
-        let defaults = UserDefaults(suiteName: appGroupID)
-        guard let data = defaults?.data(forKey: summaryKey) else {
+        guard let defaults = sharedDefaults,
+              let data = defaults.data(forKey: summaryKey) else {
             print("[AdRadarWidget] No summary data found in shared container")
             return nil
         }
@@ -55,14 +60,13 @@ struct AdSenseAPI {
     }
 
     static func loadLastUpdateDate() -> Date? {
-        let defaults = UserDefaults(suiteName: appGroupID)
-        if let date = defaults?.object(forKey: "summaryLastUpdate") as? Date {
-            print("[AdRadarWidget] Successfully loaded last update date: \(date)")
-            return date
-        } else {
+        guard let defaults = sharedDefaults,
+              let date = defaults.object(forKey: "summaryLastUpdate") as? Date else {
             print("[AdRadarWidget] No last update date found in shared container")
             return nil
         }
+        print("[AdRadarWidget] Successfully loaded last update date: \(date)")
+        return date
     }
 }
 
