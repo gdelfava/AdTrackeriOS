@@ -192,11 +192,10 @@ struct AdRadarWidgetEntryView: View {
                 }
                 Spacer()
                 HStack(alignment: .lastTextBaseline, spacing: 2) {
-                    Image("WidgetIcon")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 24, height: 24)
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                    Text("AdRadar")
+                        .font(.caption2)
+                        .fontWeight(.regular)
+                        .fontDesign(.rounded)
                 }
                 .foregroundColor(.secondary)
             }

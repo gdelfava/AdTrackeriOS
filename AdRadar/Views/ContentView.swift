@@ -81,6 +81,8 @@ struct ContentView: View {
 
 struct WhyGoogleModal: View {
     @Binding var isPresented: Bool
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
         VStack(spacing: 0) {
             VStack {
@@ -88,19 +90,20 @@ struct WhyGoogleModal: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 80, height: 80)
-                    .padding(.top, 24)
+                    .padding(.top, 16)
                     .shadow(radius: 4)
             }
             ScrollView {
                 VStack(spacing: 16) {
                     Text("Why Google?")
-                        .font(.title2).bold()
-                        .foregroundColor(.black)
+                        .font(.body)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
                         .padding(.top, 0)
                     Text("AdRadar requires you to sign in to your Google account to allow it to receive the relevant AdSense data.\n\nWithout this, AdRadar cannot provide you with any information.\n\nAdRadar does not store any personal information. It is used only to display your data.")
                         .font(.body)
-                        .foregroundColor(.black)
-                        .multilineTextAlignment(.leading)
+                        .foregroundColor(.primary)
+                        .multilineTextAlignment(.center)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 8)
@@ -117,11 +120,11 @@ struct WhyGoogleModal: View {
             }
             .padding([.horizontal, .bottom], 24)
         }
-        .background(Color.white)
+        .background(Color(.systemBackground))
         .cornerRadius(32)
-        .padding(.top, 40)
+        .padding(.top, 32)
         .padding(.horizontal, 8)
-        .presentationDetents([.large])
+        .presentationDetents([.medium])
     }
 }
 

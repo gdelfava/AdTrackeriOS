@@ -37,9 +37,11 @@ struct PaymentsView: View {
                             Image(uiColorScheme == .dark ? "moneyjumpblk2" : "moneyjumpwht2")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(maxWidth: .infinity)
+                                .frame(width: 330)
+                                .frame(maxWidth: .infinity, alignment: .center)
                                 .padding(.horizontal)
                                 .padding(.top, 8)
+                            Spacer()
                         }
                         .padding(.horizontal)
                         Text("AdRadar is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
