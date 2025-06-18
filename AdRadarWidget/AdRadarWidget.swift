@@ -176,7 +176,7 @@ struct AdRadarWidgetEntryView: View {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 VStack(alignment: .leading){
                     Text("Today")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.system(size: 20, weight: .semibold))
                         .foregroundColor(.primary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)

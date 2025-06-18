@@ -16,6 +16,11 @@ struct SummaryTabView: View {
                     Image(systemName: "square.split.2x2")
                     Text("Summary")
                 }
+            StreakView()
+                .tabItem {
+                    Image(systemName: "calendar")
+                    Text("Streak")
+                }
             PaymentsView()
                 .tabItem {
                     Image(systemName: "creditcard")
