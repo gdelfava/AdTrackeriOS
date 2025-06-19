@@ -10,6 +10,16 @@ import SwiftUI
 
 @main
 struct AdRadar_App: App {
+    init() {
+        // Initialize memory management
+        _ = MemoryManager.shared
+        
+        // Initialize UserDefaultsManager
+        _ = UserDefaultsManager.shared
+        
+        print("[AdRadar] App initialized with memory management and UserDefaults optimization")
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

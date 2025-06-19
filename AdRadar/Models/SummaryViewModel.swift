@@ -35,10 +35,8 @@ class SummaryViewModel: ObservableObject {
     init(accessToken: String?, authViewModel: AuthViewModel? = nil) {
         self.accessToken = accessToken
         self.authViewModel = authViewModel
-        // Load last update time from UserDefaults
-        if let defaults = UserDefaults(suiteName: AdSenseAPI.appGroupID) {
-            self.lastUpdateTime = defaults.object(forKey: "summaryLastUpdate") as? Date
-        }
+        // Load last update time from UserDefaultsManager
+        self.lastUpdateTime = UserDefaultsManager.shared.getLastUpdateDate()
         if accessToken != nil {
             fetchTask = Task { await fetchSummary() }
         }
@@ -249,12 +247,10 @@ class SummaryViewModel: ObservableObject {
                 )
                 self.summaryData = summary
                 AdSenseAPI.shared.saveSummaryToSharedContainer(summary)
-                // Save the last update time as well
-                if let defaults = UserDefaults(suiteName: AdSenseAPI.appGroupID) {
-                    let now = Date()
-                    defaults.set(now, forKey: "summaryLastUpdate")
-                    self.lastUpdateTime = now
-                }
+                // Save the last update time using UserDefaultsManager
+                let now = Date()
+                UserDefaultsManager.shared.setDate(now, forKey: "summaryLastUpdate")
+                self.lastUpdateTime = now
                 self.hasLoaded = true
                 self.isLoading = false
                 return

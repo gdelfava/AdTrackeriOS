@@ -61,12 +61,17 @@ enum AdSenseError: Error {
 
 class AdSenseAPI {
     static let shared = AdSenseAPI()
-    private init() {}
+    private let urlSession: URLSession
+    
+    private init() {
+        self.urlSession = NetworkMonitor.createURLSession()
+    }
     
     func fetchSummaryData(accountID: String, accessToken: String, startDate: Date, endDate: Date) async -> Result<AdSenseSummaryData, AdSenseError> {
-        guard NetworkMonitor.shared.isConnected else {
+        guard NetworkMonitor.shared.shouldProceedWithRequest() else {
             return .failure(.requestFailed("No internet connection"))
         }
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let start = dateFormatter.string(from: startDate)
@@ -78,10 +83,16 @@ class AdSenseAPI {
         
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.timeoutInterval = 30 // Add timeout
+        request.timeoutInterval = 30
         
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
+            // Check for cancellation before making the request
+            try Task.checkCancellation()
+            
+            let (data, response) = try await urlSession.data(for: request)
+            
+            // Check for cancellation after receiving the response
+            try Task.checkCancellation()
             
             guard let httpResponse = response as? HTTPURLResponse else {
                 return .failure(.invalidResponse)
@@ -131,6 +142,8 @@ class AdSenseAPI {
                 return .failure(.requestFailed("Request timed out"))
             case .cannotConnectToHost:
                 return .failure(.requestFailed("Cannot connect to server"))
+            case .cancelled:
+                return .failure(.requestFailed("Request was cancelled"))
             default:
                 return .failure(.requestFailed("Network error: \(error.localizedDescription)"))
             }
@@ -141,7 +154,7 @@ class AdSenseAPI {
     
     // Fetch the user's AdSense account ID
     static func fetchAccountID(accessToken: String) async -> Result<String, AdSenseError> {
-        guard NetworkMonitor.shared.isConnected else {
+        guard NetworkMonitor.shared.shouldProceedWithRequest() else {
             return .failure(.requestFailed("No internet connection"))
         }
         guard let url = URL(string: "https://adsense.googleapis.com/v2/accounts") else {
@@ -151,12 +164,14 @@ class AdSenseAPI {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.timeoutInterval = 30
         
         do {
             // Check for cancellation before making the request
             try Task.checkCancellation()
             
-            let (data, response) = try await URLSession.shared.data(for: request)
+            let urlSession = NetworkMonitor.createURLSession()
+            let (data, response) = try await urlSession.data(for: request)
             
             // Check for cancellation after receiving the response
             try Task.checkCancellation()
@@ -199,6 +214,17 @@ class AdSenseAPI {
         } catch let error as URLError where error.code == .cancelled {
             print("Request was cancelled")
             return .failure(.requestFailed("Request was cancelled"))
+        } catch let error as URLError {
+            switch error.code {
+            case .notConnectedToInternet:
+                return .failure(.requestFailed("No internet connection"))
+            case .timedOut:
+                return .failure(.requestFailed("Request timed out"))
+            case .cannotConnectToHost:
+                return .failure(.requestFailed("Cannot connect to server"))
+            default:
+                return .failure(.requestFailed("Network error: \(error.localizedDescription)"))
+            }
         } catch {
             print("Network error: \(error)")
             return .failure(.requestFailed("Network error: \(error.localizedDescription)"))
@@ -427,10 +453,6 @@ class AdSenseAPI {
 
     static let appGroupID = "group.com.delteqws.AdRadar"
     
-    private static var sharedDefaults: UserDefaults? {
-        return UserDefaults(suiteName: appGroupID)
-    }
-    
     func fetchAccountInfo(accessToken: String) async -> Result<Account, AdSenseError> {
         guard NetworkMonitor.shared.isConnected else {
             return .failure(.requestFailed("No internet connection"))
@@ -477,42 +499,15 @@ class AdSenseAPI {
     }
     
     func saveSummaryToSharedContainer(_ summary: AdSenseSummaryData) {
-        guard let defaults = Self.sharedDefaults else { return }
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(summary) {
-            defaults.set(encoded, forKey: "summaryData")
-            defaults.set(Date(), forKey: "summaryLastUpdate")
-            defaults.synchronize()
-            print("[AdSenseAPI] Successfully saved summary data to shared container")
-        } else {
-            print("[AdSenseAPI] Failed to encode summary data")
-        }
+        UserDefaultsManager.shared.saveSummaryData(summary)
     }
     
     static func loadSummaryFromSharedContainer() -> AdSenseSummaryData? {
-        guard let defaults = sharedDefaults,
-              let data = defaults.data(forKey: "summaryData") else {
-            print("[AdSenseAPI] No summary data found in shared container")
-            return nil
-        }
-        let decoder = JSONDecoder()
-        if let summary = try? decoder.decode(AdSenseSummaryData.self, from: data) {
-            print("[AdSenseAPI] Successfully loaded summary data from shared container")
-            return summary
-        } else {
-            print("[AdSenseAPI] Failed to decode summary data")
-            return nil
-        }
+        return UserDefaultsManager.shared.loadSummaryData()
     }
     
     static func loadLastUpdateDate() -> Date? {
-        guard let defaults = sharedDefaults,
-              let date = defaults.object(forKey: "summaryLastUpdate") as? Date else {
-            print("[AdSenseAPI] No last update date found in shared container")
-            return nil
-        }
-        print("[AdSenseAPI] Successfully loaded last update date: \(date)")
-        return date
+        return UserDefaultsManager.shared.getLastUpdateDate()
     }
 
     /// Fetches all detailed metrics for a given date range
