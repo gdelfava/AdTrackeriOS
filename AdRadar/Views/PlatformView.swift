@@ -75,42 +75,32 @@ struct PlatformView: View {
     
     private var mainContent: some View {
         Group {
-            if let error = viewModel.error {
-                ErrorBannerView(message: error, symbol: errorSymbol(for: error))
-                    .padding(.horizontal)
-                    .padding(.top)
-            }
-            
             if viewModel.isLoading {
                 Spacer()
                 ProgressView("Loading platforms...")
                     .padding()
                 Spacer()
-            } else if viewModel.platforms.isEmpty && viewModel.hasLoaded {
-                emptyStateView
+            } else if viewModel.platforms.isEmpty {
+                VStack(spacing: 16) {
+                    Image(systemName: "display.2")
+                        .font(.system(size: 48))
+                        .foregroundColor(.gray)
+                    
+                    Text("No Platform Data")
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                    
+                    Text("No platform data available for the selected time period.")
+                        .font(.body)
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 platformsScrollView
             }
         }
-    }
-    
-    private var emptyStateView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "laptopcomputer")
-                .font(.system(size: 48))
-                .foregroundColor(.secondary)
-            
-            Text("No Platform Data")
-                .font(.headline)
-                .foregroundColor(.primary)
-            
-            Text("No platform data available for the selected time period.")
-                .font(.body)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     private var platformsScrollView: some View {

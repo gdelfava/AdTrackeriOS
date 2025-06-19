@@ -75,42 +75,32 @@ struct DomainsView: View {
     
     private var mainContent: some View {
         Group {
-            if let error = viewModel.error {
-                ErrorBannerView(message: error, symbol: errorSymbol(for: error))
-                    .padding(.horizontal)
-                    .padding(.top)
-            }
-            
             if viewModel.isLoading {
                 Spacer()
                 ProgressView("Loading domains...")
                     .padding()
                 Spacer()
-            } else if viewModel.domains.isEmpty && viewModel.hasLoaded {
-                emptyStateView
+            } else if viewModel.domains.isEmpty {
+                VStack(spacing: 16) {
+                    Image(systemName: "globe")
+                        .font(.system(size: 48))
+                        .foregroundColor(.gray)
+                    
+                    Text("No Domain Data")
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                    
+                    Text("No domain data available for the selected time period.")
+                        .font(.body)
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 domainsScrollView
             }
         }
-    }
-    
-    private var emptyStateView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "globe")
-                .font(.system(size: 48))
-                .foregroundColor(.secondary)
-            
-            Text("No Domain Data")
-                .font(.headline)
-                .foregroundColor(.primary)
-            
-            Text("No domain data available for the selected time period.")
-                .font(.body)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     private var domainsScrollView: some View {
@@ -208,16 +198,6 @@ struct DomainsView: View {
         }
         .padding(.horizontal, 20)
         .padding(.bottom, 20)
-    }
-    
-    private func errorSymbol(for error: String) -> String {
-        if error.localizedCaseInsensitiveContains("internet") || error.localizedCaseInsensitiveContains("offline") {
-            return "wifi.slash"
-        } else if error.localizedCaseInsensitiveContains("unauthorized") || error.localizedCaseInsensitiveContains("session") {
-            return "person.crop.circle.badge.exclamationmark"
-        } else {
-            return "exclamationmark.triangle"
-        }
     }
     
     private func calculateTotalEarnings() -> String {

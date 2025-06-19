@@ -9,6 +9,7 @@ struct SummaryTabView: View {
     @State private var showAdSizeView = false
     @State private var showPlatformsView = false
     @State private var showCountriesView = false
+    @State private var showAdNetworkView = false
     
     init() {
         // We'll initialize settingsViewModel in onAppear to ensure we have access to authViewModel
@@ -81,7 +82,8 @@ struct SummaryTabView: View {
                     showDomainsView: $showDomainsView,
                     showAdSizeView: $showAdSizeView,
                     showPlatformsView: $showPlatformsView,
-                    showCountriesView: $showCountriesView
+                    showCountriesView: $showCountriesView,
+                    showAdNetworkView: $showAdNetworkView
                 )
                 .environmentObject(authViewModel)
                 .environmentObject(settingsViewModel)
@@ -113,6 +115,10 @@ struct SummaryTabView: View {
         }
         .fullScreenCover(isPresented: $showCountriesView) {
             CountriesView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
+                .environmentObject(authViewModel)
+        }
+        .fullScreenCover(isPresented: $showAdNetworkView) {
+            AdNetworkView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
                 .environmentObject(authViewModel)
         }
     }

@@ -18,7 +18,7 @@ struct CountryCard: View {
                     .font(.title2)
                 
                 Text(country.displayCountryName)
-                    .font(.headline)
+                    .font(.caption2)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
                     .lineLimit(1)
