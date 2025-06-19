@@ -142,7 +142,7 @@ struct SummaryView: View {
                         }
                     }) {
                         Image(systemName: "line.3.horizontal")
-                            .font(.title2)
+                            .font(.title3)
                             .foregroundColor(.primary)
                     }
                 }

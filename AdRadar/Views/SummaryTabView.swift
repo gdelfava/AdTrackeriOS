@@ -13,6 +13,21 @@ struct SummaryTabView: View {
     
     var body: some View {
         ZStack {
+            // Edge swipe area for opening menu
+            Color.clear
+                .frame(width: 28)
+                .contentShape(Rectangle())
+                .ignoresSafeArea()
+                .gesture(
+                    DragGesture(minimumDistance: 15, coordinateSpace: .local)
+                        .onEnded { value in
+                            if value.translation.width > 20 && abs(value.translation.height) < 40 {
+                                withAnimation { showSlideOverMenu = true }
+                            }
+                        }
+                )
+                .zIndex(2)
+            
             TabView(selection: $selectedTab) {
                 SummaryView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
                     .tabItem {
@@ -44,6 +59,15 @@ struct SummaryTabView: View {
                 // Update settingsViewModel with the correct authViewModel
                 settingsViewModel.authViewModel = authViewModel
             }
+            .gesture(
+                DragGesture(minimumDistance: 15, coordinateSpace: .global)
+                    .onEnded { value in
+                        // Only trigger if drag starts near left edge and is a rightward swipe
+                        if value.startLocation.x < 28 && value.translation.width > 20 && abs(value.translation.height) < 40 {
+                            withAnimation { showSlideOverMenu = true }
+                        }
+                    }
+            )
             
             // Slide-over menu
             if showSlideOverMenu {
@@ -52,8 +76,18 @@ struct SummaryTabView: View {
                     .environmentObject(settingsViewModel)
                     .transition(.move(edge: .leading))
                     .zIndex(1)
+                    .gesture(
+                        DragGesture(minimumDistance: 15, coordinateSpace: .global)
+                            .onEnded { value in
+                                // Only trigger if drag is leftward and starts near left edge of menu
+                                if value.translation.width < -20 && abs(value.translation.height) < 40 {
+                                    withAnimation { showSlideOverMenu = false }
+                                }
+                            }
+                    )
             }
         }
+        .animation(.spring(response: 0.4, dampingFraction: 0.70, blendDuration: 0.2), value: showSlideOverMenu)
     }
 }
 
