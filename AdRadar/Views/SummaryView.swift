@@ -4,9 +4,13 @@ struct SummaryView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var viewModel: SummaryViewModel
     @State private var cardAppearances: [Bool] = Array(repeating: false, count: 6)
+    @Binding var showSlideOverMenu: Bool
+    @Binding var selectedTab: Int
     
-    init() {
+    init(showSlideOverMenu: Binding<Bool>, selectedTab: Binding<Int>) {
         _viewModel = StateObject(wrappedValue: SummaryViewModel(accessToken: nil))
+        _showSlideOverMenu = showSlideOverMenu
+        _selectedTab = selectedTab
     }
     
     var body: some View {
@@ -131,6 +135,17 @@ struct SummaryView: View {
             }
             .navigationTitle("Summary")
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showSlideOverMenu = true
+                        }
+                    }) {
+                        Image(systemName: "line.3.horizontal")
+                            .font(.title2)
+                            .foregroundColor(.primary)
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     ProfileImageView(url: authViewModel.userProfileImageURL)
                         .contextMenu {
@@ -198,8 +213,10 @@ struct SummaryView: View {
     private func errorSymbol(for error: String) -> String {
         if error.localizedCaseInsensitiveContains("internet") || error.localizedCaseInsensitiveContains("offline") {
             return "wifi.slash"
-        } else if error.localizedCaseInsensitiveContains("unauthorized") || error.localizedCaseInsensitiveContains("session") {
-            return "person.crop.circle.badge.exclamationmark"
+        } else if error.localizedCaseInsensitiveContains("unauthorized") || error.localizedCaseInsensitiveContains("token") {
+            return "key.slash"
+        } else if error.localizedCaseInsensitiveContains("server") || error.localizedCaseInsensitiveContains("500") {
+            return "server.rack"
         } else {
             return "exclamationmark.triangle"
         }
@@ -444,5 +461,5 @@ struct MetricRow: View {
 }
 
 #Preview {
-    SummaryView()
+    SummaryView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))
 }

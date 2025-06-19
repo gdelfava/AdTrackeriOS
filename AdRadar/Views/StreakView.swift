@@ -5,9 +5,13 @@ struct StreakView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var viewModel: StreakViewModel
     @State private var selectedDay: StreakDayData?
+    @Binding var showSlideOverMenu: Bool
+    @Binding var selectedTab: Int
     
-    init() {
+    init(showSlideOverMenu: Binding<Bool>, selectedTab: Binding<Int>) {
         _viewModel = StateObject(wrappedValue: StreakViewModel(accessToken: nil))
+        _showSlideOverMenu = showSlideOverMenu
+        _selectedTab = selectedTab
     }
     
     var body: some View {
@@ -82,6 +86,17 @@ struct StreakView: View {
             }
             .navigationTitle("Streak")
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showSlideOverMenu = true
+                        }
+                    }) {
+                        Image(systemName: "line.3.horizontal")
+                            .font(.title2)
+                            .foregroundColor(.primary)
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     ProfileImageView(url: authViewModel.userProfileImageURL)
                         .contextMenu {
@@ -212,6 +227,6 @@ struct ChartOverlayView: View {
 }
 
 #Preview {
-    StreakView()
+    StreakView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))
         .environmentObject(AuthViewModel())
 } 

@@ -41,6 +41,13 @@ struct SettingsView: View {
     @State private var isMailSheetPresented = false
     @State private var isTermsSheetPresented = false
     @State private var showToast = false
+    @Binding var showSlideOverMenu: Bool
+    @Binding var selectedTab: Int
+    
+    init(showSlideOverMenu: Binding<Bool>, selectedTab: Binding<Int>) {
+        _showSlideOverMenu = showSlideOverMenu
+        _selectedTab = selectedTab
+    }
     
     var body: some View {
         NavigationView {
@@ -198,106 +205,61 @@ struct SettingsView: View {
                     }
                     .padding(.bottom, 32)
                 }
+                .navigationTitle("Settings")
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                showSlideOverMenu = true
+                            }
+                        }) {
+                            Image(systemName: "line.3.horizontal")
+                                .font(.title2)
+                                .foregroundColor(.primary)
+                        }
+                    }
+                }
                 
                 // Toast overlay
-                VStack {
-                    Spacer()
-                    if showToast {
-                        Toast(message: "Copied to clipboard", isShowing: $showToast)
-                            .padding(.bottom, 32)
+                if showToast {
+                    VStack {
+                        Spacer()
+                        Toast(message: "Publisher ID copied to clipboard", isShowing: $showToast)
+                            .padding(.bottom, 100)
                     }
                 }
             }
-            .navigationTitle("Settings")
-            .background(Color(.systemBackground).ignoresSafeArea())
-            .onChange(of: settingsViewModel.isSignedOut) { signedOut, _ in
-                if signedOut {
-                    authViewModel.isSignedIn = false
-                }
+        }
+        .onAppear {
+            settingsViewModel.authViewModel = authViewModel
+            Task {
+                await settingsViewModel.fetchAccountInfo()
             }
-            .onAppear {
-                settingsViewModel.name = authViewModel.userName
-                settingsViewModel.email = authViewModel.userEmail
-                settingsViewModel.imageURL = authViewModel.userProfileImageURL
-            }
-            .sheet(isPresented: $isShareSheetPresented) {
-                ShareSheet(activityItems: [
-                    "Check out AdRadar - the best way to track your AdSense earnings!",
-                    "https://example.com/adradar" // Placeholder URL until App Store submission
-                ])
-                .presentationDetents([.medium])
-            }
-            .sheet(isPresented: $isWidgetSupportSheetPresented) {
-                VStack(spacing: 20) {
-                    Image("LoginScreen")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 100, height: 100)
-                        .clipShape(RoundedRectangle(cornerRadius: 22))
-                        .padding(.top)
-                    
-                    Text("Widget Support")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                    
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("Are your widgets not updating frequently or at all?")
-                                .font(.headline)
-                            
-                            Text("Unfortunately Apple does not give developers a hug amount of control over how often a background refresh happens.")
-                            
-                            Text("The operating system attempts to be intuitive and learns at what points pf the day you use the app, and then does a background refresh just beforehand.")
-                            
-                            Text("I would suggest using the app for a week or so, then you should start to see the widget update more frequently as the operating system learns how often you like to view the data.")
-                            
-                            Text("You will need to make sure that notifications are switched on for the app, as the app uses background notifications, but please don't worry - we will not bother you with any alerts.")
-                            
-                            Text("If the app continues not to update the widget, please feel free to contact me directly using the 'Feedback' option.")
-                            
-                            Text("Thank's for your support.\nGuilio")
-                                .padding(.top, 8)
-                        }
-                        .padding(.horizontal)
+        }
+        .sheet(isPresented: $isShareSheetPresented) {
+            ShareSheet(activityItems: ["Check out AdRadar for AdSense! https://apps.apple.com/app/id1481431267"])
+        }
+        .sheet(isPresented: $isWidgetSupportSheetPresented) {
+            WidgetSupportSheet()
+        }
+        .sheet(isPresented: $isMailSheetPresented) {
+            if MFMailComposeViewController.canSendMail() {
+                MailView(toRecipients: ["support@adradar.app"], subject: "AdRadar Feedback", body: "") { result in
+                    switch result {
+                    case .success:
+                        print("Email sent successfully")
+                    case .failure(let error):
+                        print("Email failed to send: \(error.localizedDescription)")
                     }
-                    
-                    Button(action: {
-                        isWidgetSupportSheetPresented = false
-                    }) {
-                        Text("Close")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.accentColor)
-                            .clipShape(Capsule())
-                    }
-                    .padding(.horizontal)
-                    .padding(.bottom)
                 }
-                .presentationDetents([.large])
-                .presentationDragIndicator(.visible)
+            } else {
+                // Fallback for devices that can't send email
+                Text("Email not available on this device")
+                    .padding()
             }
-            .sheet(isPresented: $isMailSheetPresented) {
-                MailView(
-                    subject: "AdRadar: User feedback",
-                    messageBody: "Any feeback or questions are more than welcome, please enter your message below:"
-                )
-            }
-            .sheet(isPresented: $isTermsSheetPresented) {
-                NavigationView {
-                    WebView(url: URL(string: "https://www.notion.so/AdRadar-Terms-Privacy-Policy-21539fba0e268090a327da6296c3c99a?source=copy_link")!)
-                        .navigationTitle("Terms & Privacy Policy")
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Button("Done") {
-                                    isTermsSheetPresented = false
-                                }
-                            }
-                        }
-                }
-            }
+        }
+        .sheet(isPresented: $isTermsSheetPresented) {
+            TermsAndPrivacySheet()
         }
     }
 }
@@ -369,15 +331,17 @@ struct ShareSheet: UIViewControllerRepresentable {
 
 struct MailView: UIViewControllerRepresentable {
     @Environment(\.presentationMode) var presentation
+    let toRecipients: [String]
     let subject: String
-    let messageBody: String
+    let body: String
+    let completion: (Result<Void, Error>) -> Void
     
     func makeUIViewController(context: Context) -> MFMailComposeViewController {
         let vc = MFMailComposeViewController()
         vc.mailComposeDelegate = context.coordinator
+        vc.setToRecipients(toRecipients)
         vc.setSubject(subject)
-        vc.setMessageBody(messageBody, isHTML: false)
-        vc.setToRecipients(["apps@delteqis.co.za"])
+        vc.setMessageBody(body, isHTML: false)
         return vc
     }
     
@@ -395,6 +359,11 @@ struct MailView: UIViewControllerRepresentable {
         }
         
         func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+            if let error = error {
+                parent.completion(.failure(error))
+            } else {
+                parent.completion(.success(()))
+            }
             parent.presentation.wrappedValue.dismiss()
         }
     }
@@ -403,11 +372,11 @@ struct MailView: UIViewControllerRepresentable {
 // For preview
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView()
+        SettingsView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))
             .environmentObject(AuthViewModel())
             .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
             .preferredColorScheme(.light)
-        SettingsView()
+        SettingsView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))
             .environmentObject(AuthViewModel())
             .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
             .preferredColorScheme(.dark)
@@ -451,5 +420,80 @@ struct AccountInfoRow: View {
             .background(Color(.secondarySystemBackground))
         }
         .buttonStyle(PlainButtonStyle())
+    }
+}
+
+struct WidgetSupportSheet: View {
+    @Environment(\.presentationMode) var presentationMode
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Image("LoginScreen")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 100, height: 100)
+                .clipShape(RoundedRectangle(cornerRadius: 22))
+                .padding(.top)
+            
+            Text("Widget Support")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Are your widgets not updating frequently or at all?")
+                        .font(.headline)
+                    
+                    Text("Unfortunately Apple does not give developers a huge amount of control over how often a background refresh happens.")
+                    
+                    Text("The operating system attempts to be intuitive and learns at what points of the day you use the app, and then does a background refresh just beforehand.")
+                    
+                    Text("I would suggest using the app for a week or so, then you should start to see the widget update more frequently as the operating system learns how often you like to view the data.")
+                    
+                    Text("You will need to make sure that notifications are switched on for the app, as the app uses background notifications, but please don't worry - we will not bother you with any alerts.")
+                    
+                    Text("If the app continues not to update the widget, please feel free to contact me directly using the 'Feedback' option.")
+                    
+                    Text("Thanks for your support.\nGuilio")
+                        .padding(.top, 8)
+                }
+                .padding(.horizontal)
+            }
+            
+            Button(action: {
+                presentationMode.wrappedValue.dismiss()
+            }) {
+                Text("Close")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.accentColor)
+                    .clipShape(Capsule())
+            }
+            .padding(.horizontal)
+            .padding(.bottom)
+        }
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+    }
+}
+
+struct TermsAndPrivacySheet: View {
+    @Environment(\.presentationMode) var presentationMode
+    
+    var body: some View {
+        NavigationView {
+            WebView(url: URL(string: "https://www.notion.so/AdRadar-Terms-Privacy-Policy-21539fba0e268090a327da6296c3c99a?source=copy_link")!)
+                .navigationTitle("Terms & Privacy Policy")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Done") {
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                    }
+                }
+        }
     }
 } 

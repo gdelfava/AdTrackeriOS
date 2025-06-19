@@ -4,9 +4,13 @@ struct PaymentsView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var viewModel: PaymentsViewModel
     @Environment(\.colorScheme) private var uiColorScheme
+    @Binding var showSlideOverMenu: Bool
+    @Binding var selectedTab: Int
     
-    init() {
+    init(showSlideOverMenu: Binding<Bool>, selectedTab: Binding<Int>) {
         _viewModel = StateObject(wrappedValue: PaymentsViewModel(accessToken: nil))
+        _showSlideOverMenu = showSlideOverMenu
+        _selectedTab = selectedTab
     }
     
     var body: some View {
@@ -64,6 +68,17 @@ struct PaymentsView: View {
             }
             .navigationTitle("Payments")
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showSlideOverMenu = true
+                        }
+                    }) {
+                        Image(systemName: "line.3.horizontal")
+                            .font(.title2)
+                            .foregroundColor(.primary)
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     ProfileImageView(url: authViewModel.userProfileImageURL)
                         .contextMenu {
@@ -219,6 +234,6 @@ struct PreviousPaymentCardView: View {
 }
 
 #Preview {
-    PaymentsView()
+    PaymentsView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))
         .environmentObject(AuthViewModel())
 }
