@@ -7,6 +7,8 @@ struct SlideOverMenuView: View {
     @EnvironmentObject var settingsViewModel: SettingsViewModel
     @Binding var selectedTab: Int // 0: Summary, 1: Streak, 2: Payments, 3: Settings
     @Binding var showDomainsView: Bool
+    @Binding var showAdSizeView: Bool
+    @Binding var showPlatformsView: Bool
     @State private var showMail = false
     @State private var mailResult: Result<MFMailComposeResult, Error>? = nil
     
@@ -52,8 +54,18 @@ struct SlideOverMenuView: View {
                         }) {
                             MenuItemView(title: "Domain", icon: "globe")
                         }
-                        MenuItemView(title: "Ad Size", icon: "rectangle.3.group")
-                        MenuItemView(title: "Platforms", icon: "iphone")
+                        Button(action: {
+                            showAdSizeView = true
+                            isPresented = false
+                        }) {
+                            MenuItemView(title: "Ad Size", icon: "rectangle.3.group")
+                        }
+                        Button(action: {
+                            showPlatformsView = true
+                            isPresented = false
+                        }) {
+                            MenuItemView(title: "Platforms", icon: "iphone")
+                        }
                         MenuItemView(title: "Ad Network", icon: "network")
                         MenuItemView(title: "Country", icon: "flag")
                         MenuItemView(title: "Targeting", icon: "target")
@@ -182,7 +194,7 @@ struct MenuItemView: View {
 }
 
 #Preview {
-    SlideOverMenuView(isPresented: .constant(true), selectedTab: .constant(0), showDomainsView: .constant(false))
+    SlideOverMenuView(isPresented: .constant(true), selectedTab: .constant(0), showDomainsView: .constant(false), showAdSizeView: .constant(false), showPlatformsView: .constant(false))
         .environmentObject(AuthViewModel())
         .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
 } 

@@ -1,8 +1,8 @@
 import SwiftUI
 
-struct DomainsView: View {
+struct PlatformView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
-    @StateObject private var viewModel: DomainViewModel
+    @StateObject private var viewModel: PlatformViewModel
     @State private var showingDateFilter = false
     @State private var showTotalEarningsCard = false
     @Binding var showSlideOverMenu: Bool
@@ -12,7 +12,7 @@ struct DomainsView: View {
     init(showSlideOverMenu: Binding<Bool>, selectedTab: Binding<Int>) {
         _showSlideOverMenu = showSlideOverMenu
         _selectedTab = selectedTab
-        _viewModel = StateObject(wrappedValue: DomainViewModel(accessToken: nil))
+        _viewModel = StateObject(wrappedValue: PlatformViewModel(accessToken: nil))
     }
     
     var body: some View {
@@ -20,18 +20,18 @@ struct DomainsView: View {
             VStack(spacing: 0) {
                 mainContent
             }
-            .navigationTitle("Domains")
+            .navigationTitle("Platforms")
             .toolbar {
                 leadingToolbarItem
                 trailingToolbarItem
             }
         }
         .sheet(isPresented: $showingDateFilter) {
-            DateFilterSheet(selectedFilter: $viewModel.selectedFilter, isPresented: $showingDateFilter) {
+            PlatformDateFilterSheet(selectedFilter: $viewModel.selectedFilter, isPresented: $showingDateFilter) {
                 // Reset total earnings card when filter changes
                 showTotalEarningsCard = false
                 Task {
-                    await viewModel.fetchDomainData()
+                    await viewModel.fetchPlatformData()
                 }
             }
         }
@@ -42,15 +42,15 @@ struct DomainsView: View {
             if let token = authViewModel.accessToken, !viewModel.hasLoaded {
                 viewModel.accessToken = token
                 viewModel.authViewModel = authViewModel
-                Task { await viewModel.fetchDomainData() }
+                Task { await viewModel.fetchPlatformData() }
             }
             
             // Reset total earnings card visibility
             showTotalEarningsCard = false
         }
-        .onChange(of: viewModel.domains) { oldDomains, newDomains in
-            // Show total earnings card after domains have loaded
-            if !newDomains.isEmpty && viewModel.hasLoaded {
+        .onChange(of: viewModel.platforms) { oldPlatforms, newPlatforms in
+            // Show total earnings card after platforms have loaded
+            if !newPlatforms.isEmpty && viewModel.hasLoaded {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     showTotalEarningsCard = true
                 }
@@ -60,7 +60,7 @@ struct DomainsView: View {
         }
         .onChange(of: viewModel.hasLoaded) { oldValue, newValue in
             // Reset total earnings card when loading state changes
-            if newValue && !viewModel.domains.isEmpty {
+            if newValue && !viewModel.platforms.isEmpty {
                 showTotalEarningsCard = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     showTotalEarningsCard = true
@@ -83,28 +83,28 @@ struct DomainsView: View {
             
             if viewModel.isLoading {
                 Spacer()
-                ProgressView("Loading domains...")
+                ProgressView("Loading platforms...")
                     .padding()
                 Spacer()
-            } else if viewModel.domains.isEmpty && viewModel.hasLoaded {
+            } else if viewModel.platforms.isEmpty && viewModel.hasLoaded {
                 emptyStateView
             } else {
-                domainsScrollView
+                platformsScrollView
             }
         }
     }
     
     private var emptyStateView: some View {
         VStack(spacing: 16) {
-            Image(systemName: "globe")
+            Image(systemName: "laptopcomputer")
                 .font(.system(size: 48))
                 .foregroundColor(.secondary)
             
-            Text("No Domain Data")
+            Text("No Platform Data")
                 .font(.headline)
                 .foregroundColor(.primary)
             
-            Text("No domain data available for the selected time period.")
+            Text("No platform data available for the selected time period.")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -113,11 +113,11 @@ struct DomainsView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    private var domainsScrollView: some View {
+    private var platformsScrollView: some View {
         ScrollView {
             VStack(spacing: 16) {
                 totalEarningsCard
-                domainCardsList
+                platformCardsList
             }
             .padding(.horizontal)
             .padding(.top)
@@ -127,7 +127,7 @@ struct DomainsView: View {
             if let token = authViewModel.accessToken {
                 viewModel.accessToken = token
                 viewModel.authViewModel = authViewModel
-                await viewModel.fetchDomainData()
+                await viewModel.fetchPlatformData()
             }
         }
     }
@@ -156,10 +156,10 @@ struct DomainsView: View {
         .animation(.easeOut(duration: 0.4), value: showTotalEarningsCard)
     }
     
-    private var domainCardsList: some View {
+    private var platformCardsList: some View {
         LazyVStack(spacing: 16) {
-            ForEach(Array(viewModel.domains.enumerated()), id: \.element.id) { index, domain in
-                DomainCard(domain: domain)
+            ForEach(Array(viewModel.platforms.enumerated()), id: \.element.id) { index, platform in
+                PlatformCard(platform: platform)
             }
         }
     }
@@ -210,38 +210,39 @@ struct DomainsView: View {
         .padding(.bottom, 20)
     }
     
-    private func errorSymbol(for error: String) -> String {
-        if error.localizedCaseInsensitiveContains("internet") || error.localizedCaseInsensitiveContains("offline") {
-            return "wifi.slash"
-        } else if error.localizedCaseInsensitiveContains("unauthorized") || error.localizedCaseInsensitiveContains("session") {
-            return "person.crop.circle.badge.exclamationmark"
-        } else {
-            return "exclamationmark.triangle"
-        }
-    }
+    // MARK: - Helper Methods
     
     private func calculateTotalEarnings() -> String {
-        let totalEarnings = viewModel.domains.reduce(0.0) { sum, domain in
-            sum + (Double(domain.earnings) ?? 0.0)
+        let total = viewModel.platforms.reduce(0.0) { sum, platform in
+            sum + (Double(platform.earnings) ?? 0.0)
         }
         
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.locale = Locale.current // Use user's locale for currency
-        
-        return formatter.string(from: NSNumber(value: totalEarnings)) ?? formatter.string(from: NSNumber(value: 0.0)) ?? "0.00"
+        formatter.locale = Locale.current
+        return formatter.string(from: NSNumber(value: total)) ?? "0.00"
+    }
+    
+    private func errorSymbol(for error: String) -> String {
+        if error.contains("network") || error.contains("connection") {
+            return "wifi.slash"
+        } else if error.contains("unauthorized") || error.contains("token") {
+            return "lock.slash"
+        } else {
+            return "exclamationmark.triangle"
+        }
     }
 }
 
-struct DateFilterSheet: View {
-    @Binding var selectedFilter: DateFilter
+struct PlatformDateFilterSheet: View {
+    @Binding var selectedFilter: PlatformDateFilter
     @Binding var isPresented: Bool
     var onFilterSelected: () -> Void
     
     var body: some View {
         NavigationView {
             List {
-                ForEach(DateFilter.allCases, id: \.self) { filter in
+                ForEach(PlatformDateFilter.allCases, id: \.self) { filter in
                     Button(action: {
                         selectedFilter = filter
                         onFilterSelected()
@@ -273,67 +274,7 @@ struct DateFilterSheet: View {
     }
 }
 
-struct DomainCard: View {
-    let domain: DomainData
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // Header with domain name and earnings
-            HStack {
-                Text(domain.formattedEarnings)
-                    .font(.system(.title, design: .rounded))
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-                
-                Spacer()
-                
-                Text(domain.domainName)
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.trailing)
-            }
-            
-            // Metrics Grid
-            LazyVGrid(columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible())
-            ], spacing: 16) {
-                DomainMetricView(title: "Requests", value: domain.requests)
-                DomainMetricView(title: "Page Views", value: domain.pageViews)
-                DomainMetricView(title: "Impressions", value: domain.impressions)
-                DomainMetricView(title: "Clicks", value: domain.clicks)
-                DomainMetricView(title: "CTR", value: domain.formattedCTR)
-                DomainMetricView(title: "RPM", value: domain.formattedRPM)
-            }
-        }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(12)
-    }
-}
-
-struct DomainMetricView: View {
-    let title: String
-    let value: String
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            Text(value)
-                .font(.system(.subheadline, design: .rounded))
-                .fontWeight(.medium)
-                .foregroundColor(.primary)
-                .lineLimit(1)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
 #Preview {
-    DomainsView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))
+    PlatformView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))
         .environmentObject(AuthViewModel())
 } 

@@ -1,8 +1,8 @@
 import SwiftUI
 
-struct DomainsView: View {
+struct AdSizeView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
-    @StateObject private var viewModel: DomainViewModel
+    @StateObject private var viewModel: AdSizeViewModel
     @State private var showingDateFilter = false
     @State private var showTotalEarningsCard = false
     @Binding var showSlideOverMenu: Bool
@@ -12,7 +12,7 @@ struct DomainsView: View {
     init(showSlideOverMenu: Binding<Bool>, selectedTab: Binding<Int>) {
         _showSlideOverMenu = showSlideOverMenu
         _selectedTab = selectedTab
-        _viewModel = StateObject(wrappedValue: DomainViewModel(accessToken: nil))
+        _viewModel = StateObject(wrappedValue: AdSizeViewModel(accessToken: nil))
     }
     
     var body: some View {
@@ -20,18 +20,18 @@ struct DomainsView: View {
             VStack(spacing: 0) {
                 mainContent
             }
-            .navigationTitle("Domains")
+            .navigationTitle("Ad Sizes")
             .toolbar {
                 leadingToolbarItem
                 trailingToolbarItem
             }
         }
         .sheet(isPresented: $showingDateFilter) {
-            DateFilterSheet(selectedFilter: $viewModel.selectedFilter, isPresented: $showingDateFilter) {
+            AdSizeDateFilterSheet(selectedFilter: $viewModel.selectedFilter, isPresented: $showingDateFilter) {
                 // Reset total earnings card when filter changes
                 showTotalEarningsCard = false
                 Task {
-                    await viewModel.fetchDomainData()
+                    await viewModel.fetchAdSizeData()
                 }
             }
         }
@@ -42,15 +42,15 @@ struct DomainsView: View {
             if let token = authViewModel.accessToken, !viewModel.hasLoaded {
                 viewModel.accessToken = token
                 viewModel.authViewModel = authViewModel
-                Task { await viewModel.fetchDomainData() }
+                Task { await viewModel.fetchAdSizeData() }
             }
             
             // Reset total earnings card visibility
             showTotalEarningsCard = false
         }
-        .onChange(of: viewModel.domains) { oldDomains, newDomains in
-            // Show total earnings card after domains have loaded
-            if !newDomains.isEmpty && viewModel.hasLoaded {
+        .onChange(of: viewModel.adSizes) { oldAdSizes, newAdSizes in
+            // Show total earnings card after ad sizes have loaded
+            if !newAdSizes.isEmpty && viewModel.hasLoaded {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     showTotalEarningsCard = true
                 }
@@ -60,7 +60,7 @@ struct DomainsView: View {
         }
         .onChange(of: viewModel.hasLoaded) { oldValue, newValue in
             // Reset total earnings card when loading state changes
-            if newValue && !viewModel.domains.isEmpty {
+            if newValue && !viewModel.adSizes.isEmpty {
                 showTotalEarningsCard = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     showTotalEarningsCard = true
@@ -83,28 +83,28 @@ struct DomainsView: View {
             
             if viewModel.isLoading {
                 Spacer()
-                ProgressView("Loading domains...")
+                ProgressView("Loading ad sizes...")
                     .padding()
                 Spacer()
-            } else if viewModel.domains.isEmpty && viewModel.hasLoaded {
+            } else if viewModel.adSizes.isEmpty && viewModel.hasLoaded {
                 emptyStateView
             } else {
-                domainsScrollView
+                adSizesScrollView
             }
         }
     }
     
     private var emptyStateView: some View {
         VStack(spacing: 16) {
-            Image(systemName: "globe")
+            Image(systemName: "rectangle.3.group")
                 .font(.system(size: 48))
                 .foregroundColor(.secondary)
             
-            Text("No Domain Data")
+            Text("No Ad Size Data")
                 .font(.headline)
                 .foregroundColor(.primary)
             
-            Text("No domain data available for the selected time period.")
+            Text("No ad size data available for the selected time period.")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -113,11 +113,11 @@ struct DomainsView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    private var domainsScrollView: some View {
+    private var adSizesScrollView: some View {
         ScrollView {
             VStack(spacing: 16) {
                 totalEarningsCard
-                domainCardsList
+                adSizeCardsList
             }
             .padding(.horizontal)
             .padding(.top)
@@ -127,7 +127,7 @@ struct DomainsView: View {
             if let token = authViewModel.accessToken {
                 viewModel.accessToken = token
                 viewModel.authViewModel = authViewModel
-                await viewModel.fetchDomainData()
+                await viewModel.fetchAdSizeData()
             }
         }
     }
@@ -156,10 +156,10 @@ struct DomainsView: View {
         .animation(.easeOut(duration: 0.4), value: showTotalEarningsCard)
     }
     
-    private var domainCardsList: some View {
+    private var adSizeCardsList: some View {
         LazyVStack(spacing: 16) {
-            ForEach(Array(viewModel.domains.enumerated()), id: \.element.id) { index, domain in
-                DomainCard(domain: domain)
+            ForEach(Array(viewModel.adSizes.enumerated()), id: \.element.id) { index, adSize in
+                AdSizeCard(adSize: adSize)
             }
         }
     }
@@ -221,8 +221,8 @@ struct DomainsView: View {
     }
     
     private func calculateTotalEarnings() -> String {
-        let totalEarnings = viewModel.domains.reduce(0.0) { sum, domain in
-            sum + (Double(domain.earnings) ?? 0.0)
+        let totalEarnings = viewModel.adSizes.reduce(0.0) { sum, adSize in
+            sum + (Double(adSize.earnings) ?? 0.0)
         }
         
         let formatter = NumberFormatter()
@@ -233,15 +233,15 @@ struct DomainsView: View {
     }
 }
 
-struct DateFilterSheet: View {
-    @Binding var selectedFilter: DateFilter
+struct AdSizeDateFilterSheet: View {
+    @Binding var selectedFilter: AdSizeDateFilter
     @Binding var isPresented: Bool
     var onFilterSelected: () -> Void
     
     var body: some View {
         NavigationView {
             List {
-                ForEach(DateFilter.allCases, id: \.self) { filter in
+                ForEach(AdSizeDateFilter.allCases, id: \.self) { filter in
                     Button(action: {
                         selectedFilter = filter
                         onFilterSelected()
@@ -271,69 +271,4 @@ struct DateFilterSheet: View {
         }
         .presentationDetents([.height(350)])
     }
-}
-
-struct DomainCard: View {
-    let domain: DomainData
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // Header with domain name and earnings
-            HStack {
-                Text(domain.formattedEarnings)
-                    .font(.system(.title, design: .rounded))
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-                
-                Spacer()
-                
-                Text(domain.domainName)
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.trailing)
-            }
-            
-            // Metrics Grid
-            LazyVGrid(columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible())
-            ], spacing: 16) {
-                DomainMetricView(title: "Requests", value: domain.requests)
-                DomainMetricView(title: "Page Views", value: domain.pageViews)
-                DomainMetricView(title: "Impressions", value: domain.impressions)
-                DomainMetricView(title: "Clicks", value: domain.clicks)
-                DomainMetricView(title: "CTR", value: domain.formattedCTR)
-                DomainMetricView(title: "RPM", value: domain.formattedRPM)
-            }
-        }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(12)
-    }
-}
-
-struct DomainMetricView: View {
-    let title: String
-    let value: String
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            Text(value)
-                .font(.system(.subheadline, design: .rounded))
-                .fontWeight(.medium)
-                .foregroundColor(.primary)
-                .lineLimit(1)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
-#Preview {
-    DomainsView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))
-        .environmentObject(AuthViewModel())
 } 

@@ -6,6 +6,8 @@ struct SummaryTabView: View {
     @State private var showSlideOverMenu = false
     @State private var selectedTab: Int = 0
     @State private var showDomainsView = false
+    @State private var showAdSizeView = false
+    @State private var showPlatformsView = false
     
     init() {
         // We'll initialize settingsViewModel in onAppear to ensure we have access to authViewModel
@@ -75,7 +77,9 @@ struct SummaryTabView: View {
                 SlideOverMenuView(
                     isPresented: $showSlideOverMenu, 
                     selectedTab: $selectedTab,
-                    showDomainsView: $showDomainsView
+                    showDomainsView: $showDomainsView,
+                    showAdSizeView: $showAdSizeView,
+                    showPlatformsView: $showPlatformsView
                 )
                 .environmentObject(authViewModel)
                 .environmentObject(settingsViewModel)
@@ -95,6 +99,14 @@ struct SummaryTabView: View {
         .animation(.spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0.1), value: showSlideOverMenu)
         .fullScreenCover(isPresented: $showDomainsView) {
             DomainsView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
+                .environmentObject(authViewModel)
+        }
+        .fullScreenCover(isPresented: $showAdSizeView) {
+            AdSizeView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
+                .environmentObject(authViewModel)
+        }
+        .fullScreenCover(isPresented: $showPlatformsView) {
+            PlatformView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
                 .environmentObject(authViewModel)
         }
     }
