@@ -1,8 +1,9 @@
 import Foundation
 
-struct DomainData: Identifiable, Codable, Equatable {
+struct CountryData: Identifiable, Codable, Equatable {
     let id = UUID()
-    let domainName: String
+    let countryCode: String
+    let countryName: String
     let earnings: String
     let requests: String
     let pageViews: String
@@ -33,8 +34,25 @@ struct DomainData: Identifiable, Codable, Equatable {
         return formatter.string(from: NSNumber(value: value)) ?? rpm
     }
     
+    var displayCountryName: String {
+        // Convert country code to readable name
+        let locale = Locale(identifier: "en_US")
+        return locale.localizedString(forRegionCode: countryCode) ?? countryCode
+    }
+    
+    var flagEmoji: String {
+        // Convert country code to flag emoji
+        let base: UInt32 = 127397
+        var flag = ""
+        for scalar in countryCode.unicodeScalars {
+            flag.unicodeScalars.append(UnicodeScalar(base + scalar.value)!)
+        }
+        return flag
+    }
+    
     enum CodingKeys: String, CodingKey {
-        case domainName = "DOMAIN_NAME"
+        case countryCode = "COUNTRY_CODE"
+        case countryName = "COUNTRY_NAME"
         case earnings = "ESTIMATED_EARNINGS"
         case requests = "AD_REQUESTS"
         case pageViews = "PAGE_VIEWS"

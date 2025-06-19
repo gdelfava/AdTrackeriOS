@@ -16,7 +16,8 @@ struct PlatformCard: View {
                 Spacer()
                 
                 Text(platform.platform)
-                    .font(.caption)
+                    .font(.headline)
+                    .fontWeight(.semibold)
                     .foregroundColor(.primary)
                     .lineLimit(1)
             }

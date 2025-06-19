@@ -1,21 +1,23 @@
 import SwiftUI
 
-struct AdSizeCard: View {
-    let adSize: AdSizeData
+struct CountryCard: View {
+    let country: CountryData
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Header with Ad Size and Earnings
+            // Header with Country Flag, Name and Earnings
             HStack {
-                
-                Text(adSize.formattedEarnings)
+                Text(country.formattedEarnings)
                     .font(.title)
                     .fontWeight(.bold)
                     .foregroundColor(.primary)
                 
                 Spacer()
                 
-                Text(adSize.adSize)
+                Text(country.flagEmoji)
+                    .font(.title2)
+                
+                Text(country.displayCountryName)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
@@ -27,12 +29,12 @@ struct AdSizeCard: View {
                 GridItem(.flexible()),
                 GridItem(.flexible())
             ], spacing: 12) {
-                AdSizeMetricRow(title: "Requests", value: adSize.requests)
-                AdSizeMetricRow(title: "Page Views", value: adSize.pageViews)
-                AdSizeMetricRow(title: "Impressions", value: adSize.impressions)
-                AdSizeMetricRow(title: "Clicks", value: adSize.clicks)
-                AdSizeMetricRow(title: "CTR", value: adSize.formattedCTR)
-                AdSizeMetricRow(title: "RPM", value: adSize.formattedRPM)
+                CountryMetricRow(title: "Requests", value: country.requests)
+                CountryMetricRow(title: "Page Views", value: country.pageViews)
+                CountryMetricRow(title: "Impressions", value: country.impressions)
+                CountryMetricRow(title: "Clicks", value: country.clicks)
+                CountryMetricRow(title: "CTR", value: country.formattedCTR)
+                CountryMetricRow(title: "RPM", value: country.formattedRPM)
             }
         }
         .padding()
@@ -41,7 +43,7 @@ struct AdSizeCard: View {
     }
 }
 
-private struct AdSizeMetricRow: View {
+private struct CountryMetricRow: View {
     let title: String
     let value: String
     

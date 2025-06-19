@@ -9,6 +9,7 @@ struct SlideOverMenuView: View {
     @Binding var showDomainsView: Bool
     @Binding var showAdSizeView: Bool
     @Binding var showPlatformsView: Bool
+    @Binding var showCountriesView: Bool
     @State private var showMail = false
     @State private var mailResult: Result<MFMailComposeResult, Error>? = nil
     
@@ -66,8 +67,13 @@ struct SlideOverMenuView: View {
                         }) {
                             MenuItemView(title: "Platforms", icon: "iphone")
                         }
+                        Button(action: {
+                            showCountriesView = true
+                            isPresented = false
+                        }) {
+                            MenuItemView(title: "Country", icon: "flag")
+                        }
                         MenuItemView(title: "Ad Network", icon: "network")
-                        MenuItemView(title: "Country", icon: "flag")
                         MenuItemView(title: "Targeting", icon: "target")
                     }
 
@@ -194,7 +200,7 @@ struct MenuItemView: View {
 }
 
 #Preview {
-    SlideOverMenuView(isPresented: .constant(true), selectedTab: .constant(0), showDomainsView: .constant(false), showAdSizeView: .constant(false), showPlatformsView: .constant(false))
+    SlideOverMenuView(isPresented: .constant(true), selectedTab: .constant(0), showDomainsView: .constant(false), showAdSizeView: .constant(false), showPlatformsView: .constant(false), showCountriesView: .constant(false))
         .environmentObject(AuthViewModel())
         .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
 } 
