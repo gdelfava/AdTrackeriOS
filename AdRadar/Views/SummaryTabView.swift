@@ -13,12 +13,12 @@ struct SummaryTabView: View {
         TabView {
             SummaryView()
                 .tabItem {
-                    Image(systemName: "square.split.2x2")
+                    Image(systemName: "chart.bar.fill")
                     Text("Summary")
                 }
             StreakView()
                 .tabItem {
-                    Image(systemName: "calendar")
+                    Image(systemName: "7.square.fill")
                     Text("Streak")
                 }
             PaymentsView()
@@ -28,7 +28,7 @@ struct SummaryTabView: View {
                 }
             SettingsView()
                 .tabItem {
-                    Image(systemName: "gear")
+                    Image(systemName: "gearshape.fill")
                     Text("Settings")
                 }
         }

@@ -27,7 +27,7 @@ struct StreakView: View {
                     } else {
                         // Bar Chart
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("8 Day Earnings Trend")
+                            Text("7 Day Earnings Trend")
                                 .font(.headline)
                                 .foregroundColor(.secondary)
                                 .padding(.horizontal)

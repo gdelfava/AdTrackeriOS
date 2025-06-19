@@ -97,16 +97,16 @@ class StreakViewModel: ObservableObject {
                         return
                     }
                     
-                    // Calculate date range for last 8 days
+                    // Calculate date range for last 7 days
                     let calendar = Calendar.current
                     let today = Date()
-                    let startDate = calendar.date(byAdding: .day, value: -7, to: today)!
+                    let startDate = calendar.date(byAdding: .day, value: -6, to: today)!
                     
                     // Fetch metrics for each day
                     var newStreakData: [StreakDayData] = []
                     var previousEarnings: Double?
                     
-                    for dayOffset in 0...7 {
+                    for dayOffset in 0...6 {
                         try Task.checkCancellation()
                         
                         let currentDate = calendar.date(byAdding: .day, value: dayOffset, to: startDate)!

@@ -11,8 +11,6 @@ enum MetricsCardType {
 class SummaryViewModel: ObservableObject {
     @Published var summaryData: AdSenseSummaryData? = nil
     @Published var isLoading: Bool = false
-    @Published var isRefreshing: Bool = false
-    @Published var refreshingCards: Set<MetricsCardType> = []
     @Published var error: String? = nil
     @Published var isOffline: Bool = false
     @Published var showOfflineToast: Bool = false
@@ -117,8 +115,7 @@ class SummaryViewModel: ObservableObject {
         try? await Task.sleep(nanoseconds: duration)
     }
     
-    func fetchSummary(isRefresh: Bool = false) async {
-        if hasLoaded && !isRefresh { return }
+    func fetchSummary() async {
         fetchTask?.cancel()
         fetchTask = Task {
             if !NetworkMonitor.shared.isConnected {
@@ -132,7 +129,6 @@ class SummaryViewModel: ObservableObject {
                 }
                 self.error = "No internet connection."
                 self.isLoading = false
-                self.isRefreshing = false
                 return
             } else {
                 self.isOffline = false
@@ -144,11 +140,7 @@ class SummaryViewModel: ObservableObject {
             var currentToken = accessToken ?? ""
 
             while retryCount < maxRetries {
-                if isRefresh {
-                    self.isRefreshing = true
-                } else {
-                    self.isLoading = true
-                }
+                self.isLoading = true
                 self.error = nil
                 
                 // Fetch account ID
@@ -169,32 +161,26 @@ class SummaryViewModel: ObservableObject {
                         }
                         self.error = "Session expired. Please sign in again."
                         self.isLoading = false
-                        self.isRefreshing = false
                         return
                     case .requestFailed(let message):
                         self.error = "Failed to get AdSense account: \(message)"
                         self.isLoading = false
-                        self.isRefreshing = false
                         return
                     case .noAccountID:
                         self.error = "No AdSense account found."
                         self.isLoading = false
-                        self.isRefreshing = false
                         return
                     case .invalidURL:
                         self.error = "Invalid API URL configuration."
                         self.isLoading = false
-                        self.isRefreshing = false
                         return
                     case .invalidResponse:
                         self.error = "Invalid response from AdSense API."
                         self.isLoading = false
-                        self.isRefreshing = false
                         return
                     case .decodingError(let message):
                         self.error = "Failed to decode response: \(message)"
                         self.isLoading = false
-                        self.isRefreshing = false
                         return
                     }
                 }
@@ -202,7 +188,6 @@ class SummaryViewModel: ObservableObject {
                 guard let accountID = self.accountID else {
                     self.error = "No AdSense account found."
                     self.isLoading = false
-                    self.isRefreshing = false
                     return
                 }
                 
@@ -218,9 +203,6 @@ class SummaryViewModel: ObservableObject {
                 let prevMonthStart = calendar.date(byAdding: .month, value: -1, to: lastMonthStart)!
                 let prevMonthEnd = calendar.date(byAdding: .day, value: -1, to: lastMonthStart)!
                 let threeYearsAgo = calendar.date(byAdding: .year, value: -3, to: today)!
-                
-                // Update the refreshing state for each card
-                self.refreshingCards = Set(MetricsCardType.allCases)
                 
                 // Create a local copy of the token for concurrent operations
                 let token = currentToken
@@ -275,14 +257,10 @@ class SummaryViewModel: ObservableObject {
                 }
                 self.hasLoaded = true
                 self.isLoading = false
-                self.isRefreshing = false
-                self.refreshingCards.removeAll()
                 return
             }
             self.error = "Failed to fetch summary data after multiple attempts."
             self.isLoading = false
-            self.isRefreshing = false
-            self.refreshingCards.removeAll()
         }
     }
     

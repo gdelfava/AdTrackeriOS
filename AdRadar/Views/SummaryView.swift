@@ -48,8 +48,7 @@ struct SummaryView: View {
                                 subtitle: "vs yesterday",
                                 delta: data.todayDelta,
                                 deltaPositive: data.todayDeltaPositive,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .today) } },
-                                isRefreshing: viewModel.refreshingCards.contains(.today)
+                                onTap: { Task { await viewModel.fetchMetrics(forCard: .today) } }
                             )
                             .opacity(cardAppearances[0] ? 1 : 0)
                             .offset(y: cardAppearances[0] ? 0 : 20)
@@ -60,8 +59,7 @@ struct SummaryView: View {
                                 subtitle: "vs the same day last week",
                                 delta: data.yesterdayDelta,
                                 deltaPositive: data.yesterdayDeltaPositive,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .yesterday) } },
-                                isRefreshing: viewModel.refreshingCards.contains(.yesterday)
+                                onTap: { Task { await viewModel.fetchMetrics(forCard: .yesterday) } }
                             )
                             .opacity(cardAppearances[1] ? 1 : 0)
                             .offset(y: cardAppearances[1] ? 0 : 20)
@@ -72,8 +70,7 @@ struct SummaryView: View {
                                 subtitle: "vs the previous 7 days",
                                 delta: data.last7DaysDelta,
                                 deltaPositive: data.last7DaysDeltaPositive,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .last7Days) } },
-                                isRefreshing: viewModel.refreshingCards.contains(.last7Days)
+                                onTap: { Task { await viewModel.fetchMetrics(forCard: .last7Days) } }
                             )
                             .opacity(cardAppearances[2] ? 1 : 0)
                             .offset(y: cardAppearances[2] ? 0 : 20)
@@ -84,8 +81,7 @@ struct SummaryView: View {
                                 subtitle: "vs the same day last month",
                                 delta: data.thisMonthDelta,
                                 deltaPositive: data.thisMonthDeltaPositive,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .thisMonth) } },
-                                isRefreshing: viewModel.refreshingCards.contains(.thisMonth)
+                                onTap: { Task { await viewModel.fetchMetrics(forCard: .thisMonth) } }
                             )
                             .opacity(cardAppearances[3] ? 1 : 0)
                             .offset(y: cardAppearances[3] ? 0 : 20)
@@ -96,8 +92,7 @@ struct SummaryView: View {
                                 subtitle: "AdRadar for Adsense",
                                 delta: nil,
                                 deltaPositive: nil,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .lastThreeYears) } },
-                                isRefreshing: viewModel.refreshingCards.contains(.lastThreeYears)
+                                onTap: { Task { await viewModel.fetchMetrics(forCard: .lastThreeYears) } }
                             )
                             .opacity(cardAppearances[4] ? 1 : 0)
                             .offset(y: cardAppearances[4] ? 0 : 20)
@@ -131,7 +126,7 @@ struct SummaryView: View {
                 if let token = authViewModel.accessToken {
                     viewModel.accessToken = token
                     viewModel.authViewModel = authViewModel
-                    await viewModel.fetchSummary(isRefresh: true)
+                    await viewModel.fetchSummary()
                 }
             }
             .navigationTitle("Summary")
@@ -218,8 +213,6 @@ struct SummaryCardView: View {
     let delta: String?
     let deltaPositive: Bool?
     var onTap: (() -> Void)? = nil
-    let isRefreshing: Bool
-    @State private var isPressed = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -234,23 +227,11 @@ struct SummaryCardView: View {
                         .foregroundColor(.secondary)
                 }
             }
-            if isRefreshing {
-                HStack {
-                    ProgressView()
-                        .scaleEffect(0.8)
-                    Text("Loading...")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .fontDesign(.rounded)
-                        .foregroundColor(.secondary)
-                }
-            } else {
-                Text(value)
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .fontDesign(.rounded)
-                    .foregroundColor(.primary)
-            }
+            Text(value)
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .fontDesign(.rounded)
+                .foregroundColor(.primary)
             if let delta = delta, let positive = deltaPositive {
                 HStack(spacing: 4) {
                     Image(systemName: positive ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
@@ -274,17 +255,8 @@ struct SummaryCardView: View {
                 .padding(.trailing, 16),
             alignment: .trailing
         )
-        .scaleEffect(isPressed ? 0.96 : 1.0)
-        .opacity(isPressed ? 0.7 : 1.0)
-        .animation(.easeInOut(duration: 0.12), value: isPressed)
         .onTapGesture {
-            isPressed = true
-            let generator = UIImpactFeedbackGenerator(style: .light)
-            generator.impactOccurred()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
-                isPressed = false
-                onTap?()
-            }
+            onTap?()
         }
     }
 }
