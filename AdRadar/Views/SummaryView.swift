@@ -214,6 +214,8 @@ struct SummaryCardView: View {
     let deltaPositive: Bool?
     var onTap: (() -> Void)? = nil
     
+    @State private var isPressed = false
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -255,7 +257,26 @@ struct SummaryCardView: View {
                 .padding(.trailing, 16),
             alignment: .trailing
         )
+        .scaleEffect(isPressed ? 0.95 : 1.0)
+        .animation(.easeInOut(duration: 0.1), value: isPressed)
         .onTapGesture {
+            // Haptic feedback
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+            
+            // Animation
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = true
+            }
+            
+            // Reset animation after a short delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = false
+                }
+            }
+            
+            // Call the onTap closure
             onTap?()
         }
     }
