@@ -41,6 +41,10 @@ struct SettingsView: View {
     @State private var isMailSheetPresented = false
     @State private var isTermsSheetPresented = false
     @State private var showToast = false
+    @State private var profileAppeared = false
+    @State private var accountInfoAppeared = false
+    @State private var supportAppeared = false
+    @State private var generalAppeared = false
     @Binding var showSlideOverMenu: Bool
     @Binding var selectedTab: Int
     
@@ -90,6 +94,8 @@ struct SettingsView: View {
                             }
                         }
                         .padding(.top, 24)
+                        .opacity(profileAppeared ? 1 : 0)
+                        .offset(y: profileAppeared ? 0 : 20)
                         
                         // Account Information Section
                         VStack(alignment: .leading, spacing: 16) {
@@ -129,6 +135,8 @@ struct SettingsView: View {
                             .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
                         }
                         .padding(.horizontal)
+                        .opacity(accountInfoAppeared ? 1 : 0)
+                        .offset(y: accountInfoAppeared ? 0 : 20)
                         
                         // Support Section
                         VStack(alignment: .leading, spacing: 16) {
@@ -149,25 +157,25 @@ struct SettingsView: View {
                                 //     isShareSheetPresented = true
                                 // }
                                 // Divider()
-                                AnimatedSettingsRow(icon: "info.circle.fill", color: .blue, title: "Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown")") {
+                                AnimatedSettingsRow(icon: "info.circle.fill", color: .blue, title: "Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown")", showChevron: false) {
                                     // No action needed for version
                                 }
                                 Divider()
-                                AnimatedSettingsRow(icon: "square.grid.2x2.fill", color: .orange, title: "Widget Support") {
+                                AnimatedSettingsRow(icon: "square.grid.2x2.fill", color: .orange, title: "Widget Support", showChevron: true) {
                                     isWidgetSupportSheetPresented = true
                                 }
                                 Divider()
-                                AnimatedSettingsRow(icon: "envelope.fill", color: .green, title: "Feedback") {
+                                AnimatedSettingsRow(icon: "envelope.fill", color: .green, title: "Feedback", showChevron: true) {
                                     isMailSheetPresented = true
                                 }
                                 Divider()
-                                AnimatedSettingsRow(icon: "bird.fill", color: .blue, title: "@AdRadar") {
+                                AnimatedSettingsRow(icon: "bird.fill", color: .blue, title: "@AdRadar", showChevron: true) {
                                     if let url = URL(string: "https://x.com/gdelfava") {
                                         UIApplication.shared.open(url)
                                     }
                                 }
                                 Divider()
-                                AnimatedSettingsRow(icon: "lock.fill", color: .purple, title: "Terms & Privacy Policy") {
+                                AnimatedSettingsRow(icon: "lock.fill", color: .purple, title: "Terms & Privacy Policy", showChevron: true) {
                                     isTermsSheetPresented = true
                                 }
                             }
@@ -176,6 +184,8 @@ struct SettingsView: View {
                             .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
                         }
                         .padding(.horizontal)
+                        .opacity(supportAppeared ? 1 : 0)
+                        .offset(y: supportAppeared ? 0 : 20)
                         
                         // General Section
                         VStack(alignment: .leading, spacing: 16) {
@@ -202,6 +212,33 @@ struct SettingsView: View {
                             }
                         }
                         .padding(.horizontal)
+                        .opacity(generalAppeared ? 1 : 0)
+                        .offset(y: generalAppeared ? 0 : 20)
+                        .onAppear {
+                            // Animate sections with staggered timing
+                            withAnimation(.easeOut(duration: 0.5)) {
+                                profileAppeared = true
+                            }
+                            
+                            withAnimation(.easeOut(duration: 0.5).delay(0.2)) {
+                                accountInfoAppeared = true
+                            }
+                            
+                            withAnimation(.easeOut(duration: 0.5).delay(0.4)) {
+                                supportAppeared = true
+                            }
+                            
+                            withAnimation(.easeOut(duration: 0.5).delay(0.6)) {
+                                generalAppeared = true
+                            }
+                        }
+                        .onDisappear {
+                            // Reset animation states when view disappears
+                            profileAppeared = false
+                            accountInfoAppeared = false
+                            supportAppeared = false
+                            generalAppeared = false
+                        }
                     }
                     .padding(.bottom, 32)
                 }
@@ -268,6 +305,7 @@ struct AnimatedSettingsRow: View {
     let icon: String
     let color: Color
     let title: String
+    let showChevron: Bool
     let action: () -> Void
     
     @State private var isPressed = false
@@ -302,9 +340,11 @@ struct AnimatedSettingsRow: View {
                 
                 Spacer()
                 
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.secondary)
+                if showChevron {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.secondary)
+                }
             }
             .padding()
             .contentShape(Rectangle())

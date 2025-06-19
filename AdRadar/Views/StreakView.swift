@@ -5,6 +5,9 @@ struct StreakView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var viewModel: StreakViewModel
     @State private var selectedDay: StreakDayData?
+    @State private var chartTitleAppeared = false
+    @State private var barAnimations: [Bool] = []
+    @State private var cardAppearances: [Bool] = []
     @Binding var showSlideOverMenu: Bool
     @Binding var selectedTab: Int
     
@@ -35,12 +38,14 @@ struct StreakView: View {
                                 .font(.headline)
                                 .foregroundColor(.secondary)
                                 .padding(.horizontal)
+                                .opacity(chartTitleAppeared ? 1 : 0)
+                                .offset(y: chartTitleAppeared ? 0 : 20)
                             
                             Chart {
-                                ForEach(viewModel.streakData) { day in
+                                ForEach(Array(viewModel.streakData.sorted(by: { $0.date < $1.date }).enumerated()), id: \.element.id) { index, day in
                                     BarMark(
                                         x: .value("Date", day.date, unit: .day),
-                                        y: .value("Earnings", day.earnings)
+                                        y: .value("Earnings", barAnimations.indices.contains(index) && barAnimations[index] ? day.earnings : 0)
                                     )
                                     .foregroundStyle(Color.accentColor.gradient)
                                     .annotation(position: .top) {
@@ -64,15 +69,51 @@ struct StreakView: View {
                                     ChartOverlayView(proxy: proxy, geometry: geometry, viewModel: viewModel, selectedDay: $selectedDay)
                                 }
                             }
+                            .onAppear {
+                                // Animate chart title first
+                                withAnimation(.easeOut(duration: 0.3)) {
+                                    chartTitleAppeared = true
+                                }
+                                
+                                // Animate chart bars from latest to earliest date (right to left)
+                                let sortedData = viewModel.streakData.sorted(by: { $0.date > $1.date })
+                                for i in 0..<sortedData.count {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2 + Double(i) * 0.08) {
+                                        withAnimation(.easeOut(duration: 0.4)) {
+                                            // Find the index in the original array for this sorted item
+                                            if let originalIndex = viewModel.streakData.firstIndex(where: { $0.id == sortedData[i].id }) {
+                                                barAnimations[originalIndex] = true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                         
                         // Daily Cards
                         VStack(spacing: 16) {
-                            ForEach(viewModel.streakData) { day in
+                            ForEach(Array(viewModel.streakData.enumerated()), id: \.element.id) { index, day in
                                 StreakDayCard(day: day, viewModel: viewModel)
+                                    .opacity(cardAppearances.indices.contains(index) && cardAppearances[index] ? 1 : 0)
+                                    .offset(y: cardAppearances.indices.contains(index) && cardAppearances[index] ? 0 : 20)
                             }
                         }
                         .padding(.horizontal)
+                        .onAppear {
+                            // Animate cards with staggered delay after bars finish
+                            let totalBarAnimationTime = 0.2 + Double(barAnimations.count) * 0.08 + 0.4
+                            for i in 0..<cardAppearances.count {
+                                withAnimation(.easeOut(duration: 0.3).delay(totalBarAnimationTime + Double(i) * 0.06)) {
+                                    cardAppearances[i] = true
+                                }
+                            }
+                        }
+                        .onDisappear {
+                            // Reset animation states when view disappears
+                            chartTitleAppeared = false
+                            barAnimations = Array(repeating: false, count: viewModel.streakData.count)
+                            cardAppearances = Array(repeating: false, count: viewModel.streakData.count)
+                        }
                     }
                 }
                 .padding(.vertical)
@@ -116,6 +157,15 @@ struct StreakView: View {
                 viewModel.authViewModel = authViewModel
                 Task { await viewModel.fetchStreakData() }
             }
+            
+            // Initialize animation arrays based on data count
+            barAnimations = Array(repeating: false, count: viewModel.streakData.count)
+            cardAppearances = Array(repeating: false, count: viewModel.streakData.count)
+        }
+        .onChange(of: viewModel.streakData.count) { oldCount, newCount in
+            // Update animation arrays when data changes
+            barAnimations = Array(repeating: false, count: newCount)
+            cardAppearances = Array(repeating: false, count: newCount)
         }
     }
     

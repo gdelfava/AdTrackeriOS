@@ -6,6 +6,7 @@ struct SlideOverMenuView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @EnvironmentObject var settingsViewModel: SettingsViewModel
     @Binding var selectedTab: Int // 0: Summary, 1: Streak, 2: Payments, 3: Settings
+    @Binding var showDomainsView: Bool
     @State private var showMail = false
     @State private var mailResult: Result<MFMailComposeResult, Error>? = nil
     
@@ -45,7 +46,12 @@ struct SlideOverMenuView: View {
                     
                     // Main menu items
                     VStack(spacing: 0) {
-                        MenuItemView(title: "Domain", icon: "globe")
+                        Button(action: {
+                            showDomainsView = true
+                            isPresented = false
+                        }) {
+                            MenuItemView(title: "Domain", icon: "globe")
+                        }
                         MenuItemView(title: "Ad Size", icon: "rectangle.3.group")
                         MenuItemView(title: "Platforms", icon: "iphone")
                         MenuItemView(title: "Ad Network", icon: "network")
@@ -176,7 +182,7 @@ struct MenuItemView: View {
 }
 
 #Preview {
-    SlideOverMenuView(isPresented: .constant(true), selectedTab: .constant(0))
+    SlideOverMenuView(isPresented: .constant(true), selectedTab: .constant(0), showDomainsView: .constant(false))
         .environmentObject(AuthViewModel())
         .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
 } 

@@ -4,6 +4,9 @@ struct PaymentsView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var viewModel: PaymentsViewModel
     @Environment(\.colorScheme) private var uiColorScheme
+    @State private var unpaidCardAppeared = false
+    @State private var previousCardAppeared = false
+    @State private var imageAppeared = false
     @Binding var showSlideOverMenu: Bool
     @Binding var selectedTab: Int
     
@@ -33,10 +36,15 @@ struct PaymentsView: View {
                                 date: data.previousPaymentDate,
                                 isPaid: false // Set logic as needed
                             )
+                            .opacity(unpaidCardAppeared ? 1 : 0)
+                            .offset(y: unpaidCardAppeared ? 0 : 20)
+                            
                             PreviousPaymentCardView(
                                 amount: data.previousPaymentAmount,
                                 date: data.previousPaymentDate
                             )
+                            .opacity(previousCardAppeared ? 1 : 0)
+                            .offset(y: previousCardAppeared ? 0 : 20)
                             
                             Image(uiColorScheme == .dark ? "moneyjumpblk2" : "moneyjumpwht2")
                                 .resizable()
@@ -45,6 +53,30 @@ struct PaymentsView: View {
                                 .frame(maxWidth: .infinity, alignment: .center)
                                 .padding(.horizontal)
                                 .padding(.top, 8)
+                                .opacity(imageAppeared ? 1 : 0)
+                                .scaleEffect(imageAppeared ? 1 : 0.8)
+                                .onAppear {
+                                    // Animate unpaid card first
+                                    withAnimation(.easeOut(duration: 0.5)) {
+                                        unpaidCardAppeared = true
+                                    }
+                                    
+                                    // Animate previous payment card after delay
+                                    withAnimation(.easeOut(duration: 0.5).delay(0.2)) {
+                                        previousCardAppeared = true
+                                    }
+                                    
+                                    // Animate image after cards
+                                    withAnimation(.easeOut(duration: 0.6).delay(0.4)) {
+                                        imageAppeared = true
+                                    }
+                                }
+                                .onDisappear {
+                                    // Reset animation states when view disappears
+                                    unpaidCardAppeared = false
+                                    previousCardAppeared = false
+                                    imageAppeared = false
+                                }
                             Spacer()
                         }
                         .padding(.horizontal)

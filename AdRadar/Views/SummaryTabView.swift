@@ -5,6 +5,7 @@ struct SummaryTabView: View {
     @StateObject private var settingsViewModel: SettingsViewModel
     @State private var showSlideOverMenu = false
     @State private var selectedTab: Int = 0
+    @State private var showDomainsView = false
     
     init() {
         // We'll initialize settingsViewModel in onAppear to ensure we have access to authViewModel
@@ -71,23 +72,31 @@ struct SummaryTabView: View {
             
             // Slide-over menu
             if showSlideOverMenu {
-                SlideOverMenuView(isPresented: $showSlideOverMenu, selectedTab: $selectedTab)
-                    .environmentObject(authViewModel)
-                    .environmentObject(settingsViewModel)
-                    .transition(.move(edge: .leading))
-                    .zIndex(1)
-                    .gesture(
-                        DragGesture(minimumDistance: 15, coordinateSpace: .global)
-                            .onEnded { value in
-                                // Only trigger if drag is leftward and starts near left edge of menu
-                                if value.translation.width < -20 && abs(value.translation.height) < 40 {
-                                    withAnimation { showSlideOverMenu = false }
-                                }
+                SlideOverMenuView(
+                    isPresented: $showSlideOverMenu, 
+                    selectedTab: $selectedTab,
+                    showDomainsView: $showDomainsView
+                )
+                .environmentObject(authViewModel)
+                .environmentObject(settingsViewModel)
+                .transition(.move(edge: .leading))
+                .zIndex(1)
+                .gesture(
+                    DragGesture(minimumDistance: 15, coordinateSpace: .global)
+                        .onEnded { value in
+                            // Only trigger if drag is leftward and starts near left edge of menu
+                            if value.translation.width < -20 && abs(value.translation.height) < 40 {
+                                withAnimation { showSlideOverMenu = false }
                             }
-                    )
+                        }
+                )
             }
         }
-        .animation(.spring(response: 0.4, dampingFraction: 0.70, blendDuration: 0.2), value: showSlideOverMenu)
+        .animation(.spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0.1), value: showSlideOverMenu)
+        .fullScreenCover(isPresented: $showDomainsView) {
+            DomainsView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
+                .environmentObject(authViewModel)
+        }
     }
 }
 
