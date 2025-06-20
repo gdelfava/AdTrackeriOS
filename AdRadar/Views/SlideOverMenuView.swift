@@ -11,6 +11,7 @@ struct SlideOverMenuView: View {
     @Binding var showPlatformsView: Bool
     @Binding var showCountriesView: Bool
     @Binding var showAdNetworkView: Bool
+    @Binding var showTargetingView: Bool
     @State private var showMail = false
     @State private var mailResult: Result<MFMailComposeResult, Error>? = nil
     
@@ -139,10 +140,13 @@ struct SlideOverMenuView: View {
                                 ModernMenuRow(
                                     icon: "target", 
                                     title: "Targeting", 
-                                    subtitle: "Coming soon",
+                                    subtitle: "Type performance",
                                     iconColor: .pink,
-                                    isDisabled: true,
-                                    action: {}
+                                    action: {
+                                        hapticFeedback()
+                                        showTargetingView = true
+                                        dismissMenu()
+                                    }
                                 )
                             }
                             
@@ -460,7 +464,7 @@ struct MenuItemView: View {
 }
 
 #Preview {
-    SlideOverMenuView(isPresented: .constant(true), selectedTab: .constant(0), showDomainsView: .constant(false), showAdSizeView: .constant(false), showPlatformsView: .constant(false), showCountriesView: .constant(false), showAdNetworkView: .constant(false))
+    SlideOverMenuView(isPresented: .constant(true), selectedTab: .constant(0), showDomainsView: .constant(false), showAdSizeView: .constant(false), showPlatformsView: .constant(false), showCountriesView: .constant(false), showAdNetworkView: .constant(false), showTargetingView: .constant(false))
         .environmentObject(AuthViewModel())
         .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
 } 

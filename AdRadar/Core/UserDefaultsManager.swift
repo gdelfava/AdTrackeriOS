@@ -7,48 +7,79 @@ class UserDefaultsManager {
     private let appGroupID = "group.com.delteqws.AdRadar"
     private var sharedDefaults: UserDefaults?
     private var standardDefaults: UserDefaults
+    private var useSharedContainer: Bool = false
     
     private init() {
         self.standardDefaults = UserDefaults.standard
         
-        // Initialize shared UserDefaults with error handling
-        if let shared = UserDefaults(suiteName: appGroupID) {
-            self.sharedDefaults = shared
-            print("[UserDefaultsManager] Successfully initialized shared UserDefaults")
-        } else {
-            print("[UserDefaultsManager] Warning: Failed to initialize shared UserDefaults, falling back to standard")
+        // Initialize shared UserDefaults with enhanced error handling
+        self.initializeSharedContainer()
+    }
+    
+    private func initializeSharedContainer() {
+        // Check if we're running in an extension or main app
+        let isExtension = Bundle.main.bundlePath.hasSuffix(".appex")
+        
+        // Try to initialize shared container only if we have proper entitlements
+        do {
+            if let shared = UserDefaults(suiteName: appGroupID) {
+                // Test write/read to ensure it's working properly
+                let testKey = "__test_container_access__"
+                let testValue = "test_\(Date().timeIntervalSince1970)"
+                
+                shared.set(testValue, forKey: testKey)
+                shared.synchronize()
+                
+                if shared.string(forKey: testKey) == testValue {
+                    self.sharedDefaults = shared
+                    self.useSharedContainer = true
+                    shared.removeObject(forKey: testKey) // Clean up test
+                    shared.synchronize()
+                    print("[UserDefaultsManager] Successfully initialized shared UserDefaults for \(isExtension ? "extension" : "main app")")
+                } else {
+                    throw NSError(domain: "UserDefaultsManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "Container test failed"])
+                }
+            } else {
+                throw NSError(domain: "UserDefaultsManager", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to create shared suite"])
+            }
+        } catch {
+            print("[UserDefaultsManager] Warning: Shared container unavailable (\(error.localizedDescription)), using standard UserDefaults")
             self.sharedDefaults = nil
+            self.useSharedContainer = false
         }
+    }
+    
+    // MARK: - Safe Container Access
+    
+    private func safeDefaults() -> UserDefaults {
+        if useSharedContainer, let shared = sharedDefaults {
+            return shared
+        }
+        return standardDefaults
     }
     
     // MARK: - Shared Container Methods
     
     func setValue(_ value: Any?, forKey key: String) {
-        if let shared = sharedDefaults {
-            shared.set(value, forKey: key)
-            shared.synchronize()
-        } else {
-            // Fallback to standard UserDefaults
-            standardDefaults.set(value, forKey: key)
-            standardDefaults.synchronize()
+        let defaults = safeDefaults()
+        defaults.set(value, forKey: key)
+        
+        // Only synchronize if we're using shared container
+        if useSharedContainer {
+            defaults.synchronize()
         }
     }
     
     func getValue(forKey key: String) -> Any? {
-        if let shared = sharedDefaults {
-            return shared.object(forKey: key)
-        } else {
-            return standardDefaults.object(forKey: key)
-        }
+        return safeDefaults().object(forKey: key)
     }
     
     func removeValue(forKey key: String) {
-        if let shared = sharedDefaults {
-            shared.removeObject(forKey: key)
-            shared.synchronize()
-        } else {
-            standardDefaults.removeObject(forKey: key)
-            standardDefaults.synchronize()
+        let defaults = safeDefaults()
+        defaults.removeObject(forKey: key)
+        
+        if useSharedContainer {
+            defaults.synchronize()
         }
     }
     
@@ -90,27 +121,35 @@ class UserDefaultsManager {
     
     func saveSummaryData(_ summary: AdSenseSummaryData) {
         let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(summary) {
+        encoder.dateEncodingStrategy = .iso8601
+        
+        do {
+            let encoded = try encoder.encode(summary)
             setData(encoded, forKey: "summaryData")
             setDate(Date(), forKey: "summaryLastUpdate")
-            print("[UserDefaultsManager] Successfully saved summary data")
-        } else {
-            print("[UserDefaultsManager] Failed to encode summary data")
+            print("[UserDefaultsManager] Successfully saved summary data using \(useSharedContainer ? "shared" : "standard") container")
+        } catch {
+            print("[UserDefaultsManager] Failed to encode summary data: \(error.localizedDescription)")
         }
     }
     
     func loadSummaryData() -> AdSenseSummaryData? {
         guard let data = getData(forKey: "summaryData") else {
-            print("[UserDefaultsManager] No summary data found")
+            print("[UserDefaultsManager] No summary data found in \(useSharedContainer ? "shared" : "standard") container")
             return nil
         }
         
         let decoder = JSONDecoder()
-        if let summary = try? decoder.decode(AdSenseSummaryData.self, from: data) {
+        decoder.dateDecodingStrategy = .iso8601
+        
+        do {
+            let summary = try decoder.decode(AdSenseSummaryData.self, from: data)
             print("[UserDefaultsManager] Successfully loaded summary data")
             return summary
-        } else {
-            print("[UserDefaultsManager] Failed to decode summary data")
+        } catch {
+            print("[UserDefaultsManager] Failed to decode summary data: \(error.localizedDescription)")
+            // Clean up corrupted data
+            removeValue(forKey: "summaryData")
             return nil
         }
     }
@@ -122,11 +161,33 @@ class UserDefaultsManager {
     // MARK: - Health Check
     
     func isSharedContainerAvailable() -> Bool {
-        return sharedDefaults != nil
+        return useSharedContainer && sharedDefaults != nil
+    }
+    
+    func getContainerStatus() -> String {
+        if useSharedContainer {
+            return "Using shared App Group container: \(appGroupID)"
+        } else {
+            return "Using standard UserDefaults (shared container unavailable)"
+        }
     }
     
     func resetSharedContainer() {
-        sharedDefaults = UserDefaults(suiteName: appGroupID)
-        print("[UserDefaultsManager] Attempted to reset shared container")
+        print("[UserDefaultsManager] Resetting shared container...")
+        initializeSharedContainer()
     }
+    
+    // MARK: - Debug Information
+    
+    #if DEBUG
+    func debugInfo() -> String {
+        let containerStatus = getContainerStatus()
+        let memoryUsage = MemoryManager.shared.getMemoryUsageString()
+        return """
+        UserDefaults Status: \(containerStatus)
+        Memory Usage: \(memoryUsage)
+        Last Update: \(getLastUpdateDate()?.formatted() ?? "Never")
+        """
+    }
+    #endif
 } 

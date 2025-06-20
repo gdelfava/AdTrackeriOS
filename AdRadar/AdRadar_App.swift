@@ -11,19 +11,55 @@ import SwiftUI
 @main
 struct AdRadar_App: App {
     init() {
-        // Initialize memory management
-        _ = MemoryManager.shared
+        setupAppEnvironment()
+    }
+    
+    private func setupAppEnvironment() {
+        // Initialize core managers in a controlled manner
+        initializeManagers()
         
-        // Initialize UserDefaultsManager
+        // Log initialization status
+        logInitializationStatus()
+    }
+    
+    private func initializeManagers() {
+        // Initialize UserDefaultsManager first (safer)
         _ = UserDefaultsManager.shared
         
-        print("[AdRadar] App initialized with memory management and UserDefaults optimization")
+        // Initialize MemoryManager with delayed setup
+        DispatchQueue.main.async {
+            _ = MemoryManager.shared
+        }
+    }
+    
+    private func logInitializationStatus() {
+        #if DEBUG
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            let userDefaultsStatus = UserDefaultsManager.shared.getContainerStatus()
+            let memoryInfo = MemoryManager.shared.getMemoryUsageString()
+            
+            print("""
+            [AdRadar] App initialization completed:
+            - \(userDefaultsStatus)
+            - Initial memory usage: \(memoryInfo)
+            - Build configuration: DEBUG
+            """)
+        }
+        #else
+        print("[AdRadar] App initialized successfully (Release)")
+        #endif
     }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(NetworkMonitor.shared)
+                .onAppear {
+                    // Perform any additional setup after UI is ready
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        MemoryManager.shared.performMaintenanceCleanup()
+                    }
+                }
         }
     }
 } 
