@@ -43,8 +43,8 @@ struct StreakView: View {
                                             .fontWeight(.bold)
                                             .foregroundColor(.primary)
                                         
-                                        Text("Track your daily AdSense performance")
-                                            .font(.subheadline)
+                                        Text("Track your weekly adsense performance")
+                                            .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
                                     
@@ -156,6 +156,7 @@ struct StreakView: View {
                                         .padding(.vertical, 16)
                                         .background(.ultraThinMaterial)
                                     }
+                                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                                     .transition(.asymmetric(
                                         insertion: .move(edge: .bottom).combined(with: .opacity),
                                         removal: .move(edge: .bottom).combined(with: .opacity)
@@ -715,43 +716,12 @@ struct EnhancedChartOverlayView: View {
     let geometry: GeometryProxy
     let viewModel: StreakViewModel
     @Binding var selectedDay: StreakDayData?
-    @State private var dragLocation: CGPoint = .zero
     
     var body: some View {
         Rectangle()
             .fill(Color.clear)
             .contentShape(Rectangle())
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { value in
-                        dragLocation = value.location
-                        guard let plotFrame = proxy.plotFrame else { return }
-                        let x = value.location.x - geometry[plotFrame].origin.x
-                        guard let date = proxy.value(atX: x) as Date? else { return }
-                        
-                        // Find the closest day
-                        let closestDay = viewModel.streakData.min(by: {
-                            abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date))
-                        })
-                        
-                        // Add haptic feedback when selection changes
-                        if selectedDay?.id != closestDay?.id {
-                            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                            impactFeedback.impactOccurred()
-                        }
-                        
-                        withAnimation(.easeInOut(duration: 0.1)) {
-                            selectedDay = closestDay
-                        }
-                    }
-                    .onEnded { _ in
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            selectedDay = nil
-                        }
-                    }
-            )
             .onTapGesture { location in
-                dragLocation = location
                 guard let plotFrame = proxy.plotFrame else { return }
                 let x = location.x - geometry[plotFrame].origin.x
                 guard let date = proxy.value(atX: x) as Date? else { return }
@@ -765,8 +735,15 @@ struct EnhancedChartOverlayView: View {
                 let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
                 impactFeedback.impactOccurred()
                 
-                withAnimation(.easeInOut(duration: 0.2)) {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                     selectedDay = selectedDay?.id == closestDay?.id ? nil : closestDay
+                }
+            }
+            .onLongPressGesture(minimumDuration: 0.0, maximumDistance: 50) {
+                // This handles the immediate press down for better responsiveness
+            } onPressingChanged: { pressing in
+                if !pressing {
+                    // This ensures the tap gesture fires reliably
                 }
             }
     }
