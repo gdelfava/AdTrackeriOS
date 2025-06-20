@@ -2,22 +2,111 @@ import SwiftUI
 import MessageUI
 import WebKit
 
-// Toast View
+// Enhanced Toast View with modern design
 struct Toast: View {
     let message: String
     @Binding var isShowing: Bool
+    @State private var offsetY: CGFloat = 100
+    @State private var opacity: Double = 0
+    @State private var scale: CGFloat = 0.8
     
     var body: some View {
-        Text(message)
-            .font(.subheadline)
-            .foregroundColor(.white)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .background(Color.green)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
-            .transition(.move(edge: .bottom).combined(with: .opacity))
-            .zIndex(1)
+        HStack(spacing: 14) {
+            // Success icon with animated background
+            ZStack {
+                Circle()
+                    .fill(Color.white.opacity(0.2))
+                    .frame(width: 32, height: 32)
+                
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(.white)
+                    .scaleEffect(scale)
+            }
+            
+            Text(message)
+                .font(.system(size: 15, weight: .medium, design: .rounded))
+                .foregroundColor(.white)
+                .multilineTextAlignment(.leading)
+                .lineLimit(2)
+            
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+        .background(
+            ZStack {
+                // Blur background effect
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(.ultraThinMaterial)
+                    .environment(\.colorScheme, .dark)
+                
+                // Gradient overlay
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(stops: [
+                                .init(color: Color.green.opacity(0.9), location: 0),
+                                .init(color: Color.green.opacity(0.8), location: 0.5),
+                                .init(color: Color.green.opacity(0.85), location: 1)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+        )
+        .overlay(
+            // Subtle border highlight
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color.white.opacity(0.3),
+                            Color.white.opacity(0.1)
+                        ]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 0.5
+                )
+        )
+        .shadow(color: Color.black.opacity(0.2), radius: 20, x: 0, y: 8)
+        .shadow(color: Color.green.opacity(0.3), radius: 15, x: 0, y: 5)
+        .scaleEffect(scale)
+        .opacity(opacity)
+        .offset(y: offsetY)
+        .onChange(of: isShowing) { _, showing in
+            if showing {
+                // Show animation
+                withAnimation(.spring(response: 0.6, dampingFraction: 0.8, blendDuration: 0)) {
+                    offsetY = 0
+                    opacity = 1
+                    scale = 1.0
+                }
+                
+                // Icon animation delay
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.6).delay(0.1)) {
+                    scale = 1.0
+                }
+            } else {
+                // Hide animation
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.9)) {
+                    offsetY = 100
+                    opacity = 0
+                    scale = 0.95
+                }
+            }
+        }
+        .onAppear {
+            if isShowing {
+                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                    offsetY = 0
+                    opacity = 1
+                    scale = 1.0
+                }
+            }
+        }
     }
 }
 
@@ -56,193 +145,253 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             ZStack {
+                // Modern background
+                Color(.systemGroupedBackground)
+                    .ignoresSafeArea()
+                
                 ScrollView {
-                    VStack(spacing: 32) {
-                        // User Profile Section
-                        VStack(spacing: 16) {
+                    LazyVStack(spacing: 28) {
+                        // Enhanced User Profile Section
+                        VStack(spacing: 20) {
+                            // Profile image with enhanced styling
                             if let url = settingsViewModel.imageURL {
                                 AsyncImage(url: url) { image in
                                     image
                                         .resizable()
                                         .aspectRatio(contentMode: .fill)
-                                        .frame(width: 100, height: 100)
+                                        .frame(width: 120, height: 120)
                                         .clipShape(Circle())
                                         .overlay(
                                             Circle()
-                                                .stroke(Color(.systemBackground), lineWidth: 4)
-                                                .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+                                                .stroke(
+                                                    LinearGradient(
+                                                        gradient: Gradient(colors: [Color.accentColor.opacity(0.3), Color.accentColor.opacity(0.1)]),
+                                                        startPoint: .topLeading,
+                                                        endPoint: .bottomTrailing
+                                                    ),
+                                                    lineWidth: 3
+                                                )
                                         )
+                                        .shadow(color: Color.accentColor.opacity(0.2), radius: 15, x: 0, y: 8)
                                         .onAppear {
                                             Task {
                                                 await ImageCache.shared.setImage(image, for: url)
                                             }
                                         }
                                 } placeholder: {
-                                    ProgressView()
-                                        .frame(width: 100, height: 100)
+                                    ZStack {
+                                        Circle()
+                                            .fill(Color(.tertiarySystemBackground))
+                                            .frame(width: 120, height: 120)
+                                        
+                                        ProgressView()
+                                            .scaleEffect(1.2)
+                                            .tint(.accentColor)
+                                    }
                                 }
                             }
                             
-                            VStack(spacing: 4) {
+                            // User info with enhanced typography
+                            VStack(spacing: 8) {
                                 Text(settingsViewModel.name)
-                                    .font(.title2)
+                                    .font(.title)
                                     .fontWeight(.bold)
-                                    .foregroundColor(.primary)
+                                    .foregroundStyle(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [.primary, .primary.opacity(0.8)]),
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                
                                 Text(settingsViewModel.email)
                                     .font(.subheadline)
+                                    .fontWeight(.medium)
                                     .foregroundColor(.secondary)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 6)
+                                    .background(Color(.quaternarySystemFill))
+                                    .clipShape(Capsule())
                             }
                         }
-                        .padding(.top, 24)
+                        .padding(.top, 20)
                         .opacity(profileAppeared ? 1 : 0)
-                        .offset(y: profileAppeared ? 0 : 20)
+                        .offset(y: profileAppeared ? 0 : 30)
                         
-                        // Account Information Section
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("ACCOUNT INFORMATION")
-                                .font(.caption)
-                                .fontWeight(.medium)
-                                .foregroundColor(.secondary)
-                                .padding(.horizontal, 4)
-                            
-                            VStack(spacing: 0) {
-                                AccountInfoRow(
+                        // Enhanced Account Information Section
+                        ModernSectionView(title: "Account Information") {
+                            VStack(spacing: 1) {
+                                EnhancedAccountInfoRow(
+                                    icon: "person.text.rectangle.fill",
+                                    iconColor: .blue,
                                     title: "Publisher ID",
                                     value: settingsViewModel.publisherId,
                                     isCopyable: true,
                                     onCopy: {
                                         UIPasteboard.general.string = settingsViewModel.publisherId
-                                        withAnimation {
+                                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                                        generator.impactOccurred()
+                                        
+                                        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
                                             showToast = true
                                         }
-                                        // Dismiss toast after 2 seconds
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                            withAnimation {
+                                        
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                                            withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
                                                 showToast = false
                                             }
                                         }
                                     }
                                 )
+                                
                                 Divider()
-                                AccountInfoRow(title: "Publisher Name", value: settingsViewModel.publisherName)
+                                    .padding(.leading, 56)
+                                
+                                EnhancedAccountInfoRow(
+                                    icon: "building.2.fill",
+                                    iconColor: .purple,
+                                    title: "Publisher Name",
+                                    value: settingsViewModel.publisherName
+                                )
+                                
                                 Divider()
-                                AccountInfoRow(title: "Time Zone", value: settingsViewModel.timeZone)
+                                    .padding(.leading, 56)
+                                
+                                EnhancedAccountInfoRow(
+                                    icon: "clock.fill",
+                                    iconColor: .orange,
+                                    title: "Time Zone",
+                                    value: settingsViewModel.timeZone
+                                )
+                                
                                 Divider()
-                                AccountInfoRow(title: "Currency", value: settingsViewModel.currency)
+                                    .padding(.leading, 56)
+                                
+                                EnhancedAccountInfoRow(
+                                    icon: "dollarsign.circle.fill",
+                                    iconColor: .green,
+                                    title: "Currency",
+                                    value: settingsViewModel.currency
+                                )
                             }
-                            .background(Color(.secondarySystemBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                            .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
                         }
-                        .padding(.horizontal)
                         .opacity(accountInfoAppeared ? 1 : 0)
-                        .offset(y: accountInfoAppeared ? 0 : 20)
+                        .offset(y: accountInfoAppeared ? 0 : 30)
                         
-                        // Support Section
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("SUPPORT")
-                                .font(.caption)
-                                .fontWeight(.medium)
-                                .foregroundColor(.secondary)
-                                .padding(.horizontal, 4)
-                            
-                            VStack(spacing: 0) {
-                                // AnimatedSettingsRow(icon: "heart.fill", color: .red, title: "Rate AdRadar") {
-                                //     if let url = URL(string: "itms-apps://itunes.apple.com/app/id1481431267?action=write-review") {
-                                //         UIApplication.shared.open(url)
-                                //     }
-                                // }
-                                // Divider()
-                                // AnimatedSettingsRow(icon: "square.and.arrow.up", color: .blue, title: "Share AdRadar") {
-                                //     isShareSheetPresented = true
-                                // }
-                                // Divider()
-                                AnimatedSettingsRow(icon: "info.circle.fill", color: .blue, title: "Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown")", showChevron: false) {
-                                    // No action needed for version
-                                }
+                        // Enhanced Support Section
+                        ModernSectionView(title: "Support & Information") {
+                            VStack(spacing: 1) {
+                                ModernSettingsRow(
+                                    icon: "info.circle.fill",
+                                    iconColor: .blue,
+                                    title: "Version",
+                                    subtitle: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown",
+                                    showChevron: false
+                                ) {}
+                                
                                 Divider()
-                                AnimatedSettingsRow(icon: "square.grid.2x2.fill", color: .orange, title: "Widget Support", showChevron: true) {
+                                    .padding(.leading, 56)
+                                
+                                ModernSettingsRow(
+                                    icon: "square.grid.2x2.fill",
+                                    iconColor: .orange,
+                                    title: "Widget Support",
+                                    subtitle: "Setup and troubleshooting",
+                                    showChevron: true
+                                ) {
                                     isWidgetSupportSheetPresented = true
                                 }
+                                
                                 Divider()
-                                AnimatedSettingsRow(icon: "envelope.fill", color: .green, title: "Feedback", showChevron: true) {
+                                    .padding(.leading, 56)
+                                
+                                ModernSettingsRow(
+                                    icon: "envelope.fill",
+                                    iconColor: .green,
+                                    title: "Send Feedback",
+                                    subtitle: "Help us improve AdRadar",
+                                    showChevron: true
+                                ) {
                                     isMailSheetPresented = true
                                 }
+                                
                                 Divider()
-                                AnimatedSettingsRow(icon: "bird.fill", color: .blue, title: "@AdRadar", showChevron: true) {
+                                    .padding(.leading, 56)
+                                
+                                ModernSettingsRow(
+                                    icon: "bird.fill",
+                                    iconColor: .blue,
+                                    title: "Follow @AdRadar",
+                                    subtitle: "Stay updated on X",
+                                    showChevron: true
+                                ) {
                                     if let url = URL(string: "https://x.com/gdelfava") {
                                         UIApplication.shared.open(url)
                                     }
                                 }
+                                
                                 Divider()
-                                AnimatedSettingsRow(icon: "lock.fill", color: .purple, title: "Terms & Privacy Policy", showChevron: true) {
+                                    .padding(.leading, 56)
+                                
+                                ModernSettingsRow(
+                                    icon: "doc.text.fill",
+                                    iconColor: .purple,
+                                    title: "Terms & Privacy",
+                                    subtitle: "Legal information",
+                                    showChevron: true
+                                ) {
                                     isTermsSheetPresented = true
                                 }
                             }
-                            .background(Color(.secondarySystemBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                            .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
                         }
-                        .padding(.horizontal)
                         .opacity(supportAppeared ? 1 : 0)
-                        .offset(y: supportAppeared ? 0 : 20)
+                        .offset(y: supportAppeared ? 0 : 30)
                         
-                        // General Section
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("GENERAL")
-                                .font(.caption)
-                                .fontWeight(.medium)
-                                .foregroundColor(.secondary)
-                                .padding(.horizontal, 4)
-                            
+                        // Enhanced General Section
+                        ModernSectionView(title: "Account Actions") {
                             Button(action: {
+                                let generator = UIImpactFeedbackGenerator(style: .medium)
+                                generator.impactOccurred()
                                 settingsViewModel.signOut(authViewModel: authViewModel)
                             }) {
-                                HStack {
-                                    Image(systemName: "person.crop.circle.fill.badge.xmark")
-                                        .foregroundColor(.red)
-                                    Text("Sign Out")
-                                        .foregroundColor(.red)
+                                HStack(spacing: 16) {
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .fill(Color.red.opacity(0.1))
+                                            .frame(width: 40, height: 40)
+                                        
+                                        Image(systemName: "rectangle.portrait.and.arrow.right.fill")
+                                            .font(.system(size: 18, weight: .medium))
+                                            .foregroundColor(.red)
+                                    }
+                                    
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("Sign Out")
+                                            .font(.body)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(.red)
+                                        
+                                        Text("Sign out of your account")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    
                                     Spacer()
                                 }
-                                .padding()
-                                .background(Color(.secondarySystemBackground))
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 16)
+                                .background(Color(.secondarySystemGroupedBackground))
                                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
                             }
                         }
-                        .padding(.horizontal)
                         .opacity(generalAppeared ? 1 : 0)
-                        .offset(y: generalAppeared ? 0 : 20)
-                        .onAppear {
-                            // Animate sections with staggered timing
-                            withAnimation(.easeOut(duration: 0.5)) {
-                                profileAppeared = true
-                            }
-                            
-                            withAnimation(.easeOut(duration: 0.5).delay(0.2)) {
-                                accountInfoAppeared = true
-                            }
-                            
-                            withAnimation(.easeOut(duration: 0.5).delay(0.4)) {
-                                supportAppeared = true
-                            }
-                            
-                            withAnimation(.easeOut(duration: 0.5).delay(0.6)) {
-                                generalAppeared = true
-                            }
-                        }
-                        .onDisappear {
-                            // Reset animation states when view disappears
-                            profileAppeared = false
-                            accountInfoAppeared = false
-                            supportAppeared = false
-                            generalAppeared = false
-                        }
+                        .offset(y: generalAppeared ? 0 : 30)
                     }
-                    .padding(.bottom, 32)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 40)
                 }
                 .navigationTitle("Settings")
+                .navigationBarTitleDisplayMode(.large)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button(action: {
@@ -252,18 +401,22 @@ struct SettingsView: View {
                         }) {
                             Image(systemName: "line.3.horizontal")
                                 .font(.title2)
+                                .fontWeight(.medium)
                                 .foregroundColor(.primary)
                         }
                     }
                 }
                 
-                // Toast overlay
+                // Enhanced Toast overlay
                 if showToast {
                     VStack {
                         Spacer()
                         Toast(message: "Publisher ID copied to clipboard", isShowing: $showToast)
+                            .padding(.horizontal, 24)
                             .padding(.bottom, 100)
                     }
+                    .allowsHitTesting(false)
+                    .zIndex(1000)
                 }
             }
         }
@@ -272,6 +425,30 @@ struct SettingsView: View {
             Task {
                 await settingsViewModel.fetchAccountInfo()
             }
+            
+            // Staggered animations for sections
+            withAnimation(.easeOut(duration: 0.6).delay(0.1)) {
+                profileAppeared = true
+            }
+            
+            withAnimation(.easeOut(duration: 0.6).delay(0.3)) {
+                accountInfoAppeared = true
+            }
+            
+            withAnimation(.easeOut(duration: 0.6).delay(0.5)) {
+                supportAppeared = true
+            }
+            
+            withAnimation(.easeOut(duration: 0.6).delay(0.7)) {
+                generalAppeared = true
+            }
+        }
+        .onDisappear {
+            // Reset animation states
+            profileAppeared = false
+            accountInfoAppeared = false
+            supportAppeared = false
+            generalAppeared = false
         }
         .sheet(isPresented: $isShareSheetPresented) {
             ShareSheet(activityItems: ["Check out AdRadar for AdSense! https://apps.apple.com/app/id1481431267"])
@@ -290,9 +467,23 @@ struct SettingsView: View {
                     }
                 }
             } else {
-                // Fallback for devices that can't send email
-                Text("Email not available on this device")
-                    .padding()
+                // Enhanced fallback view
+                VStack(spacing: 20) {
+                    Image(systemName: "envelope.badge.fill")
+                        .font(.system(size: 60))
+                        .foregroundColor(.secondary)
+                    
+                    Text("Email Not Available")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    Text("Email is not configured on this device. Please contact us directly at support@adradar.app")
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                }
+                .padding()
             }
         }
         .sheet(isPresented: $isTermsSheetPresented) {
@@ -301,10 +492,33 @@ struct SettingsView: View {
     }
 }
 
-struct AnimatedSettingsRow: View {
-    let icon: String
-    let color: Color
+// MARK: - Modern Components
+
+struct ModernSectionView<Content: View>: View {
     let title: String
+    @ViewBuilder let content: Content
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title.uppercased())
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 4)
+            
+            content
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
+        }
+    }
+}
+
+struct ModernSettingsRow: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    let subtitle: String
     let showChevron: Bool
     let action: () -> Void
     
@@ -326,17 +540,27 @@ struct AnimatedSettingsRow: View {
                 action()
             }
         }) {
-            HStack(spacing: 12) {
-                Image(systemName: icon)
-                    .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(color)
-                    .frame(width: 28, height: 28)
-                    .background(color.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            HStack(spacing: 16) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(iconColor.opacity(0.1))
+                        .frame(width: 40, height: 40)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(iconColor)
+                }
                 
-                Text(title)
-                    .font(.body)
-                    .foregroundColor(.primary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.body)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                    
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
                 
                 Spacer()
                 
@@ -346,13 +570,85 @@ struct AnimatedSettingsRow: View {
                         .foregroundColor(.secondary)
                 }
             }
-            .padding()
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
             .contentShape(Rectangle())
             .scaleEffect(isPressed ? 0.98 : 1.0)
             .opacity(isPressed ? 0.7 : 1.0)
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }
+
+struct EnhancedAccountInfoRow: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    let value: String
+    var isCopyable: Bool = false
+    var onCopy: (() -> Void)? = nil
+    
+    @State private var isPressed = false
+    
+    var body: some View {
+        Button(action: {
+            if isCopyable {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = true
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    withAnimation(.easeInOut(duration: 0.1)) {
+                        isPressed = false
+                    }
+                    onCopy?()
+                }
+            }
+        }) {
+            HStack(spacing: 16) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(iconColor.opacity(0.1))
+                        .frame(width: 40, height: 40)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(iconColor)
+                }
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.body)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                    
+                    Text(value)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                }
+                
+                Spacer()
+                
+                if isCopyable {
+                    Image(systemName: "doc.on.doc")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .contentShape(Rectangle())
+            .scaleEffect(isPressed ? 0.98 : 1.0)
+            .opacity(isPressed ? 0.7 : 1.0)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .disabled(!isCopyable)
+    }
+}
+
+// MARK: - Supporting Views (keeping existing implementations but with minor improvements)
 
 // ShareSheet view to present the system share sheet
 struct ShareSheet: UIViewControllerRepresentable {
@@ -409,113 +705,133 @@ struct MailView: UIViewControllerRepresentable {
     }
 }
 
-// For preview
-struct SettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        SettingsView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))
-            .environmentObject(AuthViewModel())
-            .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
-            .preferredColorScheme(.light)
-        SettingsView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))
-            .environmentObject(AuthViewModel())
-            .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
-            .preferredColorScheme(.dark)
-    }
-}
-
-struct AccountInfoRow: View {
-    let title: String
-    let value: String
-    var isCopyable: Bool = false
-    var onCopy: (() -> Void)? = nil
-    
-    var body: some View {
-        Button(action: {
-            if isCopyable {
-                onCopy?()
-            }
-        }) {
-            HStack(spacing: 12) {
-                Text(title)
-                    .font(.body)
-                    .foregroundColor(.primary)
-                
-                Spacer()
-                
-                HStack(spacing: 8) {
-                    Text(value)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                    
-                    if isCopyable {
-                        Image(systemName: "doc.on.doc")
-                            .font(.system(size: 14))
-                            .foregroundColor(.secondary)
-                    }
-                }
-            }
-            .padding()
-            .background(Color(.secondarySystemBackground))
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
-}
-
 struct WidgetSupportSheet: View {
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        VStack(spacing: 20) {
-            Image("LoginScreen")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 100, height: 100)
-                .clipShape(RoundedRectangle(cornerRadius: 22))
-                .padding(.top)
-            
-            Text("Widget Support")
-                .font(.title2)
-                .fontWeight(.bold)
-            
+        NavigationView {
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Are your widgets not updating frequently or at all?")
-                        .font(.headline)
+                VStack(spacing: 24) {
+                    // Header
+                    VStack(spacing: 16) {
+                        Image("LoginScreen")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 80, height: 80)
+                            .clipShape(RoundedRectangle(cornerRadius: 18))
+                            .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+                        
+                        Text("Widget Support")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                    }
+                    .padding(.top)
                     
-                    Text("Unfortunately Apple does not give developers a huge amount of control over how often a background refresh happens.")
+                    // Content
+                    VStack(alignment: .leading, spacing: 20) {
+                        SupportInfoCard(
+                            icon: "questionmark.circle.fill",
+                            iconColor: .orange,
+                            title: "Widgets not updating frequently?",
+                            description: "Apple limits how often widgets can refresh in the background to preserve battery life."
+                        )
+                        
+                        SupportInfoCard(
+                            icon: "brain.head.profile.fill",
+                            iconColor: .purple,
+                            title: "The system learns your usage",
+                            description: "iOS learns when you typically check the app and refreshes widgets just before those times."
+                        )
+                        
+                        SupportInfoCard(
+                            icon: "clock.fill",
+                            iconColor: .blue,
+                            title: "Give it about a week",
+                            description: "Use the app regularly for a week and you should see more frequent widget updates as the system learns your patterns."
+                        )
+                        
+                        SupportInfoCard(
+                            icon: "bell.fill",
+                            iconColor: .red,
+                            title: "Enable notifications",
+                            description: "Make sure notifications are enabled for AdRadar. Don't worry - we won't send you any annoying alerts!"
+                        )
+                        
+                        SupportInfoCard(
+                            icon: "envelope.fill",
+                            iconColor: .green,
+                            title: "Still having issues?",
+                            description: "If widgets continue not updating, feel free to contact us using the 'Feedback' option in Settings."
+                        )
+                    }
+                    .padding(.horizontal)
                     
-                    Text("The operating system attempts to be intuitive and learns at what points of the day you use the app, and then does a background refresh just beforehand.")
+                    // Footer
+                    VStack(spacing: 8) {
+                        Text("Thanks for your support!")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                        
+                        Text("— Guilio")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.top, 8)
                     
-                    Text("I would suggest using the app for a week or so, then you should start to see the widget update more frequently as the operating system learns how often you like to view the data.")
-                    
-                    Text("You will need to make sure that notifications are switched on for the app, as the app uses background notifications, but please don't worry - we will not bother you with any alerts.")
-                    
-                    Text("If the app continues not to update the widget, please feel free to contact me directly using the 'Feedback' option.")
-                    
-                    Text("Thanks for your support.\nGuilio")
-                        .padding(.top, 8)
+                    Spacer(minLength: 100)
                 }
-                .padding(.horizontal)
             }
-            
-            Button(action: {
-                presentationMode.wrappedValue.dismiss()
-            }) {
-                Text("Close")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.accentColor)
-                    .clipShape(Capsule())
+            .navigationTitle("Widget Support")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                    .fontWeight(.medium)
+                }
             }
-            .padding(.horizontal)
-            .padding(.bottom)
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
+    }
+}
+
+struct SupportInfoCard: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    let description: String
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 16) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(iconColor.opacity(0.1))
+                    .frame(width: 44, height: 44)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundColor(iconColor)
+            }
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                
+                Text(description)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            
+            Spacer()
+        }
+        .padding(20)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
     }
 }
 
@@ -532,8 +848,24 @@ struct TermsAndPrivacySheet: View {
                         Button("Done") {
                             presentationMode.wrappedValue.dismiss()
                         }
+                        .fontWeight(.medium)
                     }
                 }
         }
+    }
+}
+
+// For preview
+struct SettingsView_Previews: PreviewProvider {
+    static var previews: some View {
+        SettingsView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))
+            .environmentObject(AuthViewModel())
+            .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
+            .preferredColorScheme(.light)
+        
+        SettingsView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))
+            .environmentObject(AuthViewModel())
+            .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
+            .preferredColorScheme(.dark)
     }
 } 

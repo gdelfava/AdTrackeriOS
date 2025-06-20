@@ -16,6 +16,7 @@ actor ImageCache {
 struct ProfileImageView: View {
     let url: URL?
     @State private var cachedImage: Image?
+    @State private var isPressed = false
     
     var body: some View {
         Group {
@@ -25,8 +26,31 @@ struct ProfileImageView: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 36, height: 36)
                     .clipShape(Circle())
-                    .overlay(Circle().stroke(Color.primary.opacity(0.2), lineWidth: 1))
-                    .shadow(radius: 1)
+                    .overlay(
+                        Circle()
+                            .strokeBorder(
+                                LinearGradient(
+                                    colors: [
+                                        Color.primary.opacity(0.1),
+                                        Color.primary.opacity(0.05)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1.5
+                            )
+                    )
+                    .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 3)
+                    .background(
+                        Circle()
+                            .fill(Color(.systemBackground))
+                            .shadow(color: Color.black.opacity(0.06), radius: 12, x: 0, y: 4)
+                    )
+                    .onAppear {
+                        Task {
+                            await ImageCache.shared.setImage(cachedImage, for: url!)
+                        }
+                    }
             } else if let url = url {
                 AsyncImage(url: url) { image in
                     image
@@ -34,8 +58,26 @@ struct ProfileImageView: View {
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 36, height: 36)
                         .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.primary.opacity(0.2), lineWidth: 1))
-                        .shadow(radius: 1)
+                        .overlay(
+                            Circle()
+                                .strokeBorder(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.primary.opacity(0.1),
+                                            Color.primary.opacity(0.05)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 1.5
+                                )
+                        )
+                        .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 3)
+                        .background(
+                            Circle()
+                                .fill(Color(.systemBackground))
+                                .shadow(color: Color.black.opacity(0.06), radius: 12, x: 0, y: 4)
+                        )
                         .onAppear {
                             Task {
                                 await ImageCache.shared.setImage(image, for: url)
@@ -43,15 +85,100 @@ struct ProfileImageView: View {
                             }
                         }
                 } placeholder: {
-                    ProgressView()
-                        .frame(width: 36, height: 36)
+                    ZStack {
+                        Circle()
+                            .fill(Color(.secondarySystemBackground))
+                            .frame(width: 36, height: 36)
+                            .overlay(
+                                Circle()
+                                    .strokeBorder(
+                                        LinearGradient(
+                                            colors: [
+                                                Color.primary.opacity(0.1),
+                                                Color.primary.opacity(0.05)
+                                            ],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        ),
+                                        lineWidth: 1.5
+                                    )
+                            )
+                        
+                        ProgressView()
+                            .scaleEffect(0.8)
+                            .tint(.secondary)
+                    }
+                    .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 3)
+                    .background(
+                        Circle()
+                            .fill(Color(.systemBackground))
+                            .shadow(color: Color.black.opacity(0.06), radius: 12, x: 0, y: 4)
+                    )
                 }
             } else {
-                Image(systemName: "person.crop.circle")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 36, height: 36)
-                    .foregroundColor(.secondary)
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color(.tertiarySystemBackground),
+                                    Color(.quaternarySystemFill)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 36, height: 36)
+                        .overlay(
+                            Circle()
+                                .strokeBorder(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.primary.opacity(0.1),
+                                            Color.primary.opacity(0.05)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 1.5
+                                )
+                        )
+                    
+                    Image(systemName: "person.crop.circle.fill")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [
+                                    Color.secondary.opacity(0.8),
+                                    Color.secondary.opacity(0.6)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                }
+                .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 3)
+                .background(
+                    Circle()
+                        .fill(Color(.systemBackground))
+                        .shadow(color: Color.black.opacity(0.06), radius: 12, x: 0, y: 4)
+                )
+            }
+        }
+        .scaleEffect(isPressed ? 0.92 : 1.0)
+        .animation(.easeInOut(duration: 0.15), value: isPressed)
+        .onTapGesture {
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+            
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = false
+                }
             }
         }
         .task {

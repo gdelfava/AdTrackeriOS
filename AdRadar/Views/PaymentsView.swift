@@ -6,7 +6,6 @@ struct PaymentsView: View {
     @Environment(\.colorScheme) private var uiColorScheme
     @State private var unpaidCardAppeared = false
     @State private var previousCardAppeared = false
-    @State private var imageAppeared = false
     @Binding var showSlideOverMenu: Bool
     @Binding var selectedTab: Int
     
@@ -45,38 +44,22 @@ struct PaymentsView: View {
                             )
                             .opacity(previousCardAppeared ? 1 : 0)
                             .offset(y: previousCardAppeared ? 0 : 20)
-                            
-                            Image(uiColorScheme == .dark ? "moneyjumpblk2" : "moneyjumpwht2")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 330)
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .padding(.horizontal)
-                                .padding(.top, 8)
-                                .opacity(imageAppeared ? 1 : 0)
-                                .scaleEffect(imageAppeared ? 1 : 0.8)
-                                .onAppear {
-                                    // Animate unpaid card first
-                                    withAnimation(.easeOut(duration: 0.5)) {
-                                        unpaidCardAppeared = true
-                                    }
-                                    
-                                    // Animate previous payment card after delay
-                                    withAnimation(.easeOut(duration: 0.5).delay(0.2)) {
-                                        previousCardAppeared = true
-                                    }
-                                    
-                                    // Animate image after cards
-                                    withAnimation(.easeOut(duration: 0.6).delay(0.4)) {
-                                        imageAppeared = true
-                                    }
+                            .onAppear {
+                                // Animate unpaid card first
+                                withAnimation(.easeOut(duration: 0.5)) {
+                                    unpaidCardAppeared = true
                                 }
-                                .onDisappear {
-                                    // Reset animation states when view disappears
-                                    unpaidCardAppeared = false
-                                    previousCardAppeared = false
-                                    imageAppeared = false
+                                
+                                // Animate previous payment card after delay
+                                withAnimation(.easeOut(duration: 0.5).delay(0.2)) {
+                                    previousCardAppeared = true
                                 }
+                            }
+                            .onDisappear {
+                                // Reset animation states when view disappears
+                                unpaidCardAppeared = false
+                                previousCardAppeared = false
+                            }
                             Spacer()
                         }
                         .padding(.horizontal)

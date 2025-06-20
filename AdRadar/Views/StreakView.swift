@@ -32,43 +32,141 @@ struct StreakView: View {
                             .padding()
                         Spacer()
                     } else {
-                        // Bar Chart
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("7 Day Earnings Trend")
-                                .font(.headline)
-                                .foregroundColor(.secondary)
-                                .padding(.horizontal)
-                                .opacity(chartTitleAppeared ? 1 : 0)
-                                .offset(y: chartTitleAppeared ? 0 : 20)
-                            
-                            Chart {
-                                ForEach(Array(viewModel.streakData.sorted(by: { $0.date < $1.date }).enumerated()), id: \.element.id) { index, day in
-                                    BarMark(
-                                        x: .value("Date", day.date, unit: .day),
-                                        y: .value("Earnings", barAnimations.indices.contains(index) && barAnimations[index] ? day.earnings : 0)
-                                    )
-                                    .foregroundStyle(Color.accentColor.gradient)
-                                    .annotation(position: .top) {
-                                        if selectedDay?.id == day.id {
-                                            Text(viewModel.formatCurrency(day.earnings))
-                                                .font(.caption)
-                                                .padding(4)
-                                                .background(Color(.secondarySystemBackground))
-                                                .cornerRadius(4)
+                        // Enhanced Bar Chart
+                        VStack(alignment: .leading, spacing: 20) {
+                            // Modern Chart Header
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text("7 Day Earnings Trend")
+                                            .font(.title2)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.primary)
+                                        
+                                        Text("Track your daily AdSense performance")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    // Chart summary badge
+                                    if !viewModel.streakData.isEmpty {
+                                        let totalEarnings = viewModel.streakData.reduce(0) { $0 + $1.earnings }
+                                        VStack(alignment: .trailing, spacing: 2) {
+                                            Text("7 Day Total")
+                                                .font(.caption2)
+                                                .foregroundColor(.secondary)
+                                                .textCase(.uppercase)
+                                                .fontWeight(.medium)
+                                            
+                                            Text(viewModel.formatCurrency(totalEarnings))
+                                                .font(.system(.headline, design: .rounded))
+                                                .fontWeight(.bold)
+                                                .foregroundColor(.green)
                                         }
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 8)
+                                        .background(.ultraThinMaterial)
+                                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                                .stroke(Color.green.opacity(0.2), lineWidth: 1)
+                                        )
                                     }
                                 }
                             }
-                            .frame(height: 200)
-                            .padding()
-                            .background(Color(.secondarySystemBackground))
-                            .cornerRadius(12)
-                            .padding(.horizontal)
-                            .chartOverlay { proxy in
-                                GeometryReader { geometry in
-                                    ChartOverlayView(proxy: proxy, geometry: geometry, viewModel: viewModel, selectedDay: $selectedDay)
+                            .padding(.horizontal, 24)
+                            .opacity(chartTitleAppeared ? 1 : 0)
+                            .offset(y: chartTitleAppeared ? 0 : 30)
+                            
+                            // Enhanced Chart Container
+                            VStack(spacing: 0) {
+                                chartView
+                                .frame(height: 220)
+                                .padding(.horizontal, 24)
+                                .padding(.top, 20)
+                                .padding(.bottom, 16)
+                                .chartXAxis {
+                                    AxisMarks(values: .stride(by: .day)) { value in
+                                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0))
+                                        AxisValueLabel {
+                                            if let date = value.as(Date.self) {
+                                                Text(date, format: .dateTime.weekday(.abbreviated))
+                                                    .font(.caption)
+                                                    .fontWeight(.medium)
+                                                    .foregroundColor(.secondary)
+                                            }
+                                        }
+                                    }
+                                }
+                                .chartYAxis {
+                                    AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { value in
+                                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0))
+                                        AxisValueLabel {
+                                            if let earnings = value.as(Double.self) {
+                                                Text(viewModel.formatCurrency(earnings))
+                                                    .font(.caption2)
+                                                    .fontWeight(.medium)
+                                                    .foregroundColor(.secondary)
+                                            }
+                                        }
+                                    }
+                                }
+                                .chartOverlay { proxy in
+                                    GeometryReader { geometry in
+                                        EnhancedChartOverlayView(
+                                            proxy: proxy,
+                                            geometry: geometry,
+                                            viewModel: viewModel,
+                                            selectedDay: $selectedDay
+                                        )
+                                    }
+                                }
+                                
+                                // Selected day info panel
+                                if let selectedDay = selectedDay {
+                                    VStack(spacing: 0) {
+                                        Rectangle()
+                                            .fill(Color(.systemGray6))
+                                            .frame(height: 1)
+                                        
+                                        HStack(spacing: 16) {
+                                            VStack(alignment: .leading, spacing: 4) {
+                                                Text(selectedDay.date, format: .dateTime.weekday(.wide).day().month(.abbreviated))
+                                                    .font(.headline)
+                                                    .fontWeight(.semibold)
+                                                    .foregroundColor(.primary)
+                                                
+                                                Text("Daily Earnings")
+                                                    .font(.caption)
+                                                    .foregroundColor(.secondary)
+                                                    .textCase(.uppercase)
+                                                    .fontWeight(.medium)
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            Text(viewModel.formatCurrency(selectedDay.earnings))
+                                                .font(.system(.title2, design: .rounded))
+                                                .fontWeight(.bold)
+                                                .foregroundColor(.green)
+                                        }
+                                        .padding(.horizontal, 24)
+                                        .padding(.vertical, 16)
+                                        .background(.ultraThinMaterial)
+                                    }
+                                    .transition(.asymmetric(
+                                        insertion: .move(edge: .bottom).combined(with: .opacity),
+                                        removal: .move(edge: .bottom).combined(with: .opacity)
+                                    ))
                                 }
                             }
+                            .background(chartContainerBackground)
+                            .overlay(chartContainerBorder)
+                            .shadow(color: Color.black.opacity(0.04), radius: 15, x: 0, y: 8)
+                            .shadow(color: Color.accentColor.opacity(0.1), radius: 20, x: 0, y: 10)
+                            .padding(.horizontal, 20)
                             .onAppear {
                                 // Animate chart title first
                                 withAnimation(.easeOut(duration: 0.3)) {
@@ -162,11 +260,87 @@ struct StreakView: View {
             barAnimations = Array(repeating: false, count: viewModel.streakData.count)
             cardAppearances = Array(repeating: false, count: viewModel.streakData.count)
         }
-        .onChange(of: viewModel.streakData.count) { oldCount, newCount in
+        .onChange(of: viewModel.streakData.count) { _, newCount in
             // Update animation arrays when data changes
             barAnimations = Array(repeating: false, count: newCount)
             cardAppearances = Array(repeating: false, count: newCount)
         }
+    }
+    
+    // MARK: - Chart Components
+    
+    private var chartView: some View {
+        Chart {
+            ForEach(Array(viewModel.streakData.sorted(by: { $0.date < $1.date }).enumerated()), id: \.element.id) { index, day in
+                BarMark(
+                    x: .value("Date", day.date, unit: .day),
+                    y: .value("Earnings", barAnimations.indices.contains(index) && barAnimations[index] ? day.earnings : 0)
+                )
+                .foregroundStyle(barGradient(for: day))
+                .cornerRadius(6, style: .continuous)
+                .opacity(selectedDay == nil || selectedDay?.id == day.id ? 1.0 : 0.4)
+            }
+            
+            // Add subtle grid lines
+            if let maxEarnings = viewModel.streakData.map(\.earnings).max() {
+                ForEach([0.25, 0.5, 0.75], id: \.self) { fraction in
+                    RuleMark(y: .value("Grid", maxEarnings * fraction))
+                        .foregroundStyle(Color(.systemGray5))
+                        .lineStyle(StrokeStyle(lineWidth: 0.5, dash: [2, 4]))
+                }
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: selectedDay?.id)
+    }
+    
+    private func barGradient(for day: StreakDayData) -> LinearGradient {
+        let isSelected = selectedDay?.id == day.id
+        return LinearGradient(
+            gradient: Gradient(stops: [
+                .init(color: isSelected ? Color.accentColor : Color.accentColor.opacity(0.9), location: 0),
+                .init(color: isSelected ? Color.accentColor.opacity(0.8) : Color.accentColor.opacity(0.6), location: 0.7),
+                .init(color: isSelected ? Color.accentColor.opacity(0.6) : Color.accentColor.opacity(0.3), location: 1)
+            ]),
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+    
+    private var chartContainerBackground: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(.ultraThinMaterial)
+            
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(backgroundGradient)
+        }
+    }
+    
+    private var backgroundGradient: LinearGradient {
+        LinearGradient(
+            gradient: Gradient(stops: [
+                .init(color: Color(.systemBackground).opacity(0.8), location: 0),
+                .init(color: Color(.secondarySystemBackground).opacity(0.4), location: 1)
+            ]),
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+    
+    private var chartContainerBorder: some View {
+        RoundedRectangle(cornerRadius: 20, style: .continuous)
+            .stroke(borderGradient, lineWidth: 0.5)
+    }
+    
+    private var borderGradient: LinearGradient {
+        LinearGradient(
+            gradient: Gradient(colors: [
+                Color(.systemGray4).opacity(0.3),
+                Color(.systemGray5).opacity(0.1)
+            ]),
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
     }
     
     private func errorSymbol(for error: String) -> String {
@@ -536,11 +710,12 @@ struct StreakDetailedMetricRow: View {
     }
 }
 
-struct ChartOverlayView: View {
+struct EnhancedChartOverlayView: View {
     let proxy: ChartProxy
     let geometry: GeometryProxy
     let viewModel: StreakViewModel
     @Binding var selectedDay: StreakDayData?
+    @State private var dragLocation: CGPoint = .zero
     
     var body: some View {
         Rectangle()
@@ -549,19 +724,51 @@ struct ChartOverlayView: View {
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { value in
+                        dragLocation = value.location
                         guard let plotFrame = proxy.plotFrame else { return }
                         let x = value.location.x - geometry[plotFrame].origin.x
                         guard let date = proxy.value(atX: x) as Date? else { return }
                         
                         // Find the closest day
-                        selectedDay = viewModel.streakData.min(by: {
+                        let closestDay = viewModel.streakData.min(by: {
                             abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date))
                         })
+                        
+                        // Add haptic feedback when selection changes
+                        if selectedDay?.id != closestDay?.id {
+                            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                            impactFeedback.impactOccurred()
+                        }
+                        
+                        withAnimation(.easeInOut(duration: 0.1)) {
+                            selectedDay = closestDay
+                        }
                     }
                     .onEnded { _ in
-                        selectedDay = nil
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            selectedDay = nil
+                        }
                     }
             )
+            .onTapGesture { location in
+                dragLocation = location
+                guard let plotFrame = proxy.plotFrame else { return }
+                let x = location.x - geometry[plotFrame].origin.x
+                guard let date = proxy.value(atX: x) as Date? else { return }
+                
+                // Find the closest day
+                let closestDay = viewModel.streakData.min(by: {
+                    abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date))
+                })
+                
+                // Haptic feedback
+                let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                impactFeedback.impactOccurred()
+                
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    selectedDay = selectedDay?.id == closestDay?.id ? nil : closestDay
+                }
+            }
     }
 }
 
