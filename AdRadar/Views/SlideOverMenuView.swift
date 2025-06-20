@@ -190,6 +190,8 @@ struct SlideOverMenuView: View {
                                     }
                                 )
                                 
+                                // TODO: Re-enable when app is published to App Store
+                                /*
                                 ModernMenuRow(
                                     icon: "star.fill", 
                                     title: "Rate App", 
@@ -202,6 +204,7 @@ struct SlideOverMenuView: View {
                                         }
                                     }
                                 )
+                                */
                                 
                                 ModernMenuRow(
                                     icon: "rectangle.portrait.and.arrow.right", 

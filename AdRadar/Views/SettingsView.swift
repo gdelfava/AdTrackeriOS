@@ -273,6 +273,11 @@ struct SettingsView: View {
                                     title: "Currency",
                                     value: settingsViewModel.currency
                                 )
+                                
+                                Divider()
+                                    .padding(.leading, 56)
+                                
+                                PaymentThresholdRow(settingsViewModel: settingsViewModel)
                             }
                         }
                         .opacity(accountInfoAppeared ? 1 : 0)
@@ -451,7 +456,7 @@ struct SettingsView: View {
             generalAppeared = false
         }
         .sheet(isPresented: $isShareSheetPresented) {
-            ShareSheet(activityItems: ["Check out AdRadar for AdSense! https://apps.apple.com/app/id1481431267"])
+            ShareSheet(activityItems: ["Check out AdRadar for AdSense! https://apps.apple.com/app/add own id here"])
         }
         .sheet(isPresented: $isWidgetSupportSheetPresented) {
             WidgetSupportSheet()
@@ -477,7 +482,7 @@ struct SettingsView: View {
                         .font(.title2)
                         .fontWeight(.bold)
                     
-                    Text("Email is not configured on this device. Please contact us directly at support@adradar.app")
+                    Text("Email is not configured on this device. Please contact us directly at apps@delteqis.co.za")
                         .font(.body)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -855,7 +860,242 @@ struct TermsAndPrivacySheet: View {
     }
 }
 
+struct PaymentThresholdInfoSheet: View {
+    @Environment(\.presentationMode) var presentationMode
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Header
+                    VStack(spacing: 16) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                .fill(Color.green.opacity(0.1))
+                                .frame(width: 80, height: 80)
+                            
+                            Image(systemName: "banknote.fill")
+                                .font(.system(size: 36, weight: .medium))
+                                .foregroundColor(.green)
+                        }
+                        .shadow(color: Color.green.opacity(0.2), radius: 8, x: 0, y: 4)
+                        
+                        Text("Payment Threshold")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                    }
+                    .padding(.top)
+                    
+                    // Content
+                    VStack(alignment: .leading, spacing: 20) {
+                        PaymentInfoCard(
+                            icon: "target",
+                            iconColor: .blue,
+                            title: "What is the Payment Threshold?",
+                            description: "The payment threshold in Google AdSense is the minimum earnings amount you must reach before Google issues a payment."
+                        )
+                        
+                        PaymentInfoCard(
+                            icon: "dollarsign.circle.fill",
+                            iconColor: .green,
+                            title: "Standard Threshold Amount",
+                            description: "For most accounts, this threshold is $100 USD or the equivalent in local currency."
+                        )
+                        
+                        PaymentInfoCard(
+                            icon: "checkmark.circle.fill",
+                            iconColor: .orange,
+                            title: "Requirements for Payment",
+                            description: "Once your balance exceeds the threshold and all account requirements (like tax and payment info) are complete, a payment is issued."
+                        )
+                        
+                        PaymentInfoCard(
+                            icon: "calendar.circle.fill",
+                            iconColor: .purple,
+                            title: "Payment Schedule",
+                            description: "Payments are issued during the next payment cycle after meeting all requirements."
+                        )
+                    }
+                    .padding(.horizontal)
+                    
+                    // Footer
+                    VStack(spacing: 8) {
+                        Text("Google AdSense Information")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                        
+                        Text("Manage your threshold in Settings")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.top, 8)
+                    
+                    Spacer(minLength: 100)
+                }
+            }
+            .navigationTitle("Payment Threshold")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                    .fontWeight(.medium)
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+    }
+}
+
+struct PaymentInfoCard: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    let description: String
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 16) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(iconColor.opacity(0.1))
+                    .frame(width: 44, height: 44)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundColor(iconColor)
+            }
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                
+                Text(description)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            
+            Spacer()
+        }
+        .padding(20)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
+    }
+}
+
 // For preview
+// MARK: - Payment Threshold Row
+
+struct PaymentThresholdRow: View {
+    @ObservedObject var settingsViewModel: SettingsViewModel
+    @State private var isEditing = false
+    @State private var tempThreshold = ""
+    @State private var showAlert = false
+    @State private var showInfoSheet = false
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(Color.blue.opacity(0.1))
+                    .frame(width: 40, height: 40)
+                
+                Image(systemName: "target")
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(.blue)
+            }
+            
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 8) {
+                    Text("Payment Threshold")
+                        .font(.body)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                    
+                    Button(action: {
+                        showInfoSheet = true
+                    }) {
+                        Image(systemName: "info.circle")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.blue)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+                
+                if isEditing {
+                    HStack {
+                        TextField("Enter amount", text: $tempThreshold)
+                            .keyboardType(.decimalPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(maxWidth: 120)
+                        
+                        Button("Save") {
+                            if let threshold = Double(tempThreshold), threshold > 0 {
+                                settingsViewModel.updatePaymentThreshold(threshold)
+                                isEditing = false
+                                
+                                let generator = UIImpactFeedbackGenerator(style: .light)
+                                generator.impactOccurred()
+                            } else {
+                                showAlert = true
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.mini)
+                        
+                        Button("Cancel") {
+                            tempThreshold = ""
+                            isEditing = false
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.mini)
+                    }
+                } else {
+                    Text(formatCurrency(settingsViewModel.paymentThreshold))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Spacer()
+            
+            if !isEditing {
+                Button(action: {
+                    tempThreshold = String(settingsViewModel.paymentThreshold)
+                    isEditing = true
+                }) {
+                    Image(systemName: "pencil")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+        .alert("Invalid Amount", isPresented: $showAlert) {
+            Button("OK") { }
+        } message: {
+            Text("Please enter a valid amount greater than 0.")
+        }
+        .sheet(isPresented: $showInfoSheet) {
+            PaymentThresholdInfoSheet()
+        }
+    }
+    
+    private func formatCurrency(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale.current
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
+}
+
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))

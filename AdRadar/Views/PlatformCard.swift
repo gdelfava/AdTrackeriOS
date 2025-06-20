@@ -156,7 +156,7 @@ struct PlatformCard: View {
                 
                 PlatformDetailedMetricRow(
                     icon: "chart.bar.fill",
-                    title: "Impression RPM",
+                    title: "Impress. RPM",
                     value: platform.formattedImpressionsRPM,
                     color: .teal
                 )

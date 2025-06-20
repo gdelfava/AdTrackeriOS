@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PaymentsView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
+    @EnvironmentObject var settingsViewModel: SettingsViewModel
     @StateObject private var viewModel: PaymentsViewModel
     @Environment(\.colorScheme) private var uiColorScheme
     @State private var unpaidCardAppeared = false
@@ -30,8 +31,18 @@ struct PaymentsView: View {
                         Spacer()
                     } else if let data = viewModel.paymentsData {
                         VStack(alignment: .leading, spacing: 12) {
+                            // Payment threshold progress - shown above the unpaid earnings card
+                            PaymentProgressView(
+                                unpaidValue: data.unpaidEarningsValue,
+                                paymentThreshold: settingsViewModel.paymentThreshold
+                            )
+                            .opacity(unpaidCardAppeared ? 1 : 0)
+                            .offset(y: unpaidCardAppeared ? 0 : 20)
+                            
                             UnpaidEarningsCardView(
                                 amount: data.unpaidEarnings,
+                                unpaidValue: data.unpaidEarningsValue,
+                                paymentThreshold: settingsViewModel.paymentThreshold,
                                 date: data.previousPaymentDate,
                                 isPaid: false // Set logic as needed
                             )
@@ -144,6 +155,8 @@ struct PaymentCardView: View {
 
 struct UnpaidEarningsCardView: View {
     let amount: String
+    let unpaidValue: Double
+    let paymentThreshold: Double
     let date: String
     let isPaid: Bool
     
@@ -196,6 +209,8 @@ struct UnpaidEarningsCardView: View {
                     .fontWeight(.bold)
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.leading)
+                
+
                 
                 // Main metrics pills
                 HStack(spacing: 12) {
@@ -546,7 +561,136 @@ struct PaymentDetailedMetricRow: View {
     }
 }
 
+// MARK: - Payment Progress View
+
+struct PaymentProgressView: View {
+    let unpaidValue: Double
+    let paymentThreshold: Double
+    
+    @State private var animatedProgress: CGFloat = 0
+    
+    private var progress: Double {
+        min(unpaidValue / paymentThreshold, 1.0)
+    }
+    
+    private var progressPercentage: Int {
+        Int(progress * 100)
+    }
+    
+    private var remainingAmount: Double {
+        max(paymentThreshold - unpaidValue, 0)
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Progress header
+            HStack {
+                Image(systemName: "target")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.blue)
+                
+                Text("Payment Threshold Progress")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                Text("\(progressPercentage)%")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(progress >= 1.0 ? .green : .blue)
+            }
+            
+            // Progress bar
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    // Background track
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(Color(.systemGray5))
+                        .frame(height: 8)
+                    
+                    // Progress fill
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(stops: [
+                                    .init(color: progress >= 1.0 ? .green : .blue, location: 0),
+                                    .init(color: progress >= 1.0 ? .green.opacity(0.8) : .blue.opacity(0.8), location: 0.5),
+                                    .init(color: progress >= 1.0 ? .green : .blue, location: 1)
+                                ]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: animatedProgress * geometry.size.width, height: 8)
+                        .animation(.easeInOut(duration: 1.0), value: animatedProgress)
+                }
+            }
+            .frame(height: 8)
+            
+            // Progress details
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Current Earnings")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                    
+                    Text(formatCurrency(unpaidValue))
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                }
+                
+                Spacer()
+                
+                if progress < 1.0 {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text("Needed for Payment")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                        
+                        Text(formatCurrency(remainingAmount))
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.orange)
+                    }
+                } else {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text("Ready for Payment!")
+                            .font(.caption2)
+                            .foregroundColor(.green)
+                        
+                        Text("Threshold Met")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.green)
+                    }
+                }
+            }
+        }
+        .padding(16)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.0)) {
+                animatedProgress = CGFloat(progress)
+            }
+        }
+    }
+    
+    private func formatCurrency(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale.current
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
+}
+
 #Preview {
     PaymentsView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))
         .environmentObject(AuthViewModel())
+        .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
 }

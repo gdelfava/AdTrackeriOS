@@ -3,6 +3,7 @@ import Combine
 
 struct PaymentsData {
     let unpaidEarnings: String
+    let unpaidEarningsValue: Double // Raw value for calculations
     let previousPaymentDate: String
     let previousPaymentAmount: String
 }
@@ -69,6 +70,7 @@ class PaymentsViewModel: ObservableObject {
                 // Normal case: payment exists
                 let data = PaymentsData(
                     unpaidEarnings: formatCurrency(unpaidEarnings),
+                    unpaidEarningsValue: unpaidEarnings,
                     previousPaymentDate: formatDate(prevPayment.date),
                     previousPaymentAmount: formatCurrency(prevPayment.amount)
                 )
@@ -79,6 +81,7 @@ class PaymentsViewModel: ObservableObject {
                 // No payments yet
                 let data = PaymentsData(
                     unpaidEarnings: formatCurrency(unpaidEarnings),
+                    unpaidEarningsValue: unpaidEarnings,
                     previousPaymentDate: "No payments yet",
                     previousPaymentAmount: "-"
                 )

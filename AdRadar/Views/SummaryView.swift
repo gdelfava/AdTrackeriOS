@@ -91,6 +91,17 @@ struct SummaryView: View {
                             .offset(y: cardAppearances[3] ? 0 : 20)
                             
                             SummaryCardView(
+                                title: "Last month",
+                                value: data.lastMonth,
+                                subtitle: "vs the previous month",
+                                delta: data.lastMonthDelta,
+                                deltaPositive: data.lastMonthDeltaPositive,
+                                onTap: { Task { await viewModel.fetchMetrics(forCard: .lastMonth) } }
+                            )
+                            .opacity(cardAppearances[4] ? 1 : 0)
+                            .offset(y: cardAppearances[4] ? 0 : 20)
+                            
+                            SummaryCardView(
                                 title: "Last three years",
                                 value: data.lifetime,
                                 subtitle: "AdRadar for Adsense",
@@ -98,8 +109,8 @@ struct SummaryView: View {
                                 deltaPositive: nil,
                                 onTap: { Task { await viewModel.fetchMetrics(forCard: .lastThreeYears) } }
                             )
-                            .opacity(cardAppearances[4] ? 1 : 0)
-                            .offset(y: cardAppearances[4] ? 0 : 20)
+                            .opacity(cardAppearances[5] ? 1 : 0)
+                            .offset(y: cardAppearances[5] ? 0 : 20)
                         }
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.horizontal)
@@ -241,8 +252,10 @@ struct SummaryCardView: View {
             return "calendar.badge.clock"
         case let str where str.contains("7 days"):
             return "calendar.badge.plus"
-        case let str where str.contains("month"):
+        case let str where str.contains("this month"):
             return "calendar"
+        case let str where str.contains("last month"):
+            return "calendar.badge.minus"
         case let str where str.contains("three years"), let str where str.contains("lifetime"):
             return "infinity.circle.fill"
         default:
@@ -258,8 +271,10 @@ struct SummaryCardView: View {
             return .orange
         case let str where str.contains("7 days"):
             return .blue
-        case let str where str.contains("month"):
+        case let str where str.contains("this month"):
             return .purple
+        case let str where str.contains("last month"):
+            return .pink
         case let str where str.contains("three years"), let str where str.contains("lifetime"):
             return .indigo
         default:
@@ -377,159 +392,324 @@ struct DayMetricsSheet: View {
     let title: String
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @State private var cardAppearances: [Bool] = Array(repeating: false, count: 3)
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Sticky header with drag indicator
-            VStack(spacing: 8) {
-                Capsule()
-                    .fill(Color(.systemGray4))
-                    .frame(width: 36, height: 5)
-                    .padding(.top, 8)
+        NavigationView {
+            ZStack {
+                // Modern background
+                Color(.systemGroupedBackground)
+                    .ignoresSafeArea()
                 
-                // Header with date and close button
-                HStack {
-                    Button(action: { dismiss() }) {
-                        Text("Done")
-                            .font(.body.weight(.medium))
-                            .foregroundColor(.accentColor)
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Header section with enhanced styling
+                        headerSection
+                        
+                        // Enhanced metric cards
+                        VStack(spacing: 20) {
+                            // Performance Card
+                            EnhancedMetricCard(
+                                title: "Engagement Metrics",
+                                icon: "chart.bar.xaxis.ascending.badge.clock",
+                                iconColor: .blue,
+                                metrics: [
+                                    MetricData(
+                                        icon: "cursorarrow.click",
+                                        title: "Clicks",
+                                        value: metrics.clicks,
+                                        subtitle: "User Interactions",
+                                        color: .blue
+                                    ),
+                                    MetricData(
+                                        icon: "eye.fill",
+                                        title: "Impressions",
+                                        value: metrics.impressions,
+                                        subtitle: "Ad Views",
+                                        color: .cyan
+                                    ),
+                                    MetricData(
+                                        icon: "percent",
+                                        title: "CTR",
+                                        value: metrics.formattedImpressionsCTR,
+                                        subtitle: "Click Rate",
+                                        color: .indigo
+                                    )
+                                ]
+                            )
+                            .opacity(cardAppearances[0] ? 1 : 0)
+                            .offset(y: cardAppearances[0] ? 0 : 30)
+                            
+                            // Traffic Card
+                            EnhancedMetricCard(
+                                title: "Traffic Analytics",
+                                icon: "network.badge.shield.half.filled",
+                                iconColor: .orange,
+                                metrics: [
+                                    MetricData(
+                                        icon: "doc.text.fill",
+                                        title: "Page Views",
+                                        value: metrics.requests,
+                                        subtitle: "Site Traffic",
+                                        color: .orange
+                                    ),
+                                    MetricData(
+                                        icon: "checkmark.circle.fill",
+                                        title: "Matched Requests",
+                                        value: metrics.matchedRequests,
+                                        subtitle: "Ad Requests",
+                                        color: .mint
+                                    )
+                                ]
+                            )
+                            .opacity(cardAppearances[1] ? 1 : 0)
+                            .offset(y: cardAppearances[1] ? 0 : 30)
+                            
+                            // Cost Analysis Card
+                            EnhancedMetricCard(
+                                title: "Cost Analysis",
+                                icon: "chart.pie.fill",
+                                iconColor: .purple,
+                                metrics: [
+                                    MetricData(
+                                        icon: "creditcard.fill",
+                                        title: "Cost Per Click",
+                                        value: metrics.formattedCostPerClick,
+                                        subtitle: "Average CPC",
+                                        color: .purple
+                                    )
+                                ]
+                            )
+                            .opacity(cardAppearances[2] ? 1 : 0)
+                            .offset(y: cardAppearances[2] ? 0 : 30)
+                        }
+                        .padding(.horizontal, 20)
+                        
+                        // Footer disclaimer
+                        Text("AdRadar is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 20)
+                            .padding(.bottom, 20)
                     }
-                    Spacer()
+                    .padding(.top, 20)
+                }
+            }
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                    .font(.body.weight(.medium))
+                    .foregroundColor(.accentColor)
+                }
+                
+                ToolbarItem(placement: .principal) {
                     Text(title)
-                        .font(.title3.weight(.semibold))
-                    Spacer()
-                    // Invisible button to balance the layout
-                    Text("Done")
-                        .font(.body)
-                        .opacity(0)
+                        .font(.title2.weight(.bold))
+                        .foregroundColor(.primary)
                 }
-                .padding(.horizontal)
             }
-            .background(Color(.systemGroupedBackground))
-            
-            // Metrics list
-            ScrollView {
-                VStack(spacing: 16) {
-                    // Revenue section
-                    MetricSection(title: "Revenue", color: .green) {
-                        MetricRow(
-                            icon: "chart.line.uptrend.xyaxis.circle.fill",
-                            title: "Estimated Earnings",
-                            value: metrics.formattedEstimatedEarnings,
-                            color: .green
-                        )
-                    }
-                    
-                    // Performance section
-                    MetricSection(title: "Performance", color: .blue) {
-                        MetricRow(
-                            icon: "cursorarrow.click",
-                            title: "Clicks",
-                            value: metrics.clicks,
-                            color: .blue
-                        )
-                        MetricRow(
-                            icon: "eye.fill",
-                            title: "Impressions",
-                            value: metrics.impressions,
-                            color: .blue
-                        )
-                        MetricRow(
-                            icon: "percent",
-                            title: "Impression CTR",
-                            value: metrics.formattedImpressionsCTR,
-                            color: .blue
-                        )
-                    }
-                    
-                    // Requests section
-                    MetricSection(title: "Requests", color: .orange) {
-                        MetricRow(
-                            icon: "doc.text.fill",
-                            title: "Page Views",
-                            value: metrics.requests,
-                            color: .orange
-                        )
-                        MetricRow(
-                            icon: "checkmark.circle.fill",
-                            title: "Matched Requests",
-                            value: metrics.matchedRequests,
-                            color: .orange
-                        )
-                    }
-                    
-                    // Cost section
-                    MetricSection(title: "Cost", color: .purple) {
-                        MetricRow(
-                            icon: "dollarsign.circle.fill",
-                            title: "Cost Per Click",
-                            value: metrics.formattedCostPerClick,
-                            color: .purple
-                        )
-                    }
-                }
-                .padding()
-            }
-            .background(Color(.systemGroupedBackground))
         }
-        .presentationDetents([.height(600)])
+        .presentationDetents([.large])
         .presentationDragIndicator(.visible)
-    }
-}
-
-struct MetricSection<Content: View>: View {
-    let title: String
-    let color: Color
-    let content: Content
-    
-    init(title: String, color: Color, @ViewBuilder content: () -> Content) {
-        self.title = title
-        self.color = color
-        self.content = content()
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
-                .font(.headline)
-                .foregroundColor(.primary)
-                .padding(.horizontal, 4)
-            
-            VStack(spacing: 0) {
-                content
+        .onAppear {
+            // Stagger the card animations
+            for index in 0..<cardAppearances.count {
+                withAnimation(.easeOut(duration: 0.6).delay(Double(index) * 0.1)) {
+                    cardAppearances[index] = true
+                }
             }
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
     }
+    
+    private var headerSection: some View {
+        VStack(spacing: 16) {
+            // App Icon or Branding Element
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color.accentColor.opacity(0.8),
+                                Color.accentColor
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 64, height: 64)
+                    .shadow(color: Color.accentColor.opacity(0.3), radius: 15, x: 0, y: 8)
+                
+                Image(systemName: "chart.bar.doc.horizontal.fill")
+                    .font(.system(size: 28, weight: .medium))
+                    .foregroundColor(.white)
+            }
+            
+            VStack(spacing: 4) {
+                Text("Detailed Metrics")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                
+                Text("Comprehensive performance overview")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.horizontal, 20)
+    }
 }
 
-struct MetricRow: View {
+// Supporting structures and views
+struct MetricData {
     let icon: String
     let title: String
     let value: String
+    let subtitle: String
     let color: Color
+}
+
+struct EnhancedMetricCard: View {
+    let title: String
+    let icon: String
+    let iconColor: Color
+    let metrics: [MetricData]
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(color)
-                .frame(width: 24, height: 24)
+        VStack(alignment: .leading, spacing: 0) {
+            // Header section with enhanced styling
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 12) {
+                    // Enhanced icon design
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        iconColor.opacity(0.15),
+                                        iconColor.opacity(0.1)
+                                    ]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 44, height: 44)
+                        
+                        Image(systemName: icon)
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundColor(iconColor)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(title)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                        
+                        Text("Performance insights")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                }
+                
+                // Metrics grid with improved layout
+                if metrics.count == 1 {
+                    // Single metric - full width
+                    singleMetricView(metrics[0])
+                } else {
+                    // Multiple metrics - grid layout
+                    LazyVGrid(columns: [
+                        GridItem(.flexible()),
+                        GridItem(.flexible())
+                    ], spacing: 16) {
+                        ForEach(Array(metrics.enumerated()), id: \.offset) { index, metric in
+                            metricPillView(metric)
+                        }
+                    }
+                }
+            }
+            .padding(20)
+        }
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.3 : 0.08), radius: 12, x: 0, y: 4)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.primary.opacity(0.05), lineWidth: 0.5)
+        )
+    }
+    
+    private func singleMetricView(_ metric: MetricData) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
+                Image(systemName: metric.icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(metric.color)
+                    .frame(width: 24, height: 24)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(metric.title)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                    
+                    Text(metric.subtitle)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+            }
             
-            Text(title)
-                .font(.body)
-                .foregroundColor(.primary)
-            
-            Spacer()
-            
-            Text(value)
-                .font(.body.weight(.semibold))
+            Text(metric.value)
+                .font(.system(.title, design: .rounded))
+                .fontWeight(.bold)
                 .foregroundColor(.primary)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(Color(.secondarySystemGroupedBackground))
+        .padding(16)
+        .background(Color(.tertiarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+    
+    private func metricPillView(_ metric: MetricData) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Image(systemName: metric.icon)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(metric.color)
+                    .frame(width: 20, height: 20)
+                
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(metric.title)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                    
+                    Text(metric.subtitle)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+            }
+            
+            Text(metric.value)
+                .font(.system(.callout, design: .rounded))
+                .fontWeight(.bold)
+                .foregroundColor(.primary)
+                .lineLimit(1)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(Color(.tertiarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 }
 

@@ -13,6 +13,9 @@ class SettingsViewModel: ObservableObject {
     @Published var timeZone: String = ""
     @Published var currency: String = ""
     
+    // Payment Threshold
+    @Published var paymentThreshold: Double = 100.0
+    
     private var cancellables = Set<AnyCancellable>()
     var authViewModel: AuthViewModel
     
@@ -44,6 +47,31 @@ class SettingsViewModel: ObservableObject {
             }
         }
         
+        // Initialize payment threshold - default based on currency
+        if let savedThreshold = UserDefaults.standard.object(forKey: "paymentThreshold") as? Double {
+            self.paymentThreshold = savedThreshold
+        } else {
+            // Set default thresholds based on currency
+            switch currency {
+            case "USD", "EUR", "GBP", "CAD", "AUD":
+                self.paymentThreshold = 100.0
+            case "ZAR":
+                self.paymentThreshold = 1000.0
+            case "INR":
+                self.paymentThreshold = 8000.0
+            case "JPY":
+                self.paymentThreshold = 12000.0
+            case "BRL":
+                self.paymentThreshold = 500.0
+            case "MXN":
+                self.paymentThreshold = 2000.0
+            default:
+                self.paymentThreshold = 100.0
+            }
+            // Save default threshold
+            UserDefaults.standard.set(self.paymentThreshold, forKey: "paymentThreshold")
+        }
+        
         // Fetch account information when initialized
         Task {
             await fetchAccountInfo()
@@ -53,6 +81,11 @@ class SettingsViewModel: ObservableObject {
     func signOut(authViewModel: AuthViewModel) {
         authViewModel.signOut()
         self.isSignedOut = true
+    }
+    
+    func updatePaymentThreshold(_ threshold: Double) {
+        self.paymentThreshold = threshold
+        UserDefaults.standard.set(threshold, forKey: "paymentThreshold")
     }
     
     @MainActor

@@ -356,7 +356,7 @@ struct PlatformDateFilterSheet: View {
             }
             .background(Color(.systemGroupedBackground))
         }
-        .presentationDetents([.height(520), .large])
+        .presentationDetents([.height(600), .large])
         .presentationDragIndicator(.hidden)
     }
     
