@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "AdRadar-iOS-Default-1024x1024@1x.png",
+      "filename" : "icon-final-v1-iOS-Default-1024x1024@1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -12,12 +12,12 @@
           "value" : "dark"
         }
       ],
-      "filename" : "AdRadar-iOS-Dark-1024x1024@1x.png",
+      "filename" : "icon-final-v1-iOS-Dark-1024x1024@1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "AdRadar-iOS-Default-1024x1024@2x.png",
+      "filename" : "icon-final-v1-iOS-Default-1024x1024@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
@@ -28,12 +28,12 @@
           "value" : "dark"
         }
       ],
-      "filename" : "AdRadar-iOS-Dark-1024x1024@2x.png",
+      "filename" : "icon-final-v1-iOS-Dark-1024x1024@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "AdRadar-iOS-Default-1024x1024@3x.png",
+      "filename" : "icon-final-v1-iOS-Default-1024x1024@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     },
@@ -44,7 +44,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "AdRadar-iOS-Dark-1024x1024@3x.png",
+      "filename" : "icon-final-v1-iOS-Dark-1024x1024@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
