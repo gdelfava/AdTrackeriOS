@@ -217,99 +217,585 @@ struct DateFilterSheet: View {
     @Binding var selectedFilter: DateFilter
     @Binding var isPresented: Bool
     var onFilterSelected: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
+    
+    // Grouping filters by type for better organization
+    private var quickFilters: [DateFilter] {
+        [.today, .yesterday]
+    }
+    
+    private var periodFilters: [DateFilter] {
+        [.last7Days, .thisMonth, .lastMonth]
+    }
+    
+    private var extendedFilters: [DateFilter] {
+        [.lifetime]
+    }
     
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(DateFilter.allCases, id: \.self) { filter in
-                    Button(action: {
-                        selectedFilter = filter
-                        onFilterSelected()
-                        isPresented = false
-                    }) {
-                        HStack {
-                            Text(filter.rawValue)
-                                .foregroundColor(.primary)
-                            Spacer()
-                            if selectedFilter == filter {
-                                Image(systemName: "checkmark")
-                                    .foregroundColor(.accentColor)
-                            }
-                        }
-                    }
-                }
-            }
-            .navigationTitle("Select Date Range")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+        VStack(spacing: 0) {
+            // Drag indicator and header
+            VStack(spacing: 16) {
+                Capsule()
+                    .fill(Color(.systemGray4))
+                    .frame(width: 36, height: 5)
+                    .padding(.top, 8)
+                
+                HStack {
+                    Text("Filter by Date")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                    Spacer()
                     Button("Done") {
                         isPresented = false
                     }
+                    .font(.body.weight(.medium))
+                    .foregroundColor(.accentColor)
+                }
+                .padding(.horizontal, 24)
+            }
+            .background(Color(.systemGroupedBackground))
+            
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Quick Access Section
+                    FilterSection(title: "Quick Access") {
+                        VStack(spacing: 0) {
+                            ForEach(Array(quickFilters.enumerated()), id: \.element) { index, filter in
+                                FilterRow(
+                                    filter: filter,
+                                    isSelected: selectedFilter == filter,
+                                    action: {
+                                        selectFilter(filter)
+                                    }
+                                )
+                                
+                                if index < quickFilters.count - 1 {
+                                    Divider()
+                                        .padding(.leading, 56)
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Time Periods Section
+                    FilterSection(title: "Time Periods") {
+                        VStack(spacing: 0) {
+                            ForEach(Array(periodFilters.enumerated()), id: \.element) { index, filter in
+                                FilterRow(
+                                    filter: filter,
+                                    isSelected: selectedFilter == filter,
+                                    action: {
+                                        selectFilter(filter)
+                                    }
+                                )
+                                
+                                if index < periodFilters.count - 1 {
+                                    Divider()
+                                        .padding(.leading, 56)
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Extended Range Section
+                    FilterSection(title: "Extended Range") {
+                        VStack(spacing: 0) {
+                            ForEach(extendedFilters, id: \.self) { filter in
+                                FilterRow(
+                                    filter: filter,
+                                    isSelected: selectedFilter == filter,
+                                    action: {
+                                        selectFilter(filter)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    
+                    // Current Selection Summary
+                    if let summary = getFilterSummary() {
+                        VStack(spacing: 8) {
+                            Text("Current Selection")
+                                .font(.footnote)
+                                .fontWeight(.medium)
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            HStack {
+                                Image(systemName: "calendar")
+                                    .font(.caption)
+                                    .foregroundColor(.accentColor)
+                                Text(summary)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background(Color(.tertiarySystemGroupedBackground))
+                            .cornerRadius(8)
+                        }
+                        .padding(.horizontal, 24)
+                    }
+                }
+                .padding(.top, 24)
+                .padding(.bottom, 32)
+            }
+            .background(Color(.systemGroupedBackground))
+        }
+        .presentationDetents([.height(520), .large])
+        .presentationDragIndicator(.hidden)
+    }
+    
+    private func selectFilter(_ filter: DateFilter) {
+        // Haptic feedback
+        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+        impactFeedback.impactOccurred()
+        
+        selectedFilter = filter
+        onFilterSelected()
+        
+        // Delay dismissal slightly for better UX
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            isPresented = false
+        }
+    }
+    
+    private func getFilterSummary() -> String? {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        let range = selectedFilter.dateRange
+        
+        switch selectedFilter {
+        case .today:
+            return "Today only"
+        case .yesterday:
+            return "Yesterday only"
+        case .last7Days:
+            return "Last 7 days including today"
+        case .thisMonth:
+            return "From \(formatter.string(from: range.start)) to today"
+        case .lastMonth:
+            return "Previous month period"
+        case .lifetime:
+            return "Last 3 years of data"
+        }
+    }
+}
+
+struct FilterSection<Content: View>: View {
+    let title: String
+    let content: Content
+    
+    init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 24)
+            
+            content
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .padding(.horizontal, 24)
+        }
+    }
+}
+
+struct FilterRow: View {
+    let filter: DateFilter
+    let isSelected: Bool
+    let action: () -> Void
+    
+    @State private var isPressed = false
+    
+    private var filterIcon: String {
+        switch filter {
+        case .today:
+            return "calendar.circle.fill"
+        case .yesterday:
+            return "calendar.badge.clock"
+        case .last7Days:
+            return "calendar.badge.exclamationmark"
+        case .thisMonth:
+            return "calendar"
+        case .lastMonth:
+            return "calendar.badge.minus"
+        case .lifetime:
+            return "infinity.circle.fill"
+        }
+    }
+    
+    private var filterColor: Color {
+        switch filter {
+        case .today:
+            return .green
+        case .yesterday:
+            return .orange
+        case .last7Days:
+            return .blue
+        case .thisMonth:
+            return .purple
+        case .lastMonth:
+            return .red
+        case .lifetime:
+            return .indigo
+        }
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: filterIcon)
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(isSelected ? .white : filterColor)
+                    .frame(width: 24, height: 24)
+                    .background(
+                        Circle()
+                            .fill(isSelected ? filterColor : filterColor.opacity(0.1))
+                    )
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(filter.rawValue)
+                        .font(.body)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                    
+                    if let description = getFilterDescription() {
+                        Text(description)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Spacer()
+                
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(.accentColor)
                 }
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color(.secondarySystemGroupedBackground))
+            .scaleEffect(isPressed ? 0.98 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: isPressed)
         }
-        .presentationDetents([.height(350)])
+        .buttonStyle(PlainButtonStyle())
+        .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = pressing
+            }
+        }, perform: {})
+    }
+    
+    private func getFilterDescription() -> String? {
+        switch filter {
+        case .today:
+            return "Current day data"
+        case .yesterday:
+            return "Previous day data"
+        case .last7Days:
+            return "Week overview"
+        case .thisMonth:
+            return "Month to date"
+        case .lastMonth:
+            return "Previous month"
+        case .lifetime:
+            return "All available data"
+        }
     }
 }
 
 struct DomainCard: View {
     let domain: DomainData
+    @State private var isPressed = false
+    @State private var showDetailedMetrics = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // Header with domain name and earnings
+        VStack(alignment: .leading, spacing: 0) {
+            // Header Section
+            headerSection
+            
+            // Divider
+            Rectangle()
+                .fill(Color(.systemGray5))
+                .frame(height: 1)
+                .padding(.horizontal, 20)
+            
+            // Main Metrics Section
+            mainMetricsSection
+            
+            // Detailed Metrics Section (expandable)
+            if showDetailedMetrics {
+                detailedMetricsSection
+            }
+            
+            // Expand/Collapse Button
+            expandButton
+        }
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.easeInOut(duration: 0.1), value: isPressed)
+        .animation(.easeInOut(duration: 0.3), value: showDetailedMetrics)
+        .onTapGesture {
+            // Haptic feedback
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+            
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = false
+                }
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showDetailedMetrics.toggle()
+                }
+            }
+        }
+    }
+    
+    private var headerSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(domain.formattedEarnings)
-                    .font(.system(.title, design: .rounded))
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
+                // Domain icon and name
+                HStack(spacing: 12) {
+                    Image(systemName: "globe.americas.fill")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(.accentColor)
+                        .frame(width: 32, height: 32)
+                        .background(Color.accentColor.opacity(0.1))
+                        .clipShape(Circle())
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(domain.domainName)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
+                        
+                        Text("Domain Performance")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
                 
                 Spacer()
                 
-                Text(domain.domainName)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.trailing)
+                // Earnings badge
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(domain.formattedEarnings)
+                        .font(.system(.title2, design: .rounded))
+                        .fontWeight(.bold)
+                        .foregroundColor(.green)
+                    
+                    Text("Earnings")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                        .textCase(.uppercase)
+                        .fontWeight(.medium)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.green.opacity(0.08))
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+    }
+    
+    private var mainMetricsSection: some View {
+        HStack(spacing: 0) {
+            MetricPill(
+                icon: "eye.fill",
+                title: "Impressions",
+                value: domain.impressions,
+                color: .blue
+            )
             
-            // Metrics Grid
+            Divider()
+                .frame(height: 40)
+            
+            MetricPill(
+                icon: "cursorarrow.click.2",
+                title: "Clicks",
+                value: domain.clicks,
+                color: .orange
+            )
+            
+            Divider()
+                .frame(height: 40)
+            
+            MetricPill(
+                icon: "percent",
+                title: "CTR",
+                value: domain.formattedCTR,
+                color: .purple
+            )
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+    }
+    
+    private var detailedMetricsSection: some View {
+        VStack(spacing: 0) {
+            Rectangle()
+                .fill(Color(.systemGray5))
+                .frame(height: 1)
+                .padding(.horizontal, 20)
+            
             LazyVGrid(columns: [
                 GridItem(.flexible()),
                 GridItem(.flexible())
             ], spacing: 16) {
-                DomainMetricView(title: "Requests", value: domain.requests)
-                DomainMetricView(title: "Page Views", value: domain.pageViews)
-                DomainMetricView(title: "Impressions", value: domain.impressions)
-                DomainMetricView(title: "Clicks", value: domain.clicks)
-                DomainMetricView(title: "CTR", value: domain.formattedCTR)
-                DomainMetricView(title: "RPM", value: domain.formattedRPM)
+                DetailedMetricRow(
+                    icon: "doc.text.fill",
+                    title: "Requests",
+                    value: domain.requests,
+                    color: .indigo
+                )
+                
+                DetailedMetricRow(
+                    icon: "newspaper.fill",
+                    title: "Page Views",
+                    value: domain.pageViews,
+                    color: .teal
+                )
+                
+                DetailedMetricRow(
+                    icon: "chart.line.uptrend.xyaxis",
+                    title: "RPM",
+                    value: domain.formattedRPM,
+                    color: .pink
+                )
+                
+                DetailedMetricRow(
+                    icon: "dollarsign.circle.fill",
+                    title: "Revenue",
+                    value: domain.formattedEarnings,
+                    color: .green
+                )
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+            .padding(.bottom, 12)
         }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(12)
+    }
+    
+    private var expandButton: some View {
+        HStack {
+            Spacer()
+            
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showDetailedMetrics.toggle()
+                }
+            }) {
+                HStack(spacing: 6) {
+                    Text(showDetailedMetrics ? "Less Details" : "More Details")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                    
+                    Image(systemName: showDetailedMetrics ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 10, weight: .medium))
+                }
+                .foregroundColor(.accentColor)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.accentColor.opacity(0.08))
+                .clipShape(Capsule())
+            }
+            .buttonStyle(PlainButtonStyle())
+            
+            Spacer()
+        }
+        .padding(.bottom, 16)
     }
 }
 
-struct DomainMetricView: View {
+struct MetricPill: View {
+    let icon: String
     let title: String
     let value: String
+    let color: Color
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            Text(value)
-                .font(.system(.subheadline, design: .rounded))
-                .fontWeight(.medium)
-                .foregroundColor(.primary)
-                .lineLimit(1)
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 28, height: 28)
+                .background(color.opacity(0.1))
+                .clipShape(Circle())
+            
+            VStack(spacing: 2) {
+                Text(value)
+                    .font(.system(.body, design: .rounded))
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+                
+                Text(title)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .fontWeight(.medium)
+                    .textCase(.uppercase)
+                    .lineLimit(1)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+struct DetailedMetricRow: View {
+    let icon: String
+    let title: String
+    let value: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 24, height: 24)
+                .background(color.opacity(0.1))
+                .clipShape(Circle())
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fontWeight(.medium)
+                
+                Text(value)
+                    .font(.system(.subheadline, design: .rounded))
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+            }
+            
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color(.tertiarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 }
 

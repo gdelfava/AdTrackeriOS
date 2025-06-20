@@ -164,56 +164,169 @@ struct UnpaidEarningsCardView: View {
     let date: String
     let isPaid: Bool
     
+    @State private var isExpanded = false
+    @State private var isPressed = false
+    
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color(.systemGray6))
-                .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(alignment: .center) {
-                    Image(systemName: "calendar.badge.clock")
-                        .font(.system(size: 22))
-                        .foregroundColor(.primary)
-                        //.padding(2)
-                        //.background(Color(.systemGray3))
-                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                    Text("Unpaid Earnings")
-                        .font(.caption2.weight(.regular))
-                        .foregroundColor(.primary)
-                    Spacer()
-                }
-                HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(amount)
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .fontDesign(.rounded)
-                            .foregroundColor(.primary)
-                            .minimumScaleFactor(0.5)
-                            .lineLimit(1)
-                        Text("Pending")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                            .lineLimit(1)
+        VStack(alignment: .leading, spacing: 0) {
+            // Header Section
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    // Earnings icon and status
+                    HStack(spacing: 12) {
+                        Image(systemName: "banknote.fill")
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundColor(.orange)
+                            .frame(width: 32, height: 32)
+                            .background(Color.orange.opacity(0.1))
+                            .clipShape(Circle())
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Unpaid Earnings")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                            
+                            Text("Current Period")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                     }
+                    
+                    Spacer()
+                    
+                    // Status badge
+                    Text(isPaid ? "Paid" : "Pending")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .textCase(.uppercase)
+                        .foregroundColor(isPaid ? .green : .orange)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background((isPaid ? Color.green : Color.orange).opacity(0.1))
+                        .clipShape(Capsule())
+                }
+                
+                // Main amount
+                Text(amount)
+                    .font(.system(.largeTitle, design: .rounded))
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.leading)
+                
+                // Main metrics pills
+                HStack(spacing: 12) {
+                    PaymentMetricPill(
+                        icon: "clock.fill",
+                        title: "Status",
+                        value: isPaid ? "Paid" : "Pending",
+                        color: isPaid ? .green : .orange
+                    )
+                    
+                    PaymentMetricPill(
+                        icon: "calendar.circle.fill",
+                        title: "Period",
+                        value: "Current",
+                        color: .blue
+                    )
                 }
             }
-            .padding(12)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            // Status pill
-            HStack {
-                Text(isPaid ? "Paid" : "Unpaid")
-                    .font(.caption.weight(.medium))
-                    .foregroundColor(isPaid ? .white : .red)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(isPaid ? Color.green : Color.red.opacity(0.18))
-                    .clipShape(Capsule())
+            .padding(20)
+            
+            // Expandable detailed metrics
+            if isExpanded {
+                VStack(spacing: 0) {
+                    Rectangle()
+                        .fill(Color(.separator))
+                        .frame(height: 0.5)
+                        .padding(.horizontal, 20)
+                    
+                    VStack(spacing: 12) {
+                        PaymentDetailedMetricRow(
+                            icon: "calendar.badge.plus",
+                            title: "Earnings Date",
+                            value: date,
+                            color: .blue
+                        )
+                        
+                        PaymentDetailedMetricRow(
+                            icon: "creditcard.fill",
+                            title: "Payment Method",
+                            value: "Bank Transfer",
+                            color: .purple
+                        )
+                        
+                        PaymentDetailedMetricRow(
+                            icon: "building.2.fill",
+                            title: "Payment Source",
+                            value: "Google AdSense",
+                            color: .green
+                        )
+                        
+                        PaymentDetailedMetricRow(
+                            icon: "info.circle.fill",
+                            title: "Payment Info",
+                            value: isPaid ? "Completed" : "Processing on next payment date",
+                            color: .secondary
+                        )
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 16)
+                }
+                .background(Color(.tertiarySystemBackground))
             }
-            .padding(18)
+            
+            // Expand/Collapse button
+            Button(action: {
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
+                
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    isExpanded.toggle()
+                }
+            }) {
+                HStack {
+                    Text(isExpanded ? "Less Details" : "More Details")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.secondary)
+                        .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                .background(Color(.quaternarySystemFill))
+            }
         }
-        //.frame(height: 110)
-        .padding(.horizontal, 2)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.06), radius: 12, x: 0, y: 4)
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.easeInOut(duration: 0.15), value: isPressed)
+        .onTapGesture {
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+            
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = false
+                }
+            }
+            
+            withAnimation(.easeInOut(duration: 0.3)) {
+                isExpanded.toggle()
+            }
+        }
     }
 }
 
@@ -221,47 +334,232 @@ struct PreviousPaymentCardView: View {
     let amount: String
     let date: String
     
+    @State private var isExpanded = false
+    @State private var isPressed = false
+    
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color(.systemGray6))
-                .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(alignment: .center) {
-                    Text("Previous Payment")
-                        .font(.caption2.weight(.regular))
-                        .foregroundColor(.primary)
+        VStack(alignment: .leading, spacing: 0) {
+            // Header Section
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    // Payment icon and info
+                    HStack(spacing: 12) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundColor(.green)
+                            .frame(width: 32, height: 32)
+                            .background(Color.green.opacity(0.1))
+                            .clipShape(Circle())
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Previous Payment")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                            
+                            Text("Last Completed")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
                     Spacer()
+                    
+                    // Status badge
+                    Text("Paid")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .textCase(.uppercase)
+                        .foregroundColor(.green)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Color.green.opacity(0.1))
+                        .clipShape(Capsule())
                 }
-                HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text(amount)
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .fontDesign(.rounded)
-                        .foregroundColor(.primary)
-                        .minimumScaleFactor(0.5)
-                        .lineLimit(1)
+                
+                // Main amount
+                Text(amount)
+                    .font(.system(.largeTitle, design: .rounded))
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.leading)
+                
+                // Main metrics pills
+                HStack(spacing: 12) {
+                    PaymentMetricPill(
+                        icon: "checkmark.circle.fill",
+                        title: "Status",
+                        value: "Completed",
+                        color: .green
+                    )
+                    
+                    PaymentMetricPill(
+                        icon: "calendar.badge.checkmark",
+                        title: "Date",
+                        value: "Last Period",
+                        color: .blue
+                    )
                 }
-                Text(date)
-                    .font(.caption2)
-                    .foregroundColor(Color.primary.opacity(0.7))
             }
-            .padding(12)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            // Status pill
-            HStack {
-                Text("Paid")
-                    .font(.caption.weight(.medium))
-                    .foregroundColor(.green)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(Color.green.opacity(0.18))
-                    .clipShape(Capsule())
+            .padding(20)
+            
+            // Expandable detailed metrics
+            if isExpanded {
+                VStack(spacing: 0) {
+                    Rectangle()
+                        .fill(Color(.separator))
+                        .frame(height: 0.5)
+                        .padding(.horizontal, 20)
+                    
+                    VStack(spacing: 12) {
+                        PaymentDetailedMetricRow(
+                            icon: "calendar.circle.fill",
+                            title: "Payment Date",
+                            value: date,
+                            color: .blue
+                        )
+                        
+                        PaymentDetailedMetricRow(
+                            icon: "creditcard.fill",
+                            title: "Payment Method",
+                            value: "Bank Transfer",
+                            color: .purple
+                        )
+                        
+                        PaymentDetailedMetricRow(
+                            icon: "building.2.fill",
+                            title: "Payment Source",
+                            value: "Google AdSense",
+                            color: .green
+                        )
+                        
+                        PaymentDetailedMetricRow(
+                            icon: "clock.badge.checkmark.fill",
+                            title: "Processing Time",
+                            value: "Instant Transfer",
+                            color: .orange
+                        )
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 16)
+                }
+                .background(Color(.tertiarySystemBackground))
             }
-            .padding(18)
+            
+            // Expand/Collapse button
+            Button(action: {
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
+                
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    isExpanded.toggle()
+                }
+            }) {
+                HStack {
+                    Text(isExpanded ? "Less Details" : "More Details")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.secondary)
+                        .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                .background(Color(.quaternarySystemFill))
+            }
         }
-        //.frame(height: 110)
-        .padding(.horizontal, 2)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.06), radius: 12, x: 0, y: 4)
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.easeInOut(duration: 0.15), value: isPressed)
+        .onTapGesture {
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+            
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = false
+                }
+            }
+            
+            withAnimation(.easeInOut(duration: 0.3)) {
+                isExpanded.toggle()
+            }
+        }
+    }
+}
+
+// Supporting components for payments
+struct PaymentMetricPill: View {
+    let icon: String
+    let title: String
+    let value: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(color)
+            
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+                
+                Text(value)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color(.tertiarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .frame(maxWidth: .infinity)
+    }
+}
+
+struct PaymentDetailedMetricRow: View {
+    let icon: String
+    let title: String
+    let value: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 20, height: 20)
+            
+            Text(title)
+                .font(.callout)
+                .foregroundColor(.secondary)
+            
+            Spacer()
+            
+            Text(value)
+                .font(.callout)
+                .fontWeight(.medium)
+                .foregroundColor(.primary)
+                .multilineTextAlignment(.trailing)
+        }
+        .padding(.vertical, 4)
     }
 }
 

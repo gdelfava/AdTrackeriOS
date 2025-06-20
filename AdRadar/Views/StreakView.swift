@@ -183,67 +183,356 @@ struct StreakView: View {
 struct StreakDayCard: View {
     let day: StreakDayData
     let viewModel: StreakViewModel
+    @State private var isPressed = false
+    @State private var showDetailedMetrics = false
+    
+    private var dayOfWeek: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        return formatter.string(from: day.date)
+    }
+    
+    private var formattedDate: String {
+        day.date.formatted(date: .abbreviated, time: .omitted)
+    }
+    
+    private var dayIcon: String {
+        switch dayOfWeek.lowercased() {
+        case "monday":
+            return "calendar.circle.fill"
+        case "tuesday":
+            return "calendar.badge.plus"
+        case "wednesday":
+            return "calendar"
+        case "thursday":
+            return "calendar.badge.clock"
+        case "friday":
+            return "calendar.badge.checkmark"
+        case "saturday":
+            return "sun.max.fill"
+        case "sunday":
+            return "moon.stars.fill"
+        default:
+            return "calendar"
+        }
+    }
+    
+    private var dayColor: Color {
+        switch dayOfWeek.lowercased() {
+        case "monday":
+            return .blue
+        case "tuesday":
+            return .green
+        case "wednesday":
+            return .orange
+        case "thursday":
+            return .purple
+        case "friday":
+            return .pink
+        case "saturday":
+            return .yellow
+        case "sunday":
+            return .indigo
+        default:
+            return .accentColor
+        }
+    }
     
     var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Header Section
+            headerSection
+            
+            // Divider
+            Rectangle()
+                .fill(Color(.systemGray5))
+                .frame(height: 1)
+                .padding(.horizontal, 20)
+            
+            // Main Metrics Section
+            mainMetricsSection
+            
+            // Detailed Metrics Section (expandable)
+            if showDetailedMetrics {
+                detailedMetricsSection
+            }
+            
+            // Expand/Collapse Button
+            expandButton
+        }
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.easeInOut(duration: 0.1), value: isPressed)
+        .animation(.easeInOut(duration: 0.3), value: showDetailedMetrics)
+        .onTapGesture {
+            // Haptic feedback
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+            
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = false
+                }
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showDetailedMetrics.toggle()
+                }
+            }
+        }
+    }
+    
+    private var headerSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text(day.date.formatted(date: .abbreviated, time: .omitted))
-                    .font(.caption)
-                    .fontWeight(.regular)
-                    .foregroundColor(.primary)
+                // Day icon and date
+                HStack(spacing: 12) {
+                    Image(systemName: dayIcon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(dayColor)
+                        .frame(width: 32, height: 32)
+                        .background(dayColor.opacity(0.1))
+                        .clipShape(Circle())
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(dayOfWeek)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                        
+                        Text(formattedDate)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
                 
                 Spacer()
                 
+                // Delta indicator (if available)
                 if let delta = day.delta {
-                    HStack(spacing: 4) {
-                        Image(systemName: day.deltaPositive == true ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
-                            .foregroundColor(day.deltaPositive == true ? .green : .red)
-                        Text(viewModel.formatCurrency(delta))
-                            .font(.subheadline)
-                            .foregroundColor(day.deltaPositive == true ? .green : .red)
+                    VStack(alignment: .trailing, spacing: 2) {
+                        HStack(spacing: 4) {
+                            Image(systemName: day.deltaPositive == true ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
+                                .foregroundColor(day.deltaPositive == true ? .green : .red)
+                                .font(.system(size: 14, weight: .medium))
+                            
+                            Text(viewModel.formatCurrency(delta))
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundColor(day.deltaPositive == true ? .green : .red)
+                        }
+                        
+                        Text("vs previous")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                            .textCase(.uppercase)
                     }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .background((day.deltaPositive == true ? Color.green : Color.red).opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                 }
             }
             
-            Text(viewModel.formatCurrency(day.earnings))
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundColor(.primary)
+            // Main earnings display
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Daily Earnings")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .textCase(.uppercase)
+                    .fontWeight(.medium)
+                
+                Text(viewModel.formatCurrency(day.earnings))
+                    .font(.system(.title, design: .rounded))
+                    .fontWeight(.bold)
+                    .foregroundColor(.green)
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+    }
+    
+    private var mainMetricsSection: some View {
+        HStack(spacing: 0) {
+            StreakMetricPill(
+                icon: "cursorarrow.click.2",
+                title: "Clicks",
+                value: "\(day.clicks)",
+                color: .blue
+            )
+            
+            Divider()
+                .frame(height: 40)
+            
+            StreakMetricPill(
+                icon: "eye.fill",
+                title: "Impressions",
+                value: "\(day.impressions)",
+                color: .orange
+            )
+            
+            Divider()
+                .frame(height: 40)
+            
+            StreakMetricPill(
+                icon: "percent",
+                title: "CTR",
+                value: viewModel.formatPercentage(day.impressionCTR),
+                color: .purple
+            )
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+    }
+    
+    private var detailedMetricsSection: some View {
+        VStack(spacing: 0) {
+            Rectangle()
+                .fill(Color(.systemGray5))
+                .frame(height: 1)
+                .padding(.horizontal, 20)
             
             LazyVGrid(columns: [
                 GridItem(.flexible()),
-                GridItem(.flexible()),
                 GridItem(.flexible())
             ], spacing: 16) {
-                MetricView(title: "Clicks", value: "\(day.clicks)")
-                MetricView(title: "Impressions", value: "\(day.impressions)")
-                MetricView(title: "CTR", value: viewModel.formatPercentage(day.impressionCTR))
-                MetricView(title: "Requests", value: "\(day.requests)")
-                MetricView(title: "Page Views", value: "\(day.pageViews)")
-                MetricView(title: "CPC", value: viewModel.formatCurrency(day.costPerClick))
+                StreakDetailedMetricRow(
+                    icon: "doc.text.fill",
+                    title: "Requests",
+                    value: "\(day.requests)",
+                    color: .indigo
+                )
+                
+                StreakDetailedMetricRow(
+                    icon: "newspaper.fill",
+                    title: "Page Views",
+                    value: "\(day.pageViews)",
+                    color: .teal
+                )
+                
+                StreakDetailedMetricRow(
+                    icon: "dollarsign.circle.fill",
+                    title: "Cost Per Click",
+                    value: viewModel.formatCurrency(day.costPerClick),
+                    color: .pink
+                )
+                
+                StreakDetailedMetricRow(
+                    icon: "chart.line.uptrend.xyaxis",
+                    title: "Revenue",
+                    value: viewModel.formatCurrency(day.earnings),
+                    color: .green
+                )
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+            .padding(.bottom, 12)
         }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(12)
+    }
+    
+    private var expandButton: some View {
+        HStack {
+            Spacer()
+            
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showDetailedMetrics.toggle()
+                }
+            }) {
+                HStack(spacing: 6) {
+                    Text(showDetailedMetrics ? "Less Details" : "More Details")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                    
+                    Image(systemName: showDetailedMetrics ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 10, weight: .medium))
+                }
+                .foregroundColor(.accentColor)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.accentColor.opacity(0.08))
+                .clipShape(Capsule())
+            }
+            .buttonStyle(PlainButtonStyle())
+            
+            Spacer()
+        }
+        .padding(.bottom, 16)
     }
 }
 
-struct MetricView: View {
+struct StreakMetricPill: View {
+    let icon: String
     let title: String
     let value: String
+    let color: Color
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            Text(value)
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .foregroundColor(.primary)
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 28, height: 28)
+                .background(color.opacity(0.1))
+                .clipShape(Circle())
+            
+            VStack(spacing: 2) {
+                Text(value)
+                    .font(.system(.body, design: .rounded))
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+                
+                Text(title)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .fontWeight(.medium)
+                    .textCase(.uppercase)
+                    .lineLimit(1)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+struct StreakDetailedMetricRow: View {
+    let icon: String
+    let title: String
+    let value: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 24, height: 24)
+                .background(color.opacity(0.1))
+                .clipShape(Circle())
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fontWeight(.medium)
+                
+                Text(value)
+                    .font(.system(.subheadline, design: .rounded))
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+            }
+            
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color(.tertiarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 }
 

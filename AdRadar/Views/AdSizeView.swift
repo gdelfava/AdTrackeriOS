@@ -217,38 +217,301 @@ struct AdSizeDateFilterSheet: View {
     @Binding var selectedFilter: AdSizeDateFilter
     @Binding var isPresented: Bool
     var onFilterSelected: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
+    
+    // Grouping filters by type for better organization
+    private var quickFilters: [AdSizeDateFilter] {
+        [.today, .yesterday]
+    }
+    
+    private var periodFilters: [AdSizeDateFilter] {
+        [.last7Days, .thisMonth, .lastMonth]
+    }
+    
+    private var extendedFilters: [AdSizeDateFilter] {
+        [.lifetime]
+    }
     
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(AdSizeDateFilter.allCases, id: \.self) { filter in
-                    Button(action: {
-                        selectedFilter = filter
-                        onFilterSelected()
-                        isPresented = false
-                    }) {
-                        HStack {
-                            Text(filter.rawValue)
-                                .foregroundColor(.primary)
-                            Spacer()
-                            if selectedFilter == filter {
-                                Image(systemName: "checkmark")
-                                    .foregroundColor(.accentColor)
-                            }
-                        }
-                    }
-                }
-            }
-            .navigationTitle("Select Date Range")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+        VStack(spacing: 0) {
+            // Drag indicator and header
+            VStack(spacing: 16) {
+                Capsule()
+                    .fill(Color(.systemGray4))
+                    .frame(width: 36, height: 5)
+                    .padding(.top, 8)
+                
+                HStack {
+                    Text("Filter by Date")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                    Spacer()
                     Button("Done") {
                         isPresented = false
                     }
+                    .font(.body.weight(.medium))
+                    .foregroundColor(.accentColor)
+                }
+                .padding(.horizontal, 24)
+            }
+            .background(Color(.systemGroupedBackground))
+            
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Quick Access Section
+                    AdSizeFilterSection(title: "Quick Access") {
+                        VStack(spacing: 0) {
+                            ForEach(Array(quickFilters.enumerated()), id: \.element) { index, filter in
+                                AdSizeFilterRow(
+                                    filter: filter,
+                                    isSelected: selectedFilter == filter,
+                                    action: {
+                                        selectFilter(filter)
+                                    }
+                                )
+                                
+                                if index < quickFilters.count - 1 {
+                                    Divider()
+                                        .padding(.leading, 56)
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Time Periods Section
+                    AdSizeFilterSection(title: "Time Periods") {
+                        VStack(spacing: 0) {
+                            ForEach(Array(periodFilters.enumerated()), id: \.element) { index, filter in
+                                AdSizeFilterRow(
+                                    filter: filter,
+                                    isSelected: selectedFilter == filter,
+                                    action: {
+                                        selectFilter(filter)
+                                    }
+                                )
+                                
+                                if index < periodFilters.count - 1 {
+                                    Divider()
+                                        .padding(.leading, 56)
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Extended Range Section
+                    AdSizeFilterSection(title: "Extended Range") {
+                        VStack(spacing: 0) {
+                            ForEach(extendedFilters, id: \.self) { filter in
+                                AdSizeFilterRow(
+                                    filter: filter,
+                                    isSelected: selectedFilter == filter,
+                                    action: {
+                                        selectFilter(filter)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    
+                    // Current Selection Summary
+                    if let summary = getFilterSummary() {
+                        VStack(spacing: 8) {
+                            Text("Current Selection")
+                                .font(.footnote)
+                                .fontWeight(.medium)
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            HStack {
+                                Image(systemName: "calendar")
+                                    .font(.caption)
+                                    .foregroundColor(.accentColor)
+                                Text(summary)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background(Color(.tertiarySystemGroupedBackground))
+                            .cornerRadius(8)
+                        }
+                        .padding(.horizontal, 24)
+                    }
+                }
+                .padding(.top, 24)
+                .padding(.bottom, 32)
+            }
+            .background(Color(.systemGroupedBackground))
+        }
+        .presentationDetents([.height(520), .large])
+        .presentationDragIndicator(.hidden)
+    }
+    
+    private func selectFilter(_ filter: AdSizeDateFilter) {
+        // Haptic feedback
+        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+        impactFeedback.impactOccurred()
+        
+        selectedFilter = filter
+        onFilterSelected()
+        
+        // Delay dismissal slightly for better UX
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            isPresented = false
+        }
+    }
+    
+    private func getFilterSummary() -> String? {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        let range = selectedFilter.dateRange
+        
+        switch selectedFilter {
+        case .today:
+            return "Today only"
+        case .yesterday:
+            return "Yesterday only"
+        case .last7Days:
+            return "Last 7 days including today"
+        case .thisMonth:
+            return "From \(formatter.string(from: range.start)) to today"
+        case .lastMonth:
+            return "Previous month period"
+        case .lifetime:
+            return "Last 3 years of data"
+        }
+    }
+}
+
+struct AdSizeFilterSection<Content: View>: View {
+    let title: String
+    let content: Content
+    
+    init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 24)
+            
+            content
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .padding(.horizontal, 24)
+        }
+    }
+}
+
+struct AdSizeFilterRow: View {
+    let filter: AdSizeDateFilter
+    let isSelected: Bool
+    let action: () -> Void
+    
+    @State private var isPressed = false
+    
+    private var filterIcon: String {
+        switch filter {
+        case .today:
+            return "calendar.circle.fill"
+        case .yesterday:
+            return "calendar.badge.clock"
+        case .last7Days:
+            return "calendar.badge.exclamationmark"
+        case .thisMonth:
+            return "calendar"
+        case .lastMonth:
+            return "calendar.badge.minus"
+        case .lifetime:
+            return "infinity.circle.fill"
+        }
+    }
+    
+    private var filterColor: Color {
+        switch filter {
+        case .today:
+            return .green
+        case .yesterday:
+            return .orange
+        case .last7Days:
+            return .blue
+        case .thisMonth:
+            return .purple
+        case .lastMonth:
+            return .red
+        case .lifetime:
+            return .indigo
+        }
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: filterIcon)
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(isSelected ? .white : filterColor)
+                    .frame(width: 24, height: 24)
+                    .background(
+                        Circle()
+                            .fill(isSelected ? filterColor : filterColor.opacity(0.1))
+                    )
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(filter.rawValue)
+                        .font(.body)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                    
+                    if let description = getFilterDescription() {
+                        Text(description)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Spacer()
+                
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(.accentColor)
                 }
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color(.secondarySystemGroupedBackground))
+            .scaleEffect(isPressed ? 0.98 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: isPressed)
         }
-        .presentationDetents([.height(350)])
+        .buttonStyle(PlainButtonStyle())
+        .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = pressing
+            }
+        }, perform: {})
+    }
+    
+    private func getFilterDescription() -> String? {
+        switch filter {
+        case .today:
+            return "Current day data"
+        case .yesterday:
+            return "Previous day data"
+        case .last7Days:
+            return "Week overview"
+        case .thisMonth:
+            return "Month to date"
+        case .lastMonth:
+            return "Previous month"
+        case .lifetime:
+            return "All available data"
+        }
     }
 } 

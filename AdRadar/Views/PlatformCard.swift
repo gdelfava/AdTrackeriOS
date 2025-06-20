@@ -2,59 +2,299 @@ import SwiftUI
 
 struct PlatformCard: View {
     let platform: PlatformData
+    @State private var isPressed = false
+    @State private var showDetailedMetrics = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // Header with platform name and earnings
+        VStack(alignment: .leading, spacing: 0) {
+            // Header Section
+            headerSection
+            
+            // Divider
+            Rectangle()
+                .fill(Color(.systemGray5))
+                .frame(height: 1)
+                .padding(.horizontal, 20)
+            
+            // Main Metrics Section
+            mainMetricsSection
+            
+            // Detailed Metrics Section (expandable)
+            if showDetailedMetrics {
+                detailedMetricsSection
+            }
+            
+            // Expand/Collapse Button
+            expandButton
+        }
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.easeInOut(duration: 0.1), value: isPressed)
+        .animation(.easeInOut(duration: 0.3), value: showDetailedMetrics)
+        .onTapGesture {
+            // Haptic feedback
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+            
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = false
+                }
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showDetailedMetrics.toggle()
+                }
+            }
+        }
+    }
+    
+    private var headerSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
-                
-                Text(platform.formattedEarnings)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
+                // Platform icon and name
+                HStack(spacing: 12) {
+                    Image(systemName: platformIcon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(.accentColor)
+                        .frame(width: 32, height: 32)
+                        .background(Color.accentColor.opacity(0.1))
+                        .clipShape(Circle())
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(platform.platform)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
+                        
+                        Text("Platform Analytics")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
                 
                 Spacer()
                 
-                Text(platform.platform)
-                    .font(.headline)
+                // Earnings badge
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(platform.formattedEarnings)
+                        .font(.system(.title2, design: .rounded))
+                        .fontWeight(.bold)
+                        .foregroundColor(.green)
+                    
+                    Text("Revenue")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                        .textCase(.uppercase)
+                        .fontWeight(.medium)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.green.opacity(0.08))
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+    }
+    
+    private var mainMetricsSection: some View {
+        HStack(spacing: 0) {
+            PlatformMetricPill(
+                icon: "newspaper.fill",
+                title: "Page Views",
+                value: platform.pageViews,
+                color: .blue
+            )
+            
+            Divider()
+                .frame(height: 40)
+            
+            PlatformMetricPill(
+                icon: "eye.fill",
+                title: "Impressions",
+                value: platform.impressions,
+                color: .orange
+            )
+            
+            Divider()
+                .frame(height: 40)
+            
+            PlatformMetricPill(
+                icon: "cursorarrow.click.2",
+                title: "Clicks",
+                value: platform.clicks,
+                color: .purple
+            )
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+    }
+    
+    private var detailedMetricsSection: some View {
+        VStack(spacing: 0) {
+            Rectangle()
+                .fill(Color(.systemGray5))
+                .frame(height: 1)
+                .padding(.horizontal, 20)
+            
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ], spacing: 16) {
+                PlatformDetailedMetricRow(
+                    icon: "chart.line.uptrend.xyaxis",
+                    title: "Page RPM",
+                    value: platform.formattedPageRPM,
+                    color: .indigo
+                )
+                
+                PlatformDetailedMetricRow(
+                    icon: "chart.bar.fill",
+                    title: "Impression RPM",
+                    value: platform.formattedImpressionsRPM,
+                    color: .teal
+                )
+                
+                PlatformDetailedMetricRow(
+                    icon: "eye.circle.fill",
+                    title: "Active View",
+                    value: platform.formattedActiveViewViewable,
+                    color: .pink
+                )
+                
+                PlatformDetailedMetricRow(
+                    icon: "dollarsign.circle.fill",
+                    title: "Total Revenue",
+                    value: platform.formattedEarnings,
+                    color: .green
+                )
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+            .padding(.bottom, 12)
+        }
+    }
+    
+    private var expandButton: some View {
+        HStack {
+            Spacer()
+            
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showDetailedMetrics.toggle()
+                }
+            }) {
+                HStack(spacing: 6) {
+                    Text(showDetailedMetrics ? "Less Details" : "More Details")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                    
+                    Image(systemName: showDetailedMetrics ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 10, weight: .medium))
+                }
+                .foregroundColor(.accentColor)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.accentColor.opacity(0.08))
+                .clipShape(Capsule())
+            }
+            .buttonStyle(PlainButtonStyle())
+            
+            Spacer()
+        }
+        .padding(.bottom, 16)
+    }
+    
+    private var platformIcon: String {
+        switch platform.platform.lowercased() {
+        case "desktop":
+            return "desktopcomputer"
+        case "mobile":
+            return "iphone"
+        case "tablet":
+            return "ipad"
+        case "highend_mobile":
+            return "iphone"
+        default:
+            return "iphone"
+        }
+    }
+}
+
+struct PlatformMetricPill: View {
+    let icon: String
+    let title: String
+    let value: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 28, height: 28)
+                .background(color.opacity(0.1))
+                .clipShape(Circle())
+            
+            VStack(spacing: 2) {
+                Text(value)
+                    .font(.system(.body, design: .rounded))
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+                
+                Text(title)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .fontWeight(.medium)
+                    .textCase(.uppercase)
+                    .lineLimit(1)
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+struct PlatformDetailedMetricRow: View {
+    let icon: String
+    let title: String
+    let value: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 24, height: 24)
+                .background(color.opacity(0.1))
+                .clipShape(Circle())
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fontWeight(.medium)
+                
+                Text(value)
+                    .font(.system(.subheadline, design: .rounded))
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
                     .lineLimit(1)
             }
             
-            // Metrics grid
-            LazyVGrid(columns: [
-                GridItem(.flexible(), alignment: .leading),
-                GridItem(.flexible(), alignment: .leading)
-            ], spacing: 16) {
-                PlatformMetricRow(title: "Page Views", value: platform.pageViews)
-                PlatformMetricRow(title: "Page RPM", value: platform.formattedPageRPM)
-                PlatformMetricRow(title: "Impressions", value: platform.impressions)
-                PlatformMetricRow(title: "Impression RPM", value: platform.formattedImpressionsRPM)
-                PlatformMetricRow(title: "Active View", value: platform.formattedActiveViewViewable)
-                PlatformMetricRow(title: "Clicks", value: platform.clicks)
-            }
+            Spacer()
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
-    }
-}
-
-struct PlatformMetricRow: View {
-    let title: String
-    let value: String
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            
-            Text(value)
-                .font(.subheadline)
-                .fontWeight(.medium)
-        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color(.tertiarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 }
 

@@ -19,136 +19,391 @@ struct SlideOverMenuView: View {
             HStack(spacing: 0) {
                 // Menu content
                 VStack(spacing: 0) {
-                    // Header with user info
-                    VStack(spacing: 12) {
-                        HStack(spacing: 12) {
-                            ProfileImageView(url: authViewModel.userProfileImageURL)
-                                .frame(width: 48, height: 48)
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(settingsViewModel.publisherName.isEmpty ? "Publisher Name" : settingsViewModel.publisherName)
-                                    .font(.headline)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.white)
-                                    .lineLimit(1)
+                    // Header with user info - Modern gradient design
+                    VStack(spacing: 0) {
+                        // Header content with proper safe area handling
+                        VStack(spacing: 16) {
+                            HStack(spacing: 16) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text(settingsViewModel.publisherName.isEmpty ? "Publisher Name" : settingsViewModel.publisherName)
+                                        .font(.system(.title2, design: .rounded))
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.white)
+                                        .lineLimit(1)
+                                    
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "number.circle.fill")
+                                            .font(.body)
+                                            .foregroundColor(.white.opacity(0.8))
+                                        
+                                        Text(settingsViewModel.publisherId.isEmpty ? "1234567890" : settingsViewModel.publisherId)
+                                            .font(.body)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(.white.opacity(0.9))
+                                            .lineLimit(1)
+                                    }
+                                    
+                                    Text("AdSense Analytics")
+                                        .font(.caption)
+                                        .foregroundColor(.white.opacity(0.7))
+                                }
                                 
-                                Text(settingsViewModel.publisherId.isEmpty ? "1234567890" : settingsViewModel.publisherId)
-                                    .font(.caption)
-                                    .foregroundColor(.white.opacity(0.85))
-                                    .lineLimit(1)
+                                Spacer()
+                                
+                                // Menu close indicator
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.title2)
+                                    .foregroundColor(.white.opacity(0.6))
+                                    .onTapGesture {
+                                        dismissMenu()
+                                    }
                             }
-                            
-                            Spacer()
+                            .padding(.horizontal, 24)
+                            .padding(.top, max(60, geometry.safeAreaInsets.top + 40))
+                            .padding(.bottom, 24)
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 16)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 44)
-                    .background(Color.accentColor)
-                    .ignoresSafeArea(edges: .top)
-                    
-                    // Main menu items
-                    VStack(spacing: 0) {
-                        Button(action: {
-                            showDomainsView = true
-                            isPresented = false
-                        }) {
-                            MenuItemView(title: "Domain", icon: "globe")
-                        }
-                        Button(action: {
-                            showAdSizeView = true
-                            isPresented = false
-                        }) {
-                            MenuItemView(title: "Ad Size", icon: "rectangle.3.group")
-                        }
-                        Button(action: {
-                            showPlatformsView = true
-                            isPresented = false
-                        }) {
-                            MenuItemView(title: "Platforms", icon: "iphone")
-                        }
-                        Button(action: {
-                            showCountriesView = true
-                            isPresented = false
-                        }) {
-                            MenuItemView(title: "Country", icon: "flag")
-                        }
-                        Button(action: {
-                            showAdNetworkView = true
-                            isPresented = false
-                        }) {
-                            MenuItemView(title: "Ad Network", icon: "network")
-                        }
-                        MenuItemView(title: "Targeting", icon: "target")
-                    }
-
-                    // Section 1: Payments, Feedback, Write a Review
-                    Divider().padding(.vertical, 8)
-                    VStack(spacing: 0) {
-                        Button(action: {
-                            selectedTab = 2 // Payments tab
-                            withAnimation { isPresented = false }
-                        }) {
-                            MenuRow(icon: "creditcard", title: "Payments")
-                        }
-                        Button(action: {
-                            showMail = true
-                        }) {
-                            MenuRow(icon: "envelope", title: "Feedback")
-                        }
-                        Button(action: {
-                            if let url = URL(string: "https://apps.apple.com/us/app/myads-adsense-admob/id1481431267?action=write-review") {
-                                UIApplication.shared.open(url)
-                            }
-                        }) {
-                            MenuRow(icon: "star.bubble", title: "Write a Review")
-                        }
-                    }
-                    .sheet(isPresented: $showMail) {
-                        MailView(
-                            toRecipients: ["apps@delteqis.co.za"],
-                            subject: "AdRadar: User feedback",
-                            body: "Any feedback or questions are more than welcome, please enter your message below:",
-                            completion: { _ in showMail = false }
+                        .background(
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.accentColor, Color.accentColor.opacity(0.8)]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
                         )
                     }
-
-                    // Section 2: Settings, Sign Out
-                    Divider().padding(.vertical, 8)
-                    VStack(spacing: 0) {
-                        Button(action: {
-                            selectedTab = 3 // Settings tab
-                            withAnimation { isPresented = false }
-                        }) {
-                            MenuRow(icon: "gearshape", title: "Settings")
+                    
+                    // Main content with modern sections
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 20) {
+                            // Analytics Section
+                            MenuSection(title: "Analytics", icon: "chart.bar.fill", iconColor: .blue) {
+                                ModernMenuRow(
+                                    icon: "globe.americas.fill", 
+                                    title: "Domains", 
+                                    subtitle: "Site performance",
+                                    iconColor: .blue,
+                                    action: {
+                                        hapticFeedback()
+                                        showDomainsView = true
+                                        dismissMenu()
+                                    }
+                                )
+                                
+                                ModernMenuRow(
+                                    icon: "rectangle.3.group.fill", 
+                                    title: "Ad Sizes", 
+                                    subtitle: "Format metrics",
+                                    iconColor: .purple,
+                                    action: {
+                                        hapticFeedback()
+                                        showAdSizeView = true
+                                        dismissMenu()
+                                    }
+                                )
+                                
+                                ModernMenuRow(
+                                    icon: "iphone", 
+                                    title: "Platforms", 
+                                    subtitle: "Device breakdown",
+                                    iconColor: .green,
+                                    action: {
+                                        hapticFeedback()
+                                        showPlatformsView = true
+                                        dismissMenu()
+                                    }
+                                )
+                                
+                                ModernMenuRow(
+                                    icon: "flag.fill", 
+                                    title: "Countries", 
+                                    subtitle: "Geographic data",
+                                    iconColor: .orange,
+                                    action: {
+                                        hapticFeedback()
+                                        showCountriesView = true
+                                        dismissMenu()
+                                    }
+                                )
+                                
+                                ModernMenuRow(
+                                    icon: "network", 
+                                    title: "Ad Networks", 
+                                    subtitle: "Network performance",
+                                    iconColor: .indigo,
+                                    action: {
+                                        hapticFeedback()
+                                        showAdNetworkView = true
+                                        dismissMenu()
+                                    }
+                                )
+                                
+                                ModernMenuRow(
+                                    icon: "target", 
+                                    title: "Targeting", 
+                                    subtitle: "Coming soon",
+                                    iconColor: .pink,
+                                    isDisabled: true,
+                                    action: {}
+                                )
+                            }
+                            
+                            // Account Section
+                            MenuSection(title: "Account", icon: "person.circle.fill", iconColor: .green) {
+                                ModernMenuRow(
+                                    icon: "creditcard.fill", 
+                                    title: "Payments", 
+                                    subtitle: "Earnings & history",
+                                    iconColor: .green,
+                                    action: {
+                                        hapticFeedback()
+                                        selectedTab = 2
+                                        dismissMenu()
+                                    }
+                                )
+                                
+                                ModernMenuRow(
+                                    icon: "gearshape.fill", 
+                                    title: "Settings", 
+                                    subtitle: "App preferences",
+                                    iconColor: .gray,
+                                    action: {
+                                        hapticFeedback()
+                                        selectedTab = 3
+                                        dismissMenu()
+                                    }
+                                )
+                            }
+                            
+                            // Support Section
+                            MenuSection(title: "Support", icon: "questionmark.circle.fill", iconColor: .orange) {
+                                ModernMenuRow(
+                                    icon: "envelope.fill", 
+                                    title: "Send Feedback", 
+                                    subtitle: "Help us improve",
+                                    iconColor: .blue,
+                                    action: {
+                                        hapticFeedback()
+                                        showMail = true
+                                    }
+                                )
+                                
+                                ModernMenuRow(
+                                    icon: "star.fill", 
+                                    title: "Rate App", 
+                                    subtitle: "Share your experience",
+                                    iconColor: .yellow,
+                                    action: {
+                                        hapticFeedback()
+                                        if let url = URL(string: "https://apps.apple.com/us/app/myads-adsense-admob/id1481431267?action=write-review") {
+                                            UIApplication.shared.open(url)
+                                        }
+                                    }
+                                )
+                                
+                                ModernMenuRow(
+                                    icon: "rectangle.portrait.and.arrow.right", 
+                                    title: "Sign Out", 
+                                    subtitle: "Exit your account",
+                                    iconColor: .red,
+                                    action: {
+                                        hapticFeedback()
+                                        authViewModel.signOut()
+                                    }
+                                )
+                            }
+                            
+                            // App info footer
+                            VStack(spacing: 8) {
+                                Text("AdRadar")
+                                    .font(.system(.caption, design: .rounded))
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.secondary)
+                                
+                                Text("Not affiliated with Google or AdSense")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .padding(.vertical, 16)
+                            .padding(.bottom, 32)
                         }
-                        Button(action: {
-                            authViewModel.signOut()
-                        }) {
-                            MenuRow(icon: "rectangle.portrait.and.arrow.right", title: "Sign Out", color: .red)
-                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 24)
                     }
-
-                    Spacer()
+                    .background(Color(.systemGroupedBackground))
                 }
-                .frame(width: min(geometry.size.width * 0.8, 320), height: geometry.size.height)
-                .background(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.1), radius: 8, x: 2, y: 0)
+                .frame(width: min(geometry.size.width * 0.85, 340), height: geometry.size.height)
+                .background(Color(.systemGroupedBackground))
+                .clipShape(
+                    RoundedCornerShape(
+                        radius: 0,
+                        corners: [.topRight, .bottomRight]
+                    )
+                )
+                .shadow(color: .black.opacity(0.15), radius: 20, x: 5, y: 0)
                 
                 // Dismiss area
-                Color.black.opacity(0.3)
+                Color.black.opacity(0.4)
                     .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            isPresented = false
-                        }
+                        dismissMenu()
                     }
             }
         }
         .ignoresSafeArea()
+        .sheet(isPresented: $showMail) {
+            MailView(
+                toRecipients: ["apps@delteqis.co.za"],
+                subject: "AdRadar: User feedback",
+                body: "Any feedback or questions are more than welcome, please enter your message below:",
+                completion: { _ in showMail = false }
+            )
+        }
+    }
+    
+    private func hapticFeedback() {
+        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+        impactFeedback.impactOccurred()
+    }
+    
+    private func dismissMenu() {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            isPresented = false
+        }
     }
 }
 
+// Modern Menu Section with header
+struct MenuSection<Content: View>: View {
+    let title: String
+    let icon: String
+    let iconColor: Color
+    let content: Content
+    
+    init(title: String, icon: String, iconColor: Color, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.icon = icon
+        self.iconColor = iconColor
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Section header
+            HStack(spacing: 10) {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(iconColor)
+                    .frame(width: 24, height: 24)
+                    .background(iconColor.opacity(0.1))
+                    .clipShape(Circle())
+                
+                Text(title)
+                    .font(.system(.subheadline, design: .rounded))
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+            }
+            .padding(.horizontal, 4)
+            
+            // Section content
+            VStack(spacing: 0) {
+                content
+            }
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+    }
+}
+
+// Modern Menu Row with enhanced design
+struct ModernMenuRow: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    let iconColor: Color
+    var isDisabled: Bool = false
+    let action: () -> Void
+    
+    @State private var isPressed = false
+    
+    var body: some View {
+        Button(action: {
+            if !isDisabled {
+                action()
+            }
+        }) {
+            HStack(spacing: 16) {
+                // Icon with background
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(isDisabled ? iconColor.opacity(0.4) : iconColor)
+                    .frame(width: 40, height: 40)
+                    .background((isDisabled ? iconColor.opacity(0.1) : iconColor.opacity(0.15)))
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                
+                // Text content
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(.system(.body, design: .rounded))
+                        .fontWeight(.medium)
+                        .foregroundColor(isDisabled ? .secondary : .primary)
+                        .lineLimit(1)
+                    
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+                
+                Spacer()
+                
+                // Chevron or disabled indicator
+                if isDisabled {
+                    Text("Soon")
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color(.tertiarySystemFill))
+                        .clipShape(Capsule())
+                } else {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .scaleEffect(isPressed ? 0.98 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: isPressed)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .disabled(isDisabled)
+        .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = pressing && !isDisabled
+            }
+        }, perform: {})
+    }
+}
+
+// Custom shape for rounded corners
+struct RoundedCornerShape: Shape {
+    var radius: CGFloat
+    var corners: UIRectCorner
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(
+            roundedRect: rect,
+            byRoundingCorners: corners,
+            cornerRadii: CGSize(width: radius, height: radius)
+        )
+        return Path(path.cgPath)
+    }
+}
+
+// Legacy components for compatibility
 struct MenuRow: View {
     let icon: String
     let title: String
@@ -199,7 +454,6 @@ struct MenuItemView: View {
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 16)
-            // No background, no shadow, no divider for flat design
         }
         .buttonStyle(PlainButtonStyle())
     }

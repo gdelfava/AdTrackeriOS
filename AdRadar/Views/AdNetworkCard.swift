@@ -2,61 +2,301 @@ import SwiftUI
 
 struct AdNetworkCard: View {
     let adNetwork: AdNetworkData
+    @State private var isPressed = false
+    @State private var showDetailedMetrics = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // Header with ad network type and earnings
+        VStack(alignment: .leading, spacing: 0) {
+            // Header Section
+            headerSection
+            
+            // Divider
+            Rectangle()
+                .fill(Color(.systemGray5))
+                .frame(height: 1)
+                .padding(.horizontal, 20)
+            
+            // Main Metrics Section
+            mainMetricsSection
+            
+            // Detailed Metrics Section (expandable)
+            if showDetailedMetrics {
+                detailedMetricsSection
+            }
+            
+            // Expand/Collapse Button
+            expandButton
+        }
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.easeInOut(duration: 0.1), value: isPressed)
+        .animation(.easeInOut(duration: 0.3), value: showDetailedMetrics)
+        .onTapGesture {
+            // Haptic feedback
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+            
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = false
+                }
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showDetailedMetrics.toggle()
+                }
+            }
+        }
+    }
+    
+    private var headerSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(adNetwork.formattedEarnings)
-                    .font(.system(.title, design: .rounded))
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
+                // Ad network icon and name
+                HStack(spacing: 12) {
+                    Image(systemName: adNetworkIcon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(.accentColor)
+                        .frame(width: 32, height: 32)
+                        .background(Color.accentColor.opacity(0.1))
+                        .clipShape(Circle())
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(adNetwork.displayName)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
+                        
+                        Text("Network Performance")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
                 
                 Spacer()
                 
-                Text(adNetwork.displayName)
-                    .font(.caption2)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.primary)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.trailing)
+                // Earnings badge
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(adNetwork.formattedEarnings)
+                        .font(.system(.title2, design: .rounded))
+                        .fontWeight(.bold)
+                        .foregroundColor(.green)
+                    
+                    Text("Revenue")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                        .textCase(.uppercase)
+                        .fontWeight(.medium)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.green.opacity(0.08))
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+    }
+    
+    private var mainMetricsSection: some View {
+        HStack(spacing: 0) {
+            AdNetworkMetricPill(
+                icon: "eye.fill",
+                title: "Impressions",
+                value: adNetwork.impressions,
+                color: .blue
+            )
             
-            // Metrics Grid
+            Divider()
+                .frame(height: 40)
+            
+            AdNetworkMetricPill(
+                icon: "cursorarrow.click.2",
+                title: "Clicks",
+                value: adNetwork.clicks,
+                color: .orange
+            )
+            
+            Divider()
+                .frame(height: 40)
+            
+            AdNetworkMetricPill(
+                icon: "percent",
+                title: "CTR",
+                value: adNetwork.formattedCTR,
+                color: .purple
+            )
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+    }
+    
+    private var detailedMetricsSection: some View {
+        VStack(spacing: 0) {
+            Rectangle()
+                .fill(Color(.systemGray5))
+                .frame(height: 1)
+                .padding(.horizontal, 20)
+            
             LazyVGrid(columns: [
                 GridItem(.flexible()),
                 GridItem(.flexible())
             ], spacing: 16) {
-                AdNetworkMetricView(title: "Requests", value: adNetwork.requests)
-                AdNetworkMetricView(title: "Page Views", value: adNetwork.pageViews)
-                AdNetworkMetricView(title: "Impressions", value: adNetwork.impressions)
-                AdNetworkMetricView(title: "Clicks", value: adNetwork.clicks)
-                AdNetworkMetricView(title: "CTR", value: adNetwork.formattedCTR)
-                AdNetworkMetricView(title: "RPM", value: adNetwork.formattedRPM)
+                AdNetworkDetailedMetricRow(
+                    icon: "doc.text.fill",
+                    title: "Requests",
+                    value: adNetwork.requests,
+                    color: .indigo
+                )
+                
+                AdNetworkDetailedMetricRow(
+                    icon: "newspaper.fill",
+                    title: "Page Views",
+                    value: adNetwork.pageViews,
+                    color: .teal
+                )
+                
+                AdNetworkDetailedMetricRow(
+                    icon: "chart.line.uptrend.xyaxis",
+                    title: "RPM",
+                    value: adNetwork.formattedRPM,
+                    color: .pink
+                )
+                
+                AdNetworkDetailedMetricRow(
+                    icon: "dollarsign.circle.fill",
+                    title: "Total Revenue",
+                    value: adNetwork.formattedEarnings,
+                    color: .green
+                )
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+            .padding(.bottom, 12)
         }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(12)
+    }
+    
+    private var expandButton: some View {
+        HStack {
+            Spacer()
+            
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showDetailedMetrics.toggle()
+                }
+            }) {
+                HStack(spacing: 6) {
+                    Text(showDetailedMetrics ? "Less Details" : "More Details")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                    
+                    Image(systemName: showDetailedMetrics ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 10, weight: .medium))
+                }
+                .foregroundColor(.accentColor)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.accentColor.opacity(0.08))
+                .clipShape(Capsule())
+            }
+            .buttonStyle(PlainButtonStyle())
+            
+            Spacer()
+        }
+        .padding(.bottom, 16)
+    }
+    
+    private var adNetworkIcon: String {
+        switch adNetwork.adNetworkType.lowercased() {
+        case "content":
+            return "doc.text.fill"
+        case "search":
+            return "magnifyingglass"
+        case "display":
+            return "rectangle.3.group"
+        case "video":
+            return "play.rectangle.fill"
+        case "mobile":
+            return "iphone"
+        default:
+            return "network"
+        }
     }
 }
 
-struct AdNetworkMetricView: View {
+struct AdNetworkMetricPill: View {
+    let icon: String
     let title: String
     let value: String
+    let color: Color
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            Text(value)
-                .font(.system(.subheadline, design: .rounded))
-                .fontWeight(.medium)
-                .foregroundColor(.primary)
-                .lineLimit(1)
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 28, height: 28)
+                .background(color.opacity(0.1))
+                .clipShape(Circle())
+            
+            VStack(spacing: 2) {
+                Text(value)
+                    .font(.system(.body, design: .rounded))
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+                
+                Text(title)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .fontWeight(.medium)
+                    .textCase(.uppercase)
+                    .lineLimit(1)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+struct AdNetworkDetailedMetricRow: View {
+    let icon: String
+    let title: String
+    let value: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 24, height: 24)
+                .background(color.opacity(0.1))
+                .clipShape(Circle())
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fontWeight(.medium)
+                
+                Text(value)
+                    .font(.system(.subheadline, design: .rounded))
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+            }
+            
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color(.tertiarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 }
 

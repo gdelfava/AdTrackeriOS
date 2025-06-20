@@ -233,49 +233,122 @@ struct SummaryCardView: View {
     
     @State private var isPressed = false
     
+    private var timeIcon: String {
+        switch title.lowercased() {
+        case let str where str.contains("today"):
+            return "calendar.circle.fill"
+        case let str where str.contains("yesterday"):
+            return "calendar.badge.clock"
+        case let str where str.contains("7 days"):
+            return "calendar.badge.plus"
+        case let str where str.contains("month"):
+            return "calendar"
+        case let str where str.contains("three years"), let str where str.contains("lifetime"):
+            return "infinity.circle.fill"
+        default:
+            return "chart.bar.fill"
+        }
+    }
+    
+    private var iconColor: Color {
+        switch title.lowercased() {
+        case let str where str.contains("today"):
+            return .green
+        case let str where str.contains("yesterday"):
+            return .orange
+        case let str where str.contains("7 days"):
+            return .blue
+        case let str where str.contains("month"):
+            return .purple
+        case let str where str.contains("three years"), let str where str.contains("lifetime"):
+            return .indigo
+        default:
+            return .accentColor
+        }
+    }
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text(title)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                if let subtitle = subtitle {
+        VStack(alignment: .leading, spacing: 0) {
+            // Header Section
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    // Time period icon and title
+                    HStack(spacing: 12) {
+                        Image(systemName: timeIcon)
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundColor(iconColor)
+                            .frame(width: 32, height: 32)
+                            .background(iconColor.opacity(0.1))
+                            .clipShape(Circle())
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(title)
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                                .lineLimit(1)
+                            
+                            if let subtitle = subtitle {
+                                Text(subtitle)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    
                     Spacer()
-                    Text(subtitle)
-                        .font(.caption)
+                    
+                    // Tap indicator
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.secondary)
                 }
-            }
-            Text(value)
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .fontDesign(.rounded)
-                .foregroundColor(.primary)
-            if let delta = delta, let positive = deltaPositive {
-                HStack(spacing: 4) {
-                    Image(systemName: positive ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
-                        .foregroundColor(positive ? .green : .red)
-                        .font(.body)
-                    Text(delta)
-                        .font(.caption)
-                        .foregroundColor(positive ? .green : .red)
+                
+                // Main value
+                Text(value)
+                    .font(.system(.largeTitle, design: .rounded))
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.leading)
+                
+                // Delta indicator
+                if let delta = delta, let positive = deltaPositive {
+                    HStack(spacing: 8) {
+                        Image(systemName: positive ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
+                            .foregroundColor(positive ? .green : .red)
+                            .font(.system(size: 16, weight: .medium))
+                        
+                        Text(delta)
+                            .font(.callout)
+                            .fontWeight(.medium)
+                            .foregroundColor(positive ? .green : .red)
+                        
+                        Spacer()
+                        
+                        // Performance badge
+                        Text(positive ? "Up" : "Down")
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .textCase(.uppercase)
+                            .foregroundColor(positive ? .green : .red)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background((positive ? Color.green : Color.red).opacity(0.1))
+                            .clipShape(Capsule())
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(Color(.tertiarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
             }
+            .padding(20)
         }
-        .padding()
         .background(Color(.secondarySystemBackground))
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)
-        .frame(maxWidth: .infinity, alignment: .center)
-        .overlay(
-            Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.secondary)
-                .padding(.trailing, 16),
-            alignment: .trailing
-        )
-        .scaleEffect(isPressed ? 0.95 : 1.0)
-        .animation(.easeInOut(duration: 0.1), value: isPressed)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.06), radius: 12, x: 0, y: 4)
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.easeInOut(duration: 0.15), value: isPressed)
         .onTapGesture {
             // Haptic feedback
             let impactFeedback = UIImpactFeedbackGenerator(style: .light)
