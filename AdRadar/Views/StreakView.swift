@@ -522,9 +522,9 @@ struct StreakDayCard: View {
                     .fontWeight(.medium)
                 
                 Text(viewModel.formatCurrency(day.earnings))
-                    .font(.system(.title, design: .rounded))
+                    .font(.system(.largeTitle, design: .rounded))
                     .fontWeight(.bold)
-                    .foregroundColor(.green)
+                    .foregroundColor(.primary)
             }
         }
         .padding(.horizontal, 20)
@@ -532,13 +532,14 @@ struct StreakDayCard: View {
     }
     
     private var mainMetricsSection: some View {
-        HStack(spacing: 0) {
+        HStack(alignment: .top, spacing: 0) {
             StreakMetricPill(
                 icon: "cursorarrow.click.2",
                 title: "Clicks",
                 value: "\(day.clicks)",
                 color: .blue
             )
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             Divider()
                 .frame(height: 40)
@@ -549,6 +550,7 @@ struct StreakDayCard: View {
                 value: "\(day.impressions)",
                 color: .orange
             )
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             Divider()
                 .frame(height: 40)
@@ -559,6 +561,7 @@ struct StreakDayCard: View {
                 value: viewModel.formatPercentage(day.impressionCTR),
                 color: .purple
             )
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 16)

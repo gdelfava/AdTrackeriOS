@@ -16,7 +16,7 @@ struct SummaryView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(alignment: .center, spacing: 24) {
+                VStack(alignment: .center, spacing: 0) {
                     if let errorMessage = viewModel.errorMessage {
                         Text(errorMessage)
                             .foregroundColor(.red)
@@ -45,79 +45,112 @@ struct SummaryView: View {
                         ErrorBannerView(message: error, symbol: errorSymbol(for: error))
                         Spacer()
                     } else if let data = viewModel.summaryData {
-                        Group {
-                            SummaryCardView(
-                                title: "Today so far",
-                                value: data.today,
-                                subtitle: "vs yesterday",
-                                delta: data.todayDelta,
-                                deltaPositive: data.todayDeltaPositive,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .today) } }
-                            )
-                            .opacity(cardAppearances[0] ? 1 : 0)
-                            .offset(y: cardAppearances[0] ? 0 : 20)
+                        LazyVStack(spacing: 24) {
+                            // HERO SECTION - Today's performance
+                            VStack(spacing: 16) {
+                                HeroSectionHeader()
+                                
+                                HeroSummaryCard(
+                                    title: "Today so far",
+                                    value: data.today,
+                                    subtitle: "vs yesterday",
+                                    delta: data.todayDelta,
+                                    deltaPositive: data.todayDeltaPositive,
+                                    onTap: { Task { await viewModel.fetchMetrics(forCard: .today) } }
+                                )
+                                .opacity(cardAppearances[0] ? 1 : 0)
+                                .offset(y: cardAppearances[0] ? 0 : 30)
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.top, 8)
                             
-                            SummaryCardView(
-                                title: "Yesterday",
-                                value: data.yesterday,
-                                subtitle: "vs the same day last week",
-                                delta: data.yesterdayDelta,
-                                deltaPositive: data.yesterdayDeltaPositive,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .yesterday) } }
-                            )
-                            .opacity(cardAppearances[1] ? 1 : 0)
-                            .offset(y: cardAppearances[1] ? 0 : 20)
+                            // RECENT SECTION - Yesterday & Last 7 Days
+                            VStack(spacing: 16) {
+                                SectionHeader(title: "Recent Performance", icon: "clock.fill", color: .orange)
+                                
+                                VStack(spacing: 12) {
+                                    CompactSummaryCard(
+                                        title: "Yesterday",
+                                        value: data.yesterday,
+                                        subtitle: "vs the same day last week",
+                                        delta: data.yesterdayDelta,
+                                        deltaPositive: data.yesterdayDeltaPositive,
+                                        icon: "calendar.badge.clock",
+                                        color: .orange,
+                                        onTap: { Task { await viewModel.fetchMetrics(forCard: .yesterday) } }
+                                    )
+                                    .opacity(cardAppearances[1] ? 1 : 0)
+                                    .offset(y: cardAppearances[1] ? 0 : 20)
+                                    
+                                    CompactSummaryCard(
+                                        title: "Last 7 Days",
+                                        value: data.last7Days,
+                                        subtitle: "vs the previous 7 days",
+                                        delta: data.last7DaysDelta,
+                                        deltaPositive: data.last7DaysDeltaPositive,
+                                        icon: "calendar.badge.plus",
+                                        color: .blue,
+                                        onTap: { Task { await viewModel.fetchMetrics(forCard: .last7Days) } }
+                                    )
+                                    .opacity(cardAppearances[2] ? 1 : 0)
+                                    .offset(y: cardAppearances[2] ? 0 : 20)
+                                }
+                            }
+                            .padding(.horizontal, 20)
                             
-                            SummaryCardView(
-                                title: "Last 7 Days",
-                                value: data.last7Days,
-                                subtitle: "vs the previous 7 days",
-                                delta: data.last7DaysDelta,
-                                deltaPositive: data.last7DaysDeltaPositive,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .last7Days) } }
-                            )
-                            .opacity(cardAppearances[2] ? 1 : 0)
-                            .offset(y: cardAppearances[2] ? 0 : 20)
+                            // MONTHLY SECTION - This month & Last month
+                            VStack(spacing: 16) {
+                                SectionHeader(title: "Monthly Overview", icon: "calendar.circle.fill", color: .purple)
+                                
+                                HStack(spacing: 12) {
+                                    MonthlyCompactCard(
+                                        title: "This month",
+                                        value: data.thisMonth,
+                                        subtitle: "vs same day last month",
+                                        delta: data.thisMonthDelta,
+                                        deltaPositive: data.thisMonthDeltaPositive,
+                                        icon: "calendar",
+                                        color: .purple,
+                                        onTap: { Task { await viewModel.fetchMetrics(forCard: .thisMonth) } }
+                                    )
+                                    .opacity(cardAppearances[3] ? 1 : 0)
+                                    .offset(y: cardAppearances[3] ? 0 : 20)
+                                    
+                                    MonthlyCompactCard(
+                                        title: "Last month",
+                                        value: data.lastMonth,
+                                        subtitle: "vs previous month",
+                                        delta: data.lastMonthDelta,
+                                        deltaPositive: data.lastMonthDeltaPositive,
+                                        icon: "calendar.badge.minus",
+                                        color: .pink,
+                                        onTap: { Task { await viewModel.fetchMetrics(forCard: .lastMonth) } }
+                                    )
+                                    .opacity(cardAppearances[4] ? 1 : 0)
+                                    .offset(y: cardAppearances[4] ? 0 : 20)
+                                }
+                            }
+                            .padding(.horizontal, 20)
                             
-                            SummaryCardView(
-                                title: "This month",
-                                value: data.thisMonth,
-                                subtitle: "vs the same day last month",
-                                delta: data.thisMonthDelta,
-                                deltaPositive: data.thisMonthDeltaPositive,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .thisMonth) } }
-                            )
-                            .opacity(cardAppearances[3] ? 1 : 0)
-                            .offset(y: cardAppearances[3] ? 0 : 20)
-                            
-                            SummaryCardView(
-                                title: "Last month",
-                                value: data.lastMonth,
-                                subtitle: "vs the previous month",
-                                delta: data.lastMonthDelta,
-                                deltaPositive: data.lastMonthDeltaPositive,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .lastMonth) } }
-                            )
-                            .opacity(cardAppearances[4] ? 1 : 0)
-                            .offset(y: cardAppearances[4] ? 0 : 20)
-                            
-                            SummaryCardView(
-                                title: "Last three years",
-                                value: data.lifetime,
-                                subtitle: "AdRadar for Adsense",
-                                delta: nil,
-                                deltaPositive: nil,
-                                onTap: { Task { await viewModel.fetchMetrics(forCard: .lastThreeYears) } }
-                            )
-                            .opacity(cardAppearances[5] ? 1 : 0)
-                            .offset(y: cardAppearances[5] ? 0 : 20)
+                            // LIFETIME SECTION - All time performance
+                            VStack(spacing: 16) {
+                                SectionHeader(title: "All Time", icon: "infinity.circle.fill", color: .indigo)
+                                
+                                LifetimeSummaryCard(
+                                    title: "Last three years",
+                                    value: data.lifetime,
+                                    subtitle: "AdRadar for Adsense",
+                                    onTap: { Task { await viewModel.fetchMetrics(forCard: .lastThreeYears) } }
+                                )
+                                .opacity(cardAppearances[5] ? 1 : 0)
+                                .offset(y: cardAppearances[5] ? 0 : 20)
+                            }
+                            .padding(.horizontal, 20)
                         }
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.horizontal)
                         .onAppear {
                             // Animate cards when they appear
                             for i in 0..<cardAppearances.count {
-                                withAnimation(.easeOut(duration: 0.5).delay(Double(i) * 0.1)) {
+                                withAnimation(.easeOut(duration: 0.6).delay(Double(i) * 0.1)) {
                                     cardAppearances[i] = true
                                 }
                             }
@@ -126,17 +159,37 @@ struct SummaryView: View {
                             // Reset animation state when view disappears
                             cardAppearances = Array(repeating: false, count: 6)
                         }
-                        Spacer(minLength: 32)
-                        Text("AdRadar is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
-                            .padding(.bottom, 16)
+                        
+                        // Footer
+                        VStack(spacing: 12) {
+                            Rectangle()
+                                .fill(Color(.separator))
+                                .frame(height: 0.5)
+                                .padding(.horizontal, 20)
+                            
+                            Text("AdRadar is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
+                                .font(.footnote)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 20)
+                                .padding(.bottom, 20)
+                        }
+                        .padding(.top, 32)
                     }
                 }
                 .padding(.top)
             }
+            .background(
+                LinearGradient(
+                    gradient: Gradient(stops: [
+                        .init(color: Color(.systemBackground), location: 0),
+                        .init(color: Color(.secondarySystemBackground).opacity(0.3), location: 0.8),
+                        .init(color: Color(.systemBackground), location: 1)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
             .refreshable {
                 if let token = authViewModel.accessToken {
                     viewModel.accessToken = token
@@ -234,6 +287,521 @@ struct SummaryView: View {
     }
 }
 
+// MARK: - Hero Section Components
+
+struct HeroSectionHeader: View {
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Today's Performance")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                
+                Text("Real-time earnings overview")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            Image(systemName: "star.circle.fill")
+                .font(.system(size: 24, weight: .medium))
+                .foregroundColor(.yellow)
+        }
+    }
+}
+
+struct HeroSummaryCard: View {
+    let title: String
+    let value: String
+    let subtitle: String?
+    let delta: String?
+    let deltaPositive: Bool?
+    var onTap: (() -> Void)? = nil
+    
+    @State private var isPressed = false
+    @Environment(\.colorScheme) private var colorScheme
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Main content
+            VStack(alignment: .leading, spacing: 20) {
+                // Header with icon
+                HStack {
+                    HStack(spacing: 12) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .fill(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [
+                                            Color.green.opacity(0.2),
+                                            Color.green.opacity(0.1)
+                                        ]),
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: 44, height: 44)
+                            
+                            Image(systemName: "calendar.circle.fill")
+                                .font(.system(size: 22, weight: .medium))
+                                .foregroundColor(.green)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(title)
+                                .font(.title3)
+                                .fontWeight(.bold)
+                                .foregroundColor(.primary)
+                            
+                            if let subtitle = subtitle {
+                                Text(subtitle)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right.circle.fill")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(.green.opacity(0.6))
+                }
+                
+                // Main value
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(value)
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .foregroundColor(.primary)
+                        .multilineTextAlignment(.leading)
+                    
+                    // Delta indicator
+                    if let delta = delta, let positive = deltaPositive {
+                        HStack(spacing: 8) {
+                            Image(systemName: positive ? "trending.up" : "trending.down")
+                                .foregroundColor(positive ? .green : .red)
+                                .font(.system(size: 16, weight: .semibold))
+                            
+                            Text(delta)
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(positive ? .green : .red)
+                            
+                            Text("compared to yesterday")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill((positive ? Color.green : Color.red).opacity(0.1))
+                        )
+                    }
+                }
+            }
+            .padding(24)
+        }
+        .background(
+            ZStack {
+                // Base gradient
+                LinearGradient(
+                    gradient: Gradient(stops: [
+                        .init(color: Color.green.opacity(0.08), location: 0),
+                        .init(color: Color.green.opacity(0.04), location: 0.5),
+                        .init(color: Color.green.opacity(0.02), location: 1)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                
+                // Pattern overlay
+                PatternOverlay(color: .green.opacity(0.03))
+            }
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .shadow(color: Color.green.opacity(colorScheme == .dark ? 0.3 : 0.15), radius: 20, x: 0, y: 8)
+        .shadow(color: Color.black.opacity(0.08), radius: 6, x: 0, y: 2)
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color.green.opacity(0.2),
+                            Color.clear,
+                            Color.green.opacity(0.1)
+                        ]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.easeInOut(duration: 0.15), value: isPressed)
+        .onTapGesture {
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+            
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = false
+                }
+            }
+            
+            onTap?()
+        }
+    }
+}
+
+// MARK: - Section Components
+
+struct SectionHeader: View {
+    let title: String
+    let icon: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 24, height: 24)
+                .background(color.opacity(0.1))
+                .clipShape(Circle())
+            
+            Text(title)
+                .font(.headline)
+                .fontWeight(.semibold)
+                .foregroundColor(.primary)
+            
+            Spacer()
+            
+            Rectangle()
+                .fill(Color(.separator))
+                .frame(height: 0.5)
+                .frame(maxWidth: .infinity)
+        }
+    }
+}
+
+struct CompactSummaryCard: View {
+    let title: String
+    let value: String
+    let subtitle: String?
+    let delta: String?
+    let deltaPositive: Bool?
+    let icon: String
+    let color: Color
+    var onTap: (() -> Void)? = nil
+    
+    @State private var isPressed = false
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            // Icon
+            Image(systemName: icon)
+                .font(.system(size: 18, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 36, height: 36)
+                .background(color.opacity(0.1))
+                .clipShape(Circle())
+            
+            // Content
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
+                
+                if let subtitle = subtitle {
+                    Text(subtitle)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Spacer()
+            
+            // Value and delta
+            VStack(alignment: .trailing, spacing: 4) {
+                Text(value)
+                    .font(.system(.title3, design: .rounded))
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                
+                if let delta = delta, let positive = deltaPositive {
+                    HStack(spacing: 4) {
+                        Image(systemName: positive ? "arrow.up" : "arrow.down")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(positive ? .green : .red)
+                        
+                        Text(delta)
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .foregroundColor(positive ? .green : .red)
+                    }
+                }
+            }
+            
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(.secondary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.easeInOut(duration: 0.15), value: isPressed)
+        .onTapGesture {
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+            
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = false
+                }
+            }
+            
+            onTap?()
+        }
+    }
+}
+
+struct MonthlyCompactCard: View {
+    let title: String
+    let value: String
+    let subtitle: String?
+    let delta: String?
+    let deltaPositive: Bool?
+    let icon: String
+    let color: Color
+    var onTap: (() -> Void)? = nil
+    
+    @State private var isPressed = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Header
+            HStack {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(color)
+                    .frame(width: 28, height: 28)
+                    .background(color.opacity(0.1))
+                    .clipShape(Circle())
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(.secondary)
+            }
+            
+            // Content
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+                
+                Text(value)
+                    .font(.system(.title3, design: .rounded))
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+                
+                if let delta = delta, let positive = deltaPositive {
+                    HStack(spacing: 4) {
+                        Image(systemName: positive ? "arrow.up" : "arrow.down")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundColor(positive ? .green : .red)
+                        
+                        Text(delta)
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .foregroundColor(positive ? .green : .red)
+                    }
+                } else {
+                    // Spacer to maintain consistent height
+                    Text(" ")
+                        .font(.caption2)
+                }
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: color.opacity(0.08), location: 0),
+                    .init(color: color.opacity(0.04), location: 1)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .scaleEffect(isPressed ? 0.96 : 1.0)
+        .animation(.easeInOut(duration: 0.15), value: isPressed)
+        .onTapGesture {
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+            
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = false
+                }
+            }
+            
+            onTap?()
+        }
+    }
+}
+
+struct LifetimeSummaryCard: View {
+    let title: String
+    let value: String
+    let subtitle: String?
+    var onTap: (() -> Void)? = nil
+    
+    @State private var isPressed = false
+    @Environment(\.colorScheme) private var colorScheme
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 16) {
+                // Header
+                HStack {
+                    HStack(spacing: 12) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [
+                                            Color.indigo.opacity(0.2),
+                                            Color.indigo.opacity(0.1)
+                                        ]),
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: 40, height: 40)
+                            
+                            Image(systemName: "infinity.circle.fill")
+                                .font(.system(size: 20, weight: .medium))
+                                .foregroundColor(.indigo)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(title)
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                            
+                            if let subtitle = subtitle {
+                                Text(subtitle)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right.circle")
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(.indigo.opacity(0.6))
+                }
+                
+                // Value
+                Text(value)
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.leading)
+            }
+            .padding(20)
+        }
+        .background(
+            ZStack {
+                LinearGradient(
+                    gradient: Gradient(stops: [
+                        .init(color: Color.indigo.opacity(0.1), location: 0),
+                        .init(color: Color.indigo.opacity(0.05), location: 0.7),
+                        .init(color: Color.indigo.opacity(0.02), location: 1)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                
+                PatternOverlay(color: .indigo.opacity(0.02))
+            }
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.indigo.opacity(colorScheme == .dark ? 0.2 : 0.1), radius: 12, x: 0, y: 6)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.indigo.opacity(0.1), lineWidth: 1)
+        )
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.easeInOut(duration: 0.15), value: isPressed)
+        .onTapGesture {
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+            
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = false
+                }
+            }
+            
+            onTap?()
+        }
+    }
+}
+
+// MARK: - Supporting Views
+
+struct PatternOverlay: View {
+    let color: Color
+    
+    var body: some View {
+        Canvas { context, size in
+            let spacing: CGFloat = 20
+            let dotSize: CGFloat = 2
+            
+            for x in stride(from: 0, through: size.width, by: spacing) {
+                for y in stride(from: 0, through: size.height, by: spacing) {
+                    let rect = CGRect(x: x, y: y, width: dotSize, height: dotSize)
+                    context.fill(Path(ellipseIn: rect), with: .color(color))
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Legacy Card View (keeping for compatibility)
+
 struct SummaryCardView: View {
     let title: String
     let value: String
@@ -282,6 +850,81 @@ struct SummaryCardView: View {
         }
     }
     
+    private var cardGradient: LinearGradient {
+        switch title.lowercased() {
+        case let str where str.contains("today"):
+            return LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color.green.opacity(0.15), location: 0),
+                    .init(color: Color.green.opacity(0.08), location: 0.7),
+                    .init(color: Color.green.opacity(0.03), location: 1)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case let str where str.contains("yesterday"):
+            return LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color.orange.opacity(0.15), location: 0),
+                    .init(color: Color.orange.opacity(0.08), location: 0.7),
+                    .init(color: Color.orange.opacity(0.03), location: 1)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case let str where str.contains("7 days"):
+            return LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color.blue.opacity(0.15), location: 0),
+                    .init(color: Color.blue.opacity(0.08), location: 0.7),
+                    .init(color: Color.blue.opacity(0.03), location: 1)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case let str where str.contains("this month"):
+            return LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color.purple.opacity(0.15), location: 0),
+                    .init(color: Color.purple.opacity(0.08), location: 0.7),
+                    .init(color: Color.purple.opacity(0.03), location: 1)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case let str where str.contains("last month"):
+            return LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color.pink.opacity(0.15), location: 0),
+                    .init(color: Color.pink.opacity(0.08), location: 0.7),
+                    .init(color: Color.pink.opacity(0.03), location: 1)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case let str where str.contains("three years"), let str where str.contains("lifetime"):
+            return LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color.indigo.opacity(0.15), location: 0),
+                    .init(color: Color.indigo.opacity(0.08), location: 0.7),
+                    .init(color: Color.indigo.opacity(0.03), location: 1)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        default:
+            return LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color.accentColor.opacity(0.15), location: 0),
+                    .init(color: Color.accentColor.opacity(0.08), location: 0.7),
+                    .init(color: Color.accentColor.opacity(0.03), location: 1)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Header Section
@@ -296,72 +939,77 @@ struct SummaryCardView: View {
                             .background(iconColor.opacity(0.1))
                             .clipShape(Circle())
                         
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(title)
-                                .font(.headline)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.primary)
-                                .lineLimit(1)
-                            
-                            if let subtitle = subtitle {
-                                Text(subtitle)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                        Text(title)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
+                    }
+                    
+                    Spacer()
+                    
+                    // Subtitle moved to top right
+                    if let subtitle = subtitle {
+                        Text(subtitle)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.trailing)
+                    }
+                }
+                
+                // Main value with chevron
+                HStack(alignment: .bottom, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(value)
+                            .font(.system(.largeTitle, design: .rounded))
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                            .multilineTextAlignment(.leading)
+                        
+                        // Delta indicator (moved below value)
+                        if let delta = delta, let positive = deltaPositive {
+                            HStack(spacing: 6) {
+                                Image(systemName: positive ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
+                                    .foregroundColor(positive ? .green : .red)
+                                    .font(.system(size: 16, weight: .medium))
+                                
+                                Text(delta)
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(positive ? .green : .red)
                             }
                         }
                     }
                     
                     Spacer()
                     
-                    // Tap indicator
+                    // Chevron
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.secondary)
                 }
-                
-                // Main value
-                Text(value)
-                    .font(.system(.largeTitle, design: .rounded))
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-                    .multilineTextAlignment(.leading)
-                
-                // Delta indicator
-                if let delta = delta, let positive = deltaPositive {
-                    HStack(spacing: 8) {
-                        Image(systemName: positive ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
-                            .foregroundColor(positive ? .green : .red)
-                            .font(.system(size: 16, weight: .medium))
-                        
-                        Text(delta)
-                            .font(.callout)
-                            .fontWeight(.medium)
-                            .foregroundColor(positive ? .green : .red)
-                        
-                        Spacer()
-                        
-                        // Performance badge
-                        Text(positive ? "Up" : "Down")
-                            .font(.caption2)
-                            .fontWeight(.medium)
-                            .textCase(.uppercase)
-                            .foregroundColor(positive ? .green : .red)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background((positive ? Color.green : Color.red).opacity(0.1))
-                            .clipShape(Capsule())
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(Color(.tertiarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                }
             }
             .padding(20)
         }
-        .background(Color(.secondarySystemBackground))
+        .background(cardGradient)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .shadow(color: Color.black.opacity(0.06), radius: 12, x: 0, y: 4)
+        .shadow(color: Color.black.opacity(0.04), radius: 6, x: 0, y: 2)
+        .shadow(color: iconColor.opacity(0.08), radius: 20, x: 0, y: 8)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            iconColor.opacity(0.1),
+                            Color.clear,
+                            iconColor.opacity(0.05)
+                        ]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
         .scaleEffect(isPressed ? 0.98 : 1.0)
         .animation(.easeInOut(duration: 0.15), value: isPressed)
         .onTapGesture {
