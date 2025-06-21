@@ -84,6 +84,7 @@ struct AdNetworkView: View {
             if viewModel.isLoading {
                 Spacer()
                 ProgressView("Loading ad networks...")
+                    .soraBody()
                     .padding()
                 Spacer()
             } else if viewModel.adNetworks.isEmpty && viewModel.hasLoaded {
@@ -101,11 +102,11 @@ struct AdNetworkView: View {
                 .foregroundColor(.secondary)
             
             Text("No Ad Network Data")
-                .font(.headline)
+                .soraHeadline()
                 .foregroundColor(.primary)
             
             Text("No ad network data available for the selected time period.")
-                .font(.body)
+                .soraBody()
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
@@ -136,15 +137,13 @@ struct AdNetworkView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("Total Earnings")
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                    .soraHeadline()
                     .foregroundColor(.primary)
                 
                 Spacer()
                 
                 Text(calculateTotalEarnings())
-                    .font(.system(.largeTitle, design: .rounded))
-                    .fontWeight(.bold)
+                    .soraLargeTitle()
                     .foregroundColor(.accentColor)
             }
         }
@@ -169,6 +168,7 @@ struct AdNetworkView: View {
             Button("Done") {
                 dismiss()
             }
+            .soraBody()
             .foregroundColor(.accentColor)
         }
     }
@@ -196,8 +196,7 @@ struct AdNetworkView: View {
                     .font(.body)
                     .foregroundColor(.white)
                 Text(viewModel.selectedFilter.rawValue)
-                    .font(.body)
-                    .fontWeight(.semibold)
+                    .soraBody()
                     .foregroundColor(.white)
             }
             .padding(.horizontal, 20)

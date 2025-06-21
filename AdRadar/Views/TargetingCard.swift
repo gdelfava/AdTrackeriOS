@@ -67,13 +67,12 @@ struct TargetingCard: View {
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(targeting.displayTargetingType)
-                            .font(.headline)
-                            .fontWeight(.semibold)
+                            .soraHeadline()
                             .foregroundColor(.primary)
                             .lineLimit(1)
                         
                         Text("Targeting Performance")
-                            .font(.caption)
+                            .soraCaption()
                             .foregroundColor(.secondary)
                     }
                 }
@@ -83,15 +82,13 @@ struct TargetingCard: View {
                 // Earnings badge
                 VStack(alignment: .trailing, spacing: 2) {
                     Text(targeting.formattedEarnings)
-                        .font(.system(.title2, design: .rounded))
-                        .fontWeight(.bold)
+                        .soraTitle2()
                         .foregroundColor(.green)
                     
                     Text("Revenue")
-                        .font(.caption2)
+                        .soraCaption2()
                         .foregroundColor(.secondary)
                         .textCase(.uppercase)
-                        .fontWeight(.medium)
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
@@ -192,8 +189,7 @@ struct TargetingCard: View {
             }) {
                 HStack(spacing: 6) {
                     Text(showDetailedMetrics ? "Less Details" : "More Details")
-                        .font(.caption)
-                        .fontWeight(.medium)
+                        .soraCaption()
                     
                     Image(systemName: showDetailedMetrics ? "chevron.up" : "chevron.down")
                         .font(.system(size: 10, weight: .medium))
@@ -252,14 +248,12 @@ struct TargetingMetricPill: View {
                 .foregroundColor(color)
             
             Text(title)
-                .font(.caption2)
+                .soraCaption2()
                 .foregroundColor(.secondary)
                 .textCase(.uppercase)
-                .fontWeight(.medium)
             
             Text(value)
-                .font(.system(.body, design: .rounded))
-                .fontWeight(.semibold)
+                .soraBody()
                 .foregroundColor(.primary)
                 .lineLimit(1)
         }
@@ -282,15 +276,13 @@ struct TargetingDetailedMetricRow: View {
                     .frame(width: 16, height: 16)
                 
                 Text(title)
-                    .font(.caption)
+                    .soraCaption()
                     .foregroundColor(.secondary)
                     .textCase(.uppercase)
-                    .fontWeight(.medium)
             }
             
             Text(value)
-                .font(.system(.callout, design: .rounded))
-                .fontWeight(.semibold)
+                .soraCallout()
                 .foregroundColor(.primary)
                 .lineLimit(2)
         }

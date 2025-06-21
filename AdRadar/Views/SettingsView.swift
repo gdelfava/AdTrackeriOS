@@ -25,7 +25,8 @@ struct Toast: View {
             }
             
             Text(message)
-                .font(.system(size: 15, weight: .medium, design: .rounded))
+                .soraSubheadline()
+                .fontWeight(.medium)
                 .foregroundColor(.white)
                 .multilineTextAlignment(.leading)
                 .lineLimit(2)
@@ -918,22 +919,10 @@ struct PaymentThresholdInfoSheet: View {
                     }
                     .padding(.horizontal)
                     
-                    // Footer
-                    VStack(spacing: 8) {
-                        Text("Google AdSense Information")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                        
-                        Text("Manage your threshold in Settings")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.top, 8)
-                    
                     Spacer(minLength: 100)
                 }
             }
-            .navigationTitle("Payment Threshold")
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -944,8 +933,6 @@ struct PaymentThresholdInfoSheet: View {
                 }
             }
         }
-        .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.visible)
     }
 }
 
@@ -1081,7 +1068,7 @@ struct PaymentThresholdRow: View {
         } message: {
             Text("Please enter a valid amount greater than 0.")
         }
-        .sheet(isPresented: $showInfoSheet) {
+        .fullScreenCover(isPresented: $showInfoSheet) {
             PaymentThresholdInfoSheet()
         }
     }

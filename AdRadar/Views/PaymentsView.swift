@@ -23,6 +23,7 @@ struct PaymentsView: View {
                     if viewModel.isLoading {
                         Spacer()
                         ProgressView("Loading...")
+                            .soraBody()
                             .padding()
                         Spacer()
                     } else if let error = viewModel.error {
@@ -74,8 +75,8 @@ struct PaymentsView: View {
                             Spacer()
                         }
                         .padding(.horizontal)
-                        Text("AdRadar is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
-                            .font(.footnote)
+                        Text("AdRadar is not affiliated with Google or Google AdSense.")
+                            .soraFootnote()
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
@@ -140,10 +141,10 @@ struct PaymentCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.subheadline)
+                .soraSubheadline()
                 .foregroundColor(.secondary)
             Text(value)
-                .font(.system(size: 34, weight: .semibold))
+                .soraFont(.semibold, size: 34)
                 .foregroundColor(.secondary)
         }
         .padding()
@@ -180,12 +181,11 @@ struct UnpaidEarningsCardView: View {
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Unpaid Earnings")
-                                .font(.headline)
-                                .fontWeight(.semibold)
+                                .soraHeadline()
                                 .foregroundColor(.primary)
                             
                             Text("Current Period")
-                                .font(.caption)
+                                .soraCaption()
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -194,8 +194,7 @@ struct UnpaidEarningsCardView: View {
                     
                     // Status badge
                     Text(isPaid ? "Paid" : "Pending")
-                        .font(.caption)
-                        .fontWeight(.medium)
+                        .soraCaption()
                         .textCase(.uppercase)
                         .foregroundColor(isPaid ? .green : .orange)
                         .padding(.horizontal, 10)
@@ -206,8 +205,7 @@ struct UnpaidEarningsCardView: View {
                 
                 // Main amount
                 Text(amount)
-                    .font(.system(.largeTitle, design: .rounded))
-                    .fontWeight(.bold)
+                    .soraLargeTitle()
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.leading)
                 
@@ -286,8 +284,7 @@ struct UnpaidEarningsCardView: View {
             }) {
                 HStack {
                     Text(isExpanded ? "Less Details" : "More Details")
-                        .font(.caption)
-                        .fontWeight(.medium)
+                        .soraCaption()
                         .foregroundColor(.secondary)
                     
                     Spacer()
@@ -352,12 +349,11 @@ struct PreviousPaymentCardView: View {
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Previous Payment")
-                                .font(.headline)
-                                .fontWeight(.semibold)
+                                .soraHeadline()
                                 .foregroundColor(.primary)
                             
                             Text("Last Completed")
-                                .font(.caption)
+                                .soraCaption()
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -366,8 +362,7 @@ struct PreviousPaymentCardView: View {
                     
                     // Status badge
                     Text("Paid")
-                        .font(.caption)
-                        .fontWeight(.medium)
+                        .soraCaption()
                         .textCase(.uppercase)
                         .foregroundColor(.green)
                         .padding(.horizontal, 10)
@@ -378,8 +373,7 @@ struct PreviousPaymentCardView: View {
                 
                 // Main amount
                 Text(amount)
-                    .font(.system(.largeTitle, design: .rounded))
-                    .fontWeight(.bold)
+                    .soraLargeTitle()
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.leading)
                 
@@ -456,8 +450,7 @@ struct PreviousPaymentCardView: View {
             }) {
                 HStack {
                     Text(isExpanded ? "Less Details" : "More Details")
-                        .font(.caption)
-                        .fontWeight(.medium)
+                        .soraCaption()
                         .foregroundColor(.secondary)
                     
                     Spacer()
@@ -516,13 +509,12 @@ struct PaymentMetricPill: View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(.caption)
-                        .fontWeight(.medium)
+                        .soraCaption()
                         .foregroundColor(.primary)
                         .lineLimit(1)
                     
                     Text(getSubtitle())
-                        .font(.caption2)
+                        .soraCaption2()
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                 }
@@ -531,8 +523,7 @@ struct PaymentMetricPill: View {
             }
             
             Text(value)
-                .font(.system(.title3, design: .rounded))
-                .fontWeight(.bold)
+                .soraTitle3()
                 .foregroundColor(.primary)
                 .lineLimit(1)
         }
@@ -585,14 +576,13 @@ struct PaymentDetailedMetricRow: View {
                 .frame(width: 20, height: 20)
             
             Text(title)
-                .font(.callout)
+                .soraCallout()
                 .foregroundColor(.secondary)
             
             Spacer()
             
             Text(value)
-                .font(.callout)
-                .fontWeight(.medium)
+                .soraCallout()
                 .foregroundColor(.primary)
                 .multilineTextAlignment(.trailing)
         }
@@ -628,16 +618,14 @@ struct PaymentProgressView: View {
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.blue)
                 
-                Text("Payment Threshold Progress")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(.primary)
+                                        Text("Payment Threshold Progress")
+                            .soraSubheadline()
+                            .foregroundColor(.primary)
                 
                 Spacer()
                 
                 Text("\(progressPercentage)%")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
+                    .soraSubheadline()
                     .foregroundColor(progress >= 1.0 ? .green : .blue)
             }
             
@@ -672,12 +660,11 @@ struct PaymentProgressView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Current Earnings")
-                        .font(.caption2)
+                        .soraCaption2()
                         .foregroundColor(.secondary)
                     
                     Text(formatCurrency(unpaidValue))
-                        .font(.caption)
-                        .fontWeight(.medium)
+                        .soraCaption()
                         .foregroundColor(.primary)
                 }
                 
@@ -686,23 +673,21 @@ struct PaymentProgressView: View {
                 if progress < 1.0 {
                     VStack(alignment: .trailing, spacing: 2) {
                         Text("Needed for Payment")
-                            .font(.caption2)
+                            .soraCaption2()
                             .foregroundColor(.secondary)
                         
                         Text(formatCurrency(remainingAmount))
-                            .font(.caption)
-                            .fontWeight(.medium)
+                            .soraCaption()
                             .foregroundColor(.orange)
                     }
                 } else {
                     VStack(alignment: .trailing, spacing: 2) {
                         Text("Ready for Payment!")
-                            .font(.caption2)
+                            .soraCaption2()
                             .foregroundColor(.green)
                         
                         Text("Threshold Met")
-                            .font(.caption)
-                            .fontWeight(.medium)
+                            .soraCaption()
                             .foregroundColor(.green)
                     }
                 }

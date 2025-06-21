@@ -15,11 +15,22 @@ struct AdRadar_App: App {
     }
     
     private func setupAppEnvironment() {
+        // Configure Sora fonts globally
+        configureFonts()
+        
         // Initialize core managers in a controlled manner
         initializeManagers()
         
         // Log initialization status
         logInitializationStatus()
+    }
+    
+    private func configureFonts() {
+        // Configure navigation and tab bar fonts with Sora
+        SoraNavigationAppearance.configure()
+        
+        // Load and verify Sora fonts
+        SoraFontLoader.loadFonts()
     }
     
     private func initializeManagers() {
@@ -53,6 +64,7 @@ struct AdRadar_App: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .applySoraFonts()
                 .environmentObject(NetworkMonitor.shared)
                 .onAppear {
                     // Perform any additional setup after UI is ready

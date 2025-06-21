@@ -78,6 +78,7 @@ struct DomainsView: View {
             if viewModel.isLoading {
                 Spacer()
                 ProgressView("Loading domains...")
+                    .soraBody()
                     .padding()
                 Spacer()
             } else if viewModel.domains.isEmpty {
@@ -87,11 +88,11 @@ struct DomainsView: View {
                         .foregroundColor(.gray)
                     
                     Text("No Domain Data")
-                        .font(.headline)
+                        .soraHeadline()
                         .foregroundColor(.gray)
                     
                     Text("No domain data available for the selected time period.")
-                        .font(.body)
+                        .soraBody()
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
@@ -126,15 +127,13 @@ struct DomainsView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("Total Earnings")
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                    .soraHeadline()
                     .foregroundColor(.primary)
                 
                 Spacer()
                 
                 Text(calculateTotalEarnings())
-                    .font(.system(.largeTitle, design: .rounded))
-                    .fontWeight(.bold)
+                    .soraLargeTitle()
                     .foregroundColor(.accentColor)
             }
         }
@@ -159,6 +158,7 @@ struct DomainsView: View {
             Button("Done") {
                 dismiss()
             }
+            .soraBody()
             .foregroundColor(.accentColor)
         }
     }
@@ -186,8 +186,7 @@ struct DomainsView: View {
                     .font(.body)
                     .foregroundColor(.white)
                 Text(viewModel.selectedFilter.rawValue)
-                    .font(.body)
-                    .fontWeight(.semibold)
+                    .soraBody()
                     .foregroundColor(.white)
             }
             .padding(.horizontal, 20)
@@ -243,14 +242,13 @@ struct DateFilterSheet: View {
                 
                 HStack {
                     Text("Filter by Date")
-                        .font(.title2)
-                        .fontWeight(.bold)
+                        .soraTitle2()
                         .foregroundColor(.primary)
                     Spacer()
                     Button("Done") {
                         isPresented = false
                     }
-                    .font(.body.weight(.medium))
+                    .soraBody()
                     .foregroundColor(.accentColor)
                 }
                 .padding(.horizontal, 24)
@@ -318,8 +316,7 @@ struct DateFilterSheet: View {
                     if let summary = getFilterSummary() {
                         VStack(spacing: 8) {
                             Text("Current Selection")
-                                .font(.footnote)
-                                .fontWeight(.medium)
+                                .soraFootnote()
                                 .foregroundColor(.secondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
@@ -328,7 +325,7 @@ struct DateFilterSheet: View {
                                     .font(.caption)
                                     .foregroundColor(.accentColor)
                                 Text(summary)
-                                    .font(.caption)
+                                    .soraCaption()
                                     .foregroundColor(.secondary)
                                 Spacer()
                             }
@@ -345,7 +342,7 @@ struct DateFilterSheet: View {
             }
             .background(Color(.systemGroupedBackground))
         }
-        .presentationDetents([.height(520), .large])
+        .presentationDetents([.height(650), .large])
         .presentationDragIndicator(.hidden)
     }
     
@@ -397,8 +394,7 @@ struct FilterSection<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.subheadline)
-                .fontWeight(.medium)
+                .soraSubheadline()
                 .foregroundColor(.secondary)
                 .padding(.horizontal, 24)
             
@@ -465,13 +461,12 @@ struct FilterRow: View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(filter.rawValue)
-                        .font(.body)
-                        .fontWeight(.medium)
+                        .soraBody()
                         .foregroundColor(.primary)
                     
                     if let description = getFilterDescription() {
                         Text(description)
-                            .font(.caption)
+                            .soraCaption()
                             .foregroundColor(.secondary)
                     }
                 }
@@ -583,13 +578,12 @@ struct DomainCard: View {
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(domain.domainName)
-                            .font(.headline)
-                            .fontWeight(.semibold)
+                            .soraHeadline()
                             .foregroundColor(.primary)
                             .lineLimit(1)
                         
                         Text("Domain Performance")
-                            .font(.caption)
+                            .soraCaption()
                             .foregroundColor(.secondary)
                     }
                 }
@@ -599,15 +593,13 @@ struct DomainCard: View {
                 // Earnings badge
                 VStack(alignment: .trailing, spacing: 2) {
                     Text(domain.formattedEarnings)
-                        .font(.system(.title2, design: .rounded))
-                        .fontWeight(.bold)
+                        .soraTitle2()
                         .foregroundColor(.green)
                     
                     Text("Earnings")
-                        .font(.caption2)
+                        .soraCaption2()
                         .foregroundColor(.secondary)
                         .textCase(.uppercase)
-                        .fontWeight(.medium)
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
@@ -708,8 +700,7 @@ struct DomainCard: View {
             }) {
                 HStack(spacing: 6) {
                     Text(showDetailedMetrics ? "Less Details" : "More Details")
-                        .font(.caption)
-                        .fontWeight(.medium)
+                        .soraCaption()
                     
                     Image(systemName: showDetailedMetrics ? "chevron.up" : "chevron.down")
                         .font(.system(size: 10, weight: .medium))
@@ -745,15 +736,13 @@ struct MetricPill: View {
             
             VStack(spacing: 2) {
                 Text(value)
-                    .font(.system(.body, design: .rounded))
-                    .fontWeight(.semibold)
+                    .soraBody()
                     .foregroundColor(.primary)
                     .lineLimit(1)
                 
                 Text(title)
-                    .font(.caption2)
+                    .soraCaption2()
                     .foregroundColor(.secondary)
-                    .fontWeight(.medium)
                     .textCase(.uppercase)
                     .lineLimit(1)
             }
@@ -779,13 +768,11 @@ struct DetailedMetricRow: View {
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.caption)
+                    .soraCaption()
                     .foregroundColor(.secondary)
-                    .fontWeight(.medium)
                 
                 Text(value)
-                    .font(.system(.subheadline, design: .rounded))
-                    .fontWeight(.semibold)
+                    .soraSubheadline()
                     .foregroundColor(.primary)
                     .lineLimit(1)
             }

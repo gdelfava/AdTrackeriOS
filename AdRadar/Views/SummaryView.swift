@@ -19,17 +19,19 @@ struct SummaryView: View {
                 VStack(alignment: .center, spacing: 0) {
                     if let errorMessage = viewModel.errorMessage {
                         Text(errorMessage)
+                            .soraBody()
                             .foregroundColor(.red)
                             .padding()
                     }
                     if viewModel.isOffline {
                         Text("No internet connection. Please check your network and try again.")
+                            .soraBody()
                             .foregroundColor(.red)
                             .padding()
                     }
                     if let lastUpdate = viewModel.lastUpdateTime {
                         Text("Last updated: \(lastUpdate.formatted(.relative(presentation: .named))) on \(lastUpdate.formatted(.dateTime.weekday(.wide)))")
-                            .font(.caption)
+                            .soraCaption()
                             .foregroundColor(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal)
@@ -38,6 +40,7 @@ struct SummaryView: View {
                     if viewModel.isLoading {
                         Spacer()
                         ProgressView("Loading...")
+                            .soraBody()
                             .padding()
                         Spacer()
                     } else if let error = viewModel.error {
@@ -167,8 +170,8 @@ struct SummaryView: View {
                                 .frame(height: 0.5)
                                 .padding(.horizontal, 20)
                             
-                            Text("AdRadar is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
-                                .font(.footnote)
+                            Text("AdRadar is not affiliated with Google or Google AdSense.")
+                                .soraFootnote()
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 20)
@@ -238,6 +241,7 @@ struct SummaryView: View {
                         HStack {
                             Spacer()
                             Text("No internet connection")
+                                .soraBody()
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 24)
                                 .padding(.vertical, 12)
@@ -263,11 +267,12 @@ struct SummaryView: View {
                 }
             )
         }
-        .sheet(isPresented: $viewModel.showDayMetricsSheet) {
+        .fullScreenCover(isPresented: $viewModel.showDayMetricsSheet) {
             if let metrics = viewModel.selectedDayMetrics {
                 DayMetricsSheet(metrics: metrics, title: viewModel.selectedCardTitle)
             } else {
                 ProgressView("Loading metrics...")
+                    .soraBody()
                     .padding()
             }
         }
@@ -294,12 +299,11 @@ struct HeroSectionHeader: View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Today's Performance")
-                    .font(.title2)
-                    .fontWeight(.bold)
+                    .soraTitle2()
                     .foregroundColor(.primary)
                 
                 Text("Real-time earnings overview")
-                    .font(.subheadline)
+                    .soraSubheadline()
                     .foregroundColor(.secondary)
             }
             
@@ -351,13 +355,12 @@ struct HeroSummaryCard: View {
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text(title)
-                                .font(.title3)
-                                .fontWeight(.bold)
+                                .soraTitle3()
                                 .foregroundColor(.primary)
                             
                             if let subtitle = subtitle {
                                 Text(subtitle)
-                                    .font(.caption)
+                                    .soraCaption()
                                     .foregroundColor(.secondary)
                             }
                         }
@@ -373,7 +376,7 @@ struct HeroSummaryCard: View {
                 // Main value
                 VStack(alignment: .leading, spacing: 12) {
                     Text(value)
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .soraFont(.bold, size: 36)
                         .foregroundColor(.primary)
                         .multilineTextAlignment(.leading)
                     
@@ -385,12 +388,11 @@ struct HeroSummaryCard: View {
                                 .font(.system(size: 16, weight: .semibold))
                             
                             Text(delta)
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
+                                .soraSubheadline()
                                 .foregroundColor(positive ? .green : .red)
                             
                             Text("compared to yesterday")
-                                .font(.caption)
+                                .soraCaption()
                                 .foregroundColor(.secondary)
                         }
                         .padding(.horizontal, 16)
@@ -477,16 +479,17 @@ struct SectionHeader: View {
                 .clipShape(Circle())
             
             Text(title)
-                .font(.headline)
-                .fontWeight(.semibold)
+                .soraHeadline()
                 .foregroundColor(.primary)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
             
-            Spacer()
+            Spacer(minLength: 8)
             
             Rectangle()
                 .fill(Color(.separator))
                 .frame(height: 0.5)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: 120)
         }
     }
 }
@@ -516,13 +519,12 @@ struct CompactSummaryCard: View {
             // Content
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
+                    .soraSubheadline()
                     .foregroundColor(.primary)
                 
                 if let subtitle = subtitle {
                     Text(subtitle)
-                        .font(.caption2)
+                        .soraCaption2()
                         .foregroundColor(.secondary)
                 }
             }
@@ -532,8 +534,7 @@ struct CompactSummaryCard: View {
             // Value and delta
             VStack(alignment: .trailing, spacing: 4) {
                 Text(value)
-                    .font(.system(.title3, design: .rounded))
-                    .fontWeight(.bold)
+                    .soraTitle3()
                     .foregroundColor(.primary)
                 
                 if let delta = delta, let positive = deltaPositive {
@@ -543,8 +544,7 @@ struct CompactSummaryCard: View {
                             .foregroundColor(positive ? .green : .red)
                         
                         Text(delta)
-                            .font(.caption2)
-                            .fontWeight(.medium)
+                            .soraCaption2()
                             .foregroundColor(positive ? .green : .red)
                     }
                 }
@@ -612,14 +612,12 @@ struct MonthlyCompactCard: View {
             // Content
             VStack(alignment: .leading, spacing: 8) {
                 Text(title)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
+                    .soraSubheadline()
                     .foregroundColor(.primary)
                     .lineLimit(1)
                 
                 Text(value)
-                    .font(.system(.title3, design: .rounded))
-                    .fontWeight(.bold)
+                    .soraTitle3()
                     .foregroundColor(.primary)
                     .lineLimit(1)
                 
@@ -630,14 +628,13 @@ struct MonthlyCompactCard: View {
                             .foregroundColor(positive ? .green : .red)
                         
                         Text(delta)
-                            .font(.caption2)
-                            .fontWeight(.medium)
+                            .soraCaption2()
                             .foregroundColor(positive ? .green : .red)
                     }
                 } else {
                     // Spacer to maintain consistent height
                     Text(" ")
-                        .font(.caption2)
+                        .soraCaption2()
                 }
             }
         }
@@ -711,13 +708,12 @@ struct LifetimeSummaryCard: View {
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text(title)
-                                .font(.headline)
-                                .fontWeight(.semibold)
+                                .soraHeadline()
                                 .foregroundColor(.primary)
                             
                             if let subtitle = subtitle {
                                 Text(subtitle)
-                                    .font(.caption)
+                                    .soraCaption()
                                     .foregroundColor(.secondary)
                             }
                         }
@@ -732,7 +728,7 @@ struct LifetimeSummaryCard: View {
                 
                 // Value
                 Text(value)
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .soraFont(.bold, size: 28)
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.leading)
             }
@@ -1040,7 +1036,7 @@ struct DayMetricsSheet: View {
     let title: String
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
-    @State private var cardAppearances: [Bool] = Array(repeating: false, count: 3)
+    @State private var cardAppearances: [Bool] = Array(repeating: false, count: 4)
     
     var body: some View {
         NavigationView {
@@ -1056,6 +1052,24 @@ struct DayMetricsSheet: View {
                         
                         // Enhanced metric cards
                         VStack(spacing: 20) {
+                            // Grand Total Card
+                            EnhancedMetricCard(
+                                title: "Revenue Overview",
+                                icon: "dollarsign.circle.fill",
+                                iconColor: .green,
+                                metrics: [
+                                    MetricData(
+                                        icon: "banknote.fill",
+                                        title: "Total Earnings",
+                                        value: metrics.formattedEstimatedEarnings,
+                                        subtitle: "Revenue Generated",
+                                        color: .green
+                                    )
+                                ]
+                            )
+                            .opacity(cardAppearances[0] ? 1 : 0)
+                            .offset(y: cardAppearances[0] ? 0 : 30)
+                            
                             // Performance Card
                             EnhancedMetricCard(
                                 title: "Engagement Metrics",
@@ -1085,8 +1099,8 @@ struct DayMetricsSheet: View {
                                     )
                                 ]
                             )
-                            .opacity(cardAppearances[0] ? 1 : 0)
-                            .offset(y: cardAppearances[0] ? 0 : 30)
+                            .opacity(cardAppearances[1] ? 1 : 0)
+                            .offset(y: cardAppearances[1] ? 0 : 30)
                             
                             // Traffic Card
                             EnhancedMetricCard(
@@ -1110,8 +1124,8 @@ struct DayMetricsSheet: View {
                                     )
                                 ]
                             )
-                            .opacity(cardAppearances[1] ? 1 : 0)
-                            .offset(y: cardAppearances[1] ? 0 : 30)
+                            .opacity(cardAppearances[2] ? 1 : 0)
+                            .offset(y: cardAppearances[2] ? 0 : 30)
                             
                             // Cost Analysis Card
                             EnhancedMetricCard(
@@ -1128,20 +1142,20 @@ struct DayMetricsSheet: View {
                                     )
                                 ]
                             )
-                            .opacity(cardAppearances[2] ? 1 : 0)
-                            .offset(y: cardAppearances[2] ? 0 : 30)
+                            .opacity(cardAppearances[3] ? 1 : 0)
+                            .offset(y: cardAppearances[3] ? 0 : 30)
                         }
                         .padding(.horizontal, 20)
                         
                         // Footer disclaimer
-                        Text("AdRadar is not affiliated with Google or Google AdSense. All data is provided by Google and is subject to their terms of service.")
-                            .font(.footnote)
+                        Text("AdRadar is not affiliated with Google or Google AdSense.")
+                            .soraFootnote()
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 20)
                             .padding(.bottom, 20)
                     }
-                    .padding(.top, 20)
+                    .padding(.top, 8)
                 }
             }
             .navigationTitle("")
@@ -1151,19 +1165,11 @@ struct DayMetricsSheet: View {
                     Button("Done") {
                         dismiss()
                     }
-                    .font(.body.weight(.medium))
+                    .soraBody()
                     .foregroundColor(.accentColor)
-                }
-                
-                ToolbarItem(placement: .principal) {
-                    Text(title)
-                        .font(.title2.weight(.bold))
-                        .foregroundColor(.primary)
                 }
             }
         }
-        .presentationDetents([.large])
-        .presentationDragIndicator(.visible)
         .onAppear {
             // Stagger the card animations
             for index in 0..<cardAppearances.count {
@@ -1198,13 +1204,12 @@ struct DayMetricsSheet: View {
             }
             
             VStack(spacing: 4) {
-                Text("Detailed Metrics")
-                    .font(.title2)
-                    .fontWeight(.bold)
+                Text(title.capitalized)
+                    .soraTitle2()
                     .foregroundColor(.primary)
                 
                 Text("Comprehensive performance overview")
-                    .font(.subheadline)
+                    .soraSubheadline()
                     .foregroundColor(.secondary)
             }
         }
@@ -1255,12 +1260,11 @@ struct EnhancedMetricCard: View {
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(title)
-                            .font(.headline)
-                            .fontWeight(.semibold)
+                            .soraHeadline()
                             .foregroundColor(.primary)
                         
                         Text("Performance insights")
-                            .font(.caption)
+                            .soraCaption()
                             .foregroundColor(.secondary)
                     }
                     
@@ -1304,12 +1308,11 @@ struct EnhancedMetricCard: View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(metric.title)
-                        .font(.subheadline)
-                        .fontWeight(.medium)
+                        .soraSubheadline()
                         .foregroundColor(.primary)
                     
                     Text(metric.subtitle)
-                        .font(.caption)
+                        .soraCaption()
                         .foregroundColor(.secondary)
                 }
                 
@@ -1317,8 +1320,7 @@ struct EnhancedMetricCard: View {
             }
             
             Text(metric.value)
-                .font(.system(.title, design: .rounded))
-                .fontWeight(.bold)
+                .soraTitle()
                 .foregroundColor(.primary)
         }
         .padding(16)
@@ -1336,21 +1338,19 @@ struct EnhancedMetricCard: View {
                 
                 VStack(alignment: .leading, spacing: 1) {
                     Text(metric.title)
-                        .font(.caption)
-                        .fontWeight(.medium)
+                        .soraCaption()
                         .foregroundColor(.primary)
                         .lineLimit(1)
                     
                     Text(metric.subtitle)
-                        .font(.caption2)
+                        .soraCaption2()
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                 }
             }
             
             Text(metric.value)
-                .font(.system(.callout, design: .rounded))
-                .fontWeight(.bold)
+                .soraCallout()
                 .foregroundColor(.primary)
                 .lineLimit(1)
         }

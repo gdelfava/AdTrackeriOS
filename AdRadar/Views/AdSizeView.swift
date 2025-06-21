@@ -78,6 +78,7 @@ struct AdSizeView: View {
             if viewModel.isLoading {
                 Spacer()
                 ProgressView("Loading ad sizes...")
+                    .soraBody()
                     .padding()
                 Spacer()
             } else if viewModel.adSizes.isEmpty {
@@ -87,11 +88,11 @@ struct AdSizeView: View {
                         .foregroundColor(.gray)
                     
                     Text("No Ad Size Data")
-                        .font(.headline)
+                        .soraHeadline()
                         .foregroundColor(.gray)
                     
                     Text("No ad size data available for the selected time period.")
-                        .font(.body)
+                        .soraBody()
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
@@ -126,15 +127,13 @@ struct AdSizeView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("Total Earnings")
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                    .soraHeadline()
                     .foregroundColor(.primary)
                 
                 Spacer()
                 
                 Text(calculateTotalEarnings())
-                    .font(.system(.largeTitle, design: .rounded))
-                    .fontWeight(.bold)
+                    .soraLargeTitle()
                     .foregroundColor(.accentColor)
             }
         }
@@ -159,6 +158,7 @@ struct AdSizeView: View {
             Button("Done") {
                 dismiss()
             }
+            .soraBody()
             .foregroundColor(.accentColor)
         }
     }
@@ -186,8 +186,7 @@ struct AdSizeView: View {
                     .font(.body)
                     .foregroundColor(.white)
                 Text(viewModel.selectedFilter.rawValue)
-                    .font(.body)
-                    .fontWeight(.semibold)
+                    .soraBody()
                     .foregroundColor(.white)
             }
             .padding(.horizontal, 20)
@@ -243,14 +242,13 @@ struct AdSizeDateFilterSheet: View {
                 
                 HStack {
                     Text("Filter by Date")
-                        .font(.title2)
-                        .fontWeight(.bold)
+                        .soraTitle2()
                         .foregroundColor(.primary)
                     Spacer()
                     Button("Done") {
                         isPresented = false
                     }
-                    .font(.body.weight(.medium))
+                    .soraBody()
                     .foregroundColor(.accentColor)
                 }
                 .padding(.horizontal, 24)
@@ -318,8 +316,7 @@ struct AdSizeDateFilterSheet: View {
                     if let summary = getFilterSummary() {
                         VStack(spacing: 8) {
                             Text("Current Selection")
-                                .font(.footnote)
-                                .fontWeight(.medium)
+                                .soraFootnote()
                                 .foregroundColor(.secondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
@@ -328,7 +325,7 @@ struct AdSizeDateFilterSheet: View {
                                     .font(.caption)
                                     .foregroundColor(.accentColor)
                                 Text(summary)
-                                    .font(.caption)
+                                    .soraCaption()
                                     .foregroundColor(.secondary)
                                 Spacer()
                             }
@@ -345,7 +342,7 @@ struct AdSizeDateFilterSheet: View {
             }
             .background(Color(.systemGroupedBackground))
         }
-        .presentationDetents([.height(520), .large])
+        .presentationDetents([.height(650), .large])
         .presentationDragIndicator(.hidden)
     }
     
@@ -397,8 +394,7 @@ struct AdSizeFilterSection<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.subheadline)
-                .fontWeight(.medium)
+                .soraSubheadline()
                 .foregroundColor(.secondary)
                 .padding(.horizontal, 24)
             
@@ -465,13 +461,12 @@ struct AdSizeFilterRow: View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(filter.rawValue)
-                        .font(.body)
-                        .fontWeight(.medium)
+                        .soraBody()
                         .foregroundColor(.primary)
                     
                     if let description = getFilterDescription() {
                         Text(description)
-                            .font(.caption)
+                            .soraCaption()
                             .foregroundColor(.secondary)
                     }
                 }

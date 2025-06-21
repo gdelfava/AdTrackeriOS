@@ -78,6 +78,7 @@ struct TargetingView: View {
             if viewModel.isLoading {
                 Spacer()
                 ProgressView("Loading targeting data...")
+                    .soraBody()
                     .padding()
                 Spacer()
             } else if let error = viewModel.error {
@@ -87,11 +88,11 @@ struct TargetingView: View {
                         .foregroundColor(.gray)
                     
                     Text("Unable to Load Data")
-                        .font(.headline)
+                        .soraHeadline()
                         .foregroundColor(.gray)
                     
                     Text(error)
-                        .font(.body)
+                        .soraBody()
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
@@ -101,6 +102,7 @@ struct TargetingView: View {
                             await viewModel.fetchTargetingData()
                         }
                     }
+                    .soraBody()
                     .padding()
                     .background(Color.accentColor)
                     .foregroundColor(.white)
@@ -114,11 +116,11 @@ struct TargetingView: View {
                         .foregroundColor(.gray)
                     
                     Text("No Targeting Data")
-                        .font(.headline)
+                        .soraHeadline()
                         .foregroundColor(.gray)
                     
                     Text("No targeting data available for the selected time period.")
-                        .font(.body)
+                        .soraBody()
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
@@ -153,15 +155,13 @@ struct TargetingView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("Total Targeting Earnings")
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                    .soraHeadline()
                     .foregroundColor(.primary)
                 
                 Spacer()
                 
                 Text(calculateTotalEarnings())
-                    .font(.system(.largeTitle, design: .rounded))
-                    .fontWeight(.bold)
+                    .soraLargeTitle()
                     .foregroundColor(.accentColor)
             }
             
@@ -171,13 +171,13 @@ struct TargetingView: View {
                     .foregroundColor(.secondary)
                 
                 Text("\(viewModel.targetingData.count) targeting type\(viewModel.targetingData.count == 1 ? "" : "s")")
-                    .font(.caption)
+                    .soraCaption()
                     .foregroundColor(.secondary)
                 
                 Spacer()
                 
                 Text("Period: \(viewModel.selectedFilter.rawValue)")
-                    .font(.caption)
+                    .soraCaption()
                     .foregroundColor(.secondary)
             }
         }
@@ -202,6 +202,7 @@ struct TargetingView: View {
             Button("Done") {
                 dismiss()
             }
+            .soraBody()
             .foregroundColor(.accentColor)
         }
     }
@@ -229,8 +230,7 @@ struct TargetingView: View {
                     .font(.body)
                     .foregroundColor(.white)
                 Text(viewModel.selectedFilter.rawValue)
-                    .font(.body)
-                    .fontWeight(.semibold)
+                    .soraBody()
                     .foregroundColor(.white)
             }
             .padding(.horizontal, 20)

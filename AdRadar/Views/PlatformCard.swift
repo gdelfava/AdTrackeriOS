@@ -67,13 +67,12 @@ struct PlatformCard: View {
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(platform.platform)
-                            .font(.headline)
-                            .fontWeight(.semibold)
+                            .soraHeadline()
                             .foregroundColor(.primary)
                             .lineLimit(1)
                         
                         Text("Platform Analytics")
-                            .font(.caption)
+                            .soraCaption()
                             .foregroundColor(.secondary)
                     }
                 }
@@ -83,15 +82,13 @@ struct PlatformCard: View {
                 // Earnings badge
                 VStack(alignment: .trailing, spacing: 2) {
                     Text(platform.formattedEarnings)
-                        .font(.system(.title2, design: .rounded))
-                        .fontWeight(.bold)
+                        .soraTitle2()
                         .foregroundColor(.green)
                     
                     Text("Revenue")
-                        .font(.caption2)
+                        .soraCaption2()
                         .foregroundColor(.secondary)
                         .textCase(.uppercase)
-                        .fontWeight(.medium)
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
@@ -192,8 +189,7 @@ struct PlatformCard: View {
             }) {
                 HStack(spacing: 6) {
                     Text(showDetailedMetrics ? "Less Details" : "More Details")
-                        .font(.caption)
-                        .fontWeight(.medium)
+                        .soraCaption()
                     
                     Image(systemName: showDetailedMetrics ? "chevron.up" : "chevron.down")
                         .font(.system(size: 10, weight: .medium))
@@ -244,15 +240,13 @@ struct PlatformMetricPill: View {
             
             VStack(spacing: 2) {
                 Text(value)
-                    .font(.system(.body, design: .rounded))
-                    .fontWeight(.semibold)
+                    .soraBody()
                     .foregroundColor(.primary)
                     .lineLimit(1)
                 
                 Text(title)
-                    .font(.caption2)
+                    .soraCaption2()
                     .foregroundColor(.secondary)
-                    .fontWeight(.medium)
                     .textCase(.uppercase)
                     .lineLimit(1)
             }
@@ -278,13 +272,11 @@ struct PlatformDetailedMetricRow: View {
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.caption)
+                    .soraCaption()
                     .foregroundColor(.secondary)
-                    .fontWeight(.medium)
                 
                 Text(value)
-                    .font(.system(.subheadline, design: .rounded))
-                    .fontWeight(.semibold)
+                    .soraSubheadline()
                     .foregroundColor(.primary)
                     .lineLimit(1)
             }

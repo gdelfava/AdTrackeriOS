@@ -78,6 +78,7 @@ struct PlatformView: View {
             if viewModel.isLoading {
                 Spacer()
                 ProgressView("Loading platforms...")
+                    .soraBody()
                     .padding()
                 Spacer()
             } else if viewModel.platforms.isEmpty {
@@ -87,11 +88,11 @@ struct PlatformView: View {
                         .foregroundColor(.gray)
                     
                     Text("No Platform Data")
-                        .font(.headline)
+                        .soraHeadline()
                         .foregroundColor(.gray)
                     
                     Text("No platform data available for the selected time period.")
-                        .font(.body)
+                        .soraBody()
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
@@ -126,15 +127,13 @@ struct PlatformView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("Total Earnings")
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                    .soraHeadline()
                     .foregroundColor(.primary)
                 
                 Spacer()
                 
                 Text(calculateTotalEarnings())
-                    .font(.system(.largeTitle, design: .rounded))
-                    .fontWeight(.bold)
+                    .soraLargeTitle()
                     .foregroundColor(.accentColor)
             }
         }
@@ -159,6 +158,7 @@ struct PlatformView: View {
             Button("Done") {
                 dismiss()
             }
+            .soraBody()
             .foregroundColor(.accentColor)
         }
     }
@@ -186,8 +186,7 @@ struct PlatformView: View {
                     .font(.body)
                     .foregroundColor(.white)
                 Text(viewModel.selectedFilter.rawValue)
-                    .font(.body)
-                    .fontWeight(.semibold)
+                    .soraBody()
                     .foregroundColor(.white)
             }
             .padding(.horizontal, 20)
@@ -254,14 +253,13 @@ struct PlatformDateFilterSheet: View {
                 
                 HStack {
                     Text("Filter by Date")
-                        .font(.title2)
-                        .fontWeight(.bold)
+                        .soraTitle2()
                         .foregroundColor(.primary)
                     Spacer()
                     Button("Done") {
                         isPresented = false
                     }
-                    .font(.body.weight(.medium))
+                    .soraBody()
                     .foregroundColor(.accentColor)
                 }
                 .padding(.horizontal, 24)
@@ -329,8 +327,7 @@ struct PlatformDateFilterSheet: View {
                     if let summary = getFilterSummary() {
                         VStack(spacing: 8) {
                             Text("Current Selection")
-                                .font(.footnote)
-                                .fontWeight(.medium)
+                                .soraFootnote()
                                 .foregroundColor(.secondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
@@ -339,7 +336,7 @@ struct PlatformDateFilterSheet: View {
                                     .font(.caption)
                                     .foregroundColor(.accentColor)
                                 Text(summary)
-                                    .font(.caption)
+                                    .soraCaption()
                                     .foregroundColor(.secondary)
                                 Spacer()
                             }
@@ -356,7 +353,7 @@ struct PlatformDateFilterSheet: View {
             }
             .background(Color(.systemGroupedBackground))
         }
-        .presentationDetents([.height(600), .large])
+        .presentationDetents([.height(650), .large])
         .presentationDragIndicator(.hidden)
     }
     
@@ -408,8 +405,7 @@ struct PlatformFilterSection<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.subheadline)
-                .fontWeight(.medium)
+                .soraSubheadline()
                 .foregroundColor(.secondary)
                 .padding(.horizontal, 24)
             
@@ -476,13 +472,12 @@ struct PlatformFilterRow: View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(filter.rawValue)
-                        .font(.body)
-                        .fontWeight(.medium)
+                        .soraBody()
                         .foregroundColor(.primary)
                     
                     if let description = getFilterDescription() {
                         Text(description)
-                            .font(.caption)
+                            .soraCaption()
                             .foregroundColor(.secondary)
                     }
                 }

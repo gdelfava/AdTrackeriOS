@@ -40,6 +40,7 @@ struct StreakView: View {
                     if viewModel.isLoading {
                         Spacer()
                         ProgressView("Loading...")
+                            .soraBody()
                             .padding()
                         Spacer()
                     } else {
@@ -161,14 +162,12 @@ struct HorizontalDatePickerView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(currentMonthName)
-                .font(.title2)
-                .fontWeight(.bold)
+                .soraTitle2()
                 .foregroundColor(.primary)
                 .padding(.horizontal, 4)
             
             Text("Select Date")
-                .font(.subheadline)
-                .fontWeight(.medium)
+                .soraSubheadline()
                 .foregroundColor(.secondary)
                 .padding(.horizontal, 4)
             
@@ -254,19 +253,16 @@ struct HorizontalDateItemView: View {
         Button(action: onTap) {
             VStack(spacing: 8) {
                 Text(weekdayText)
-                    .font(.caption)
-                    .fontWeight(.medium)
+                    .soraCaption()
                     .foregroundColor(isSelected ? .white : .secondary)
                 
                 Text(dayText)
-                    .font(.system(.title2, design: .rounded))
-                    .fontWeight(.bold)
+                    .soraTitle2()
                     .foregroundColor(isSelected ? .white : .primary)
                 
                 // Earnings indicator
                 Text(viewModel.formatCurrency(day.earnings))
-                    .font(.caption2)
-                    .fontWeight(.medium)
+                    .soraCaption2()
                     .foregroundColor(isSelected ? .white.opacity(0.9) : .secondary)
                 
                 // Data indicator dot
@@ -332,12 +328,11 @@ struct SelectedDayMetricsView: View {
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(dayOfWeek)
-                                .font(.title2)
-                                .fontWeight(.bold)
+                                .soraTitle2()
                             .foregroundColor(.primary)
                         
                         Text(formattedDate)
-                            .font(.caption)
+                            .soraCaption()
                             .foregroundColor(.secondary)
                     }
                 }
@@ -365,14 +360,12 @@ struct SelectedDayMetricsView: View {
                 HStack {
             VStack(alignment: .leading, spacing: 4) {
                         Text("Total Earnings")
-                    .font(.caption)
+                    .soraCaption()
                     .foregroundColor(.secondary)
                     .textCase(.uppercase)
-                    .fontWeight(.medium)
                 
                 Text(viewModel.formatCurrency(day.earnings))
-                    .font(.system(.largeTitle, design: .rounded))
-                    .fontWeight(.bold)
+                    .soraLargeTitle()
                     .foregroundColor(.primary)
             }
                     
@@ -387,13 +380,12 @@ struct SelectedDayMetricsView: View {
                                     .font(.system(size: 16, weight: .medium))
                                 
                                 Text(viewModel.formatCurrency(abs(delta)))
-                                    .font(.callout)
-                                    .fontWeight(.semibold)
+                                    .soraCallout()
                                     .foregroundColor(day.deltaPositive == true ? .green : .red)
                             }
                             
                             Text("vs previous day")
-                                .font(.caption2)
+                                .soraCaption2()
                                 .foregroundColor(.secondary)
                                 .textCase(.uppercase)
                         }
@@ -498,15 +490,13 @@ struct DayMetricCard: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(value)
-                    .font(.system(.title2, design: .rounded))
-                    .fontWeight(.bold)
+                    .soraTitle2()
                     .foregroundColor(.primary)
                     .lineLimit(1)
                 
                 Text(title)
-                    .font(.caption)
+                    .soraCaption()
                     .foregroundColor(.secondary)
-                    .fontWeight(.medium)
                     .textCase(.uppercase)
             }
         }
@@ -569,14 +559,12 @@ struct OverviewCardsView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("7-Day Overview")
-                            .font(.title2)
-                            .fontWeight(.bold)
+                            .soraTitle2()
                             .foregroundColor(.primary)
                         
                         if !isExpanded {
                             Text("Total: \(viewModel.formatCurrency(totalEarnings))")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
+                                .soraSubheadline()
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -588,11 +576,11 @@ struct OverviewCardsView: View {
                         if !isExpanded {
                             VStack(alignment: .trailing, spacing: 2) {
                                 Text("\(totalClicks) clicks")
-                                    .font(.caption)
+                                    .soraCaption()
                                     .foregroundColor(.secondary)
                                 
                                 Text("\(totalImpressions) views")
-                                    .font(.caption)
+                                    .soraCaption()
                                     .foregroundColor(.secondary)
                             }
                         }
@@ -682,15 +670,13 @@ struct OverviewCard: View {
             
             VStack(alignment: .leading, spacing: 6) {
                 Text(value)
-                    .font(.system(.title, design: .rounded))
-                    .fontWeight(.bold)
+                    .soraTitle()
                     .foregroundColor(.primary)
                     .lineLimit(1)
                 
                 Text(title)
-                    .font(.callout)
+                    .soraCallout()
                     .foregroundColor(.secondary)
-                    .fontWeight(.medium)
             }
         }
         .padding(20)

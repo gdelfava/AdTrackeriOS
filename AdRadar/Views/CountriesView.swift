@@ -84,6 +84,7 @@ struct CountriesView: View {
             if viewModel.isLoading {
                 Spacer()
                 ProgressView("Loading countries...")
+                    .soraBody()
                     .padding()
                 Spacer()
             } else if viewModel.countries.isEmpty && viewModel.hasLoaded {
@@ -101,11 +102,11 @@ struct CountriesView: View {
                 .foregroundColor(.secondary)
             
             Text("No Country Data")
-                .font(.headline)
+                .soraHeadline()
                 .foregroundColor(.primary)
             
             Text("No country data available for the selected time period.")
-                .font(.body)
+                .soraBody()
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
@@ -136,15 +137,13 @@ struct CountriesView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("Total Earnings")
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                    .soraHeadline()
                     .foregroundColor(.primary)
                 
                 Spacer()
                 
                 Text(calculateTotalEarnings())
-                    .font(.system(.largeTitle, design: .rounded))
-                    .fontWeight(.bold)
+                    .soraLargeTitle()
                     .foregroundColor(.accentColor)
             }
         }
@@ -169,6 +168,7 @@ struct CountriesView: View {
             Button("Done") {
                 dismiss()
             }
+            .soraBody()
             .foregroundColor(.accentColor)
         }
     }
@@ -196,8 +196,7 @@ struct CountriesView: View {
                     .font(.body)
                     .foregroundColor(.white)
                 Text(viewModel.selectedFilter.rawValue)
-                    .font(.body)
-                    .fontWeight(.semibold)
+                    .soraBody()
                     .foregroundColor(.white)
             }
             .padding(.horizontal, 16)

@@ -27,8 +27,7 @@ struct SlideOverMenuView: View {
                             HStack(spacing: 16) {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text(settingsViewModel.publisherName.isEmpty ? "Publisher Name" : settingsViewModel.publisherName)
-                                        .font(.system(.title2, design: .rounded))
-                                        .fontWeight(.bold)
+                                        .soraTitle2()
                                         .foregroundColor(.white)
                                         .lineLimit(1)
                                     
@@ -38,14 +37,13 @@ struct SlideOverMenuView: View {
                                             .foregroundColor(.white.opacity(0.8))
                                         
                                         Text(settingsViewModel.publisherId.isEmpty ? "1234567890" : settingsViewModel.publisherId)
-                                            .font(.body)
-                                            .fontWeight(.medium)
+                                            .soraBody()
                                             .foregroundColor(.white.opacity(0.9))
                                             .lineLimit(1)
                                     }
                                     
                                     Text("AdSense Analytics")
-                                        .font(.caption)
+                                        .soraCaption()
                                         .foregroundColor(.white.opacity(0.7))
                                 }
                                 
@@ -221,12 +219,11 @@ struct SlideOverMenuView: View {
                             // App info footer
                             VStack(spacing: 8) {
                                 Text("AdRadar")
-                                    .font(.system(.caption, design: .rounded))
-                                    .fontWeight(.semibold)
+                                    .soraCaption()
                                     .foregroundColor(.secondary)
                                 
                                 Text("Not affiliated with Google or AdSense")
-                                    .font(.caption2)
+                                    .soraCaption2()
                                     .foregroundColor(.secondary)
                                     .multilineTextAlignment(.center)
                             }
@@ -304,8 +301,7 @@ struct MenuSection<Content: View>: View {
                     .clipShape(Circle())
                 
                 Text(title)
-                    .font(.system(.subheadline, design: .rounded))
-                    .fontWeight(.semibold)
+                    .soraSubheadline()
                     .foregroundColor(.primary)
                 
                 Spacer()
@@ -351,13 +347,12 @@ struct ModernMenuRow: View {
                 // Text content
                 VStack(alignment: .leading, spacing: 3) {
                     Text(title)
-                        .font(.system(.body, design: .rounded))
-                        .fontWeight(.medium)
+                        .soraBody()
                         .foregroundColor(isDisabled ? .secondary : .primary)
                         .lineLimit(1)
                     
                     Text(subtitle)
-                        .font(.caption)
+                        .soraCaption()
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                 }
@@ -367,8 +362,7 @@ struct ModernMenuRow: View {
                 // Chevron or disabled indicator
                 if isDisabled {
                     Text("Soon")
-                        .font(.caption2)
-                        .fontWeight(.medium)
+                        .soraCaption2()
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
@@ -422,7 +416,7 @@ struct MenuRow: View {
                 .foregroundColor(color)
                 .frame(width: 24)
             Text(title)
-                .font(.body)
+                .soraBody()
                 .foregroundColor(color)
             Spacer()
             Image(systemName: "chevron.right")
@@ -450,7 +444,7 @@ struct MenuItemView: View {
                     .frame(width: 24)
                 
                 Text(title)
-                    .font(.body)
+                    .soraBody()
                     .foregroundColor(.primary)
                 
                 Spacer()
