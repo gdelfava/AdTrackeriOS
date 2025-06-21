@@ -380,7 +380,7 @@ struct HeroSummaryCard: View {
                     // Delta indicator
                     if let delta = delta, let positive = deltaPositive {
                         HStack(spacing: 8) {
-                            Image(systemName: positive ? "trending.up" : "trending.down")
+                            Image(systemName: positive ? "chart.line.uptrend.xyaxis" : "chart.line.downtrend.xyaxis")
                                 .foregroundColor(positive ? .green : .red)
                                 .font(.system(size: 16, weight: .semibold))
                             

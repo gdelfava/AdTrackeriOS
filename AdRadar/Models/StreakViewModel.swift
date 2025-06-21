@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-struct StreakDayData: Identifiable {
+struct StreakDayData: Identifiable, Equatable {
     let id = UUID()
     let date: Date
     let earnings: Double
@@ -13,6 +13,10 @@ struct StreakDayData: Identifiable {
     let requests: Int
     let delta: Double?
     let deltaPositive: Bool?
+    
+    static func == (lhs: StreakDayData, rhs: StreakDayData) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
 
 @MainActor

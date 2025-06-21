@@ -5,9 +5,9 @@ struct StreakView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var viewModel: StreakViewModel
     @State private var selectedDay: StreakDayData?
-    @State private var chartTitleAppeared = false
-    @State private var barAnimations: [Bool] = []
-    @State private var cardAppearances: [Bool] = []
+    @State private var calendarAppeared = false
+    @State private var overviewAppeared = false
+    @State private var detailsAppeared = false
     @Binding var showSlideOverMenu: Bool
     @Binding var selectedTab: Int
     
@@ -15,6 +15,17 @@ struct StreakView: View {
         _viewModel = StateObject(wrappedValue: StreakViewModel(accessToken: nil))
         _showSlideOverMenu = showSlideOverMenu
         _selectedTab = selectedTab
+    }
+    
+    // Auto-select current day if available, otherwise first day
+    private var displayDay: StreakDayData? {
+        selectedDay ?? currentDay ?? viewModel.streakData.first
+    }
+    
+    // Find today's date in the data
+    private var currentDay: StreakDayData? {
+        let today = Date()
+        return viewModel.streakData.first { Calendar.current.isDate($0.date, inSameDayAs: today) }
     }
     
     var body: some View {
@@ -32,186 +43,31 @@ struct StreakView: View {
                             .padding()
                         Spacer()
                     } else {
-                        // Enhanced Bar Chart
-                        VStack(alignment: .leading, spacing: 20) {
-                            // Modern Chart Header
-                            VStack(alignment: .leading, spacing: 8) {
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text("7 Day Earnings Trend")
-                                            .font(.title2)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.primary)
-                                        
-                                        Text("Track your weekly adsense performance")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    // Chart summary badge
-                                    if !viewModel.streakData.isEmpty {
-                                        let totalEarnings = viewModel.streakData.reduce(0) { $0 + $1.earnings }
-                                        VStack(alignment: .trailing, spacing: 2) {
-                                            Text("7 Day Total")
-                                                .font(.caption2)
-                                                .foregroundColor(.secondary)
-                                                .textCase(.uppercase)
-                                                .fontWeight(.medium)
-                                            
-                                            Text(viewModel.formatCurrency(totalEarnings))
-                                                .font(.system(.headline, design: .rounded))
-                                                .fontWeight(.bold)
-                                                .foregroundColor(.green)
-                                        }
-                                        .padding(.horizontal, 12)
-                                        .padding(.vertical, 8)
-                                        .background(.ultraThinMaterial)
-                                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                                .stroke(Color.green.opacity(0.2), lineWidth: 1)
-                                        )
-                                    }
-                                }
-                            }
-                            .padding(.horizontal, 24)
-                            .opacity(chartTitleAppeared ? 1 : 0)
-                            .offset(y: chartTitleAppeared ? 0 : 30)
-                            
-                            // Enhanced Chart Container
-                            VStack(spacing: 0) {
-                                chartView
-                                .frame(height: 220)
-                                .padding(.horizontal, 24)
-                                .padding(.top, 20)
-                                .padding(.bottom, 16)
-                                .chartXAxis {
-                                    AxisMarks(values: .stride(by: .day)) { value in
-                                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0))
-                                        AxisValueLabel {
-                                            if let date = value.as(Date.self) {
-                                                Text(date, format: .dateTime.weekday(.abbreviated))
-                                                    .font(.caption)
-                                                    .fontWeight(.medium)
-                                                    .foregroundColor(.secondary)
-                                            }
-                                        }
-                                    }
-                                }
-                                .chartYAxis {
-                                    AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { value in
-                                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0))
-                                        AxisValueLabel {
-                                            if let earnings = value.as(Double.self) {
-                                                Text(viewModel.formatCurrency(earnings))
-                                                    .font(.caption2)
-                                                    .fontWeight(.medium)
-                                                    .foregroundColor(.secondary)
-                                            }
-                                        }
-                                    }
-                                }
-                                .chartOverlay { proxy in
-                                    GeometryReader { geometry in
-                                        EnhancedChartOverlayView(
-                                            proxy: proxy,
-                                            geometry: geometry,
-                                            viewModel: viewModel,
-                                            selectedDay: $selectedDay
-                                        )
-                                    }
-                                }
-                                
-                                // Selected day info panel
-                                if let selectedDay = selectedDay {
-                                    VStack(spacing: 0) {
-                                        Rectangle()
-                                            .fill(Color(.systemGray6))
-                                            .frame(height: 1)
-                                        
-                                        HStack(spacing: 16) {
-                                            VStack(alignment: .leading, spacing: 4) {
-                                                Text(selectedDay.date, format: .dateTime.weekday(.wide).day().month(.abbreviated))
-                                                    .font(.headline)
-                                                    .fontWeight(.semibold)
-                                                    .foregroundColor(.primary)
-                                                
-                                                Text("Daily Earnings")
-                                                    .font(.caption)
-                                                    .foregroundColor(.secondary)
-                                                    .textCase(.uppercase)
-                                                    .fontWeight(.medium)
-                                            }
-                                            
-                                            Spacer()
-                                            
-                                            Text(viewModel.formatCurrency(selectedDay.earnings))
-                                                .font(.system(.title2, design: .rounded))
-                                                .fontWeight(.bold)
-                                                .foregroundColor(.green)
-                                        }
-                                        .padding(.horizontal, 24)
-                                        .padding(.vertical, 16)
-                                        .background(.ultraThinMaterial)
-                                    }
-                                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                                    .transition(.asymmetric(
-                                        insertion: .move(edge: .bottom).combined(with: .opacity),
-                                        removal: .move(edge: .bottom).combined(with: .opacity)
-                                    ))
-                                }
-                            }
-                            .background(chartContainerBackground)
-                            .overlay(chartContainerBorder)
-                            .shadow(color: Color.black.opacity(0.04), radius: 15, x: 0, y: 8)
-                            .shadow(color: Color.accentColor.opacity(0.1), radius: 20, x: 0, y: 10)
-                            .padding(.horizontal, 20)
-                            .onAppear {
-                                // Animate chart title first
-                                withAnimation(.easeOut(duration: 0.3)) {
-                                    chartTitleAppeared = true
-                                }
-                                
-                                // Animate chart bars from latest to earliest date (right to left)
-                                let sortedData = viewModel.streakData.sorted(by: { $0.date > $1.date })
-                                for i in 0..<sortedData.count {
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2 + Double(i) * 0.08) {
-                                        withAnimation(.easeOut(duration: 0.4)) {
-                                            // Find the index in the original array for this sorted item
-                                            if let originalIndex = viewModel.streakData.firstIndex(where: { $0.id == sortedData[i].id }) {
-                                                barAnimations[originalIndex] = true
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        // Compact Horizontal Date Picker
+                        HorizontalDatePickerView(
+                            selectedDay: $selectedDay,
+                            streakData: viewModel.streakData
+                        )
+                        .opacity(calendarAppeared ? 1 : 0)
+                        .offset(y: calendarAppeared ? 0 : 20)
+                        .padding(.horizontal, 20)
                         
-                        // Daily Cards
-                        VStack(spacing: 16) {
-                            ForEach(Array(viewModel.streakData.enumerated()), id: \.element.id) { index, day in
-                                StreakDayCard(day: day, viewModel: viewModel)
-                                    .opacity(cardAppearances.indices.contains(index) && cardAppearances[index] ? 1 : 0)
-                                    .offset(y: cardAppearances.indices.contains(index) && cardAppearances[index] ? 0 : 20)
-                            }
-                        }
-                        .padding(.horizontal)
-                        .onAppear {
-                            // Animate cards with staggered delay after bars finish
-                            let totalBarAnimationTime = 0.2 + Double(barAnimations.count) * 0.08 + 0.4
-                            for i in 0..<cardAppearances.count {
-                                withAnimation(.easeOut(duration: 0.3).delay(totalBarAnimationTime + Double(i) * 0.06)) {
-                                    cardAppearances[i] = true
-                                }
-                            }
-                        }
-                        .onDisappear {
-                            // Reset animation states when view disappears
-                            chartTitleAppeared = false
-                            barAnimations = Array(repeating: false, count: viewModel.streakData.count)
-                            cardAppearances = Array(repeating: false, count: viewModel.streakData.count)
+                        // 7-Day Overview Cards
+                        OverviewCardsView(streakData: viewModel.streakData, viewModel: viewModel)
+                            .opacity(overviewAppeared ? 1 : 0)
+                            .offset(y: overviewAppeared ? 0 : 20)
+                            .padding(.horizontal, 20)
+                        
+                        // Selected Day Detailed Metrics (Always Visible)
+                        if let displayDay = displayDay {
+                            SelectedDayMetricsView(
+                                day: displayDay,
+                                viewModel: viewModel,
+                                showCloseButton: false
+                            )
+                            .opacity(detailsAppeared ? 1 : 0)
+                            .offset(y: detailsAppeared ? 0 : 20)
+                            .padding(.horizontal, 20)
                         }
                     }
                 }
@@ -257,91 +113,26 @@ struct StreakView: View {
                 Task { await viewModel.fetchStreakData() }
             }
             
-            // Initialize animation arrays based on data count
-            barAnimations = Array(repeating: false, count: viewModel.streakData.count)
-            cardAppearances = Array(repeating: false, count: viewModel.streakData.count)
-        }
-        .onChange(of: viewModel.streakData.count) { _, newCount in
-            // Update animation arrays when data changes
-            barAnimations = Array(repeating: false, count: newCount)
-            cardAppearances = Array(repeating: false, count: newCount)
-        }
-    }
-    
-    // MARK: - Chart Components
-    
-    private var chartView: some View {
-        Chart {
-            ForEach(Array(viewModel.streakData.sorted(by: { $0.date < $1.date }).enumerated()), id: \.element.id) { index, day in
-                BarMark(
-                    x: .value("Date", day.date, unit: .day),
-                    y: .value("Earnings", barAnimations.indices.contains(index) && barAnimations[index] ? day.earnings : 0)
-                )
-                .foregroundStyle(barGradient(for: day))
-                .cornerRadius(6, style: .continuous)
-                .opacity(selectedDay == nil || selectedDay?.id == day.id ? 1.0 : 0.4)
+            // Staggered animations
+            withAnimation(.easeOut(duration: 0.5)) {
+                calendarAppeared = true
             }
             
-            // Add subtle grid lines
-            if let maxEarnings = viewModel.streakData.map(\.earnings).max() {
-                ForEach([0.25, 0.5, 0.75], id: \.self) { fraction in
-                    RuleMark(y: .value("Grid", maxEarnings * fraction))
-                        .foregroundStyle(Color(.systemGray5))
-                        .lineStyle(StrokeStyle(lineWidth: 0.5, dash: [2, 4]))
-                }
+            withAnimation(.easeOut(duration: 0.5).delay(0.2)) {
+                overviewAppeared = true
+            }
+            
+            withAnimation(.easeOut(duration: 0.5).delay(0.4)) {
+                detailsAppeared = true
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: selectedDay?.id)
-    }
-    
-    private func barGradient(for day: StreakDayData) -> LinearGradient {
-        let isSelected = selectedDay?.id == day.id
-        return LinearGradient(
-            gradient: Gradient(stops: [
-                .init(color: isSelected ? Color.accentColor : Color.accentColor.opacity(0.9), location: 0),
-                .init(color: isSelected ? Color.accentColor.opacity(0.8) : Color.accentColor.opacity(0.6), location: 0.7),
-                .init(color: isSelected ? Color.accentColor.opacity(0.6) : Color.accentColor.opacity(0.3), location: 1)
-            ]),
-            startPoint: .top,
-            endPoint: .bottom
-        )
-    }
-    
-    private var chartContainerBackground: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(.ultraThinMaterial)
-            
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(backgroundGradient)
+        .onChange(of: viewModel.streakData) { _, newData in
+            // Auto-select current day when data loads, fallback to first day
+            if selectedDay == nil && !newData.isEmpty {
+                let today = Date()
+                selectedDay = newData.first { Calendar.current.isDate($0.date, inSameDayAs: today) } ?? newData.first
+            }
         }
-    }
-    
-    private var backgroundGradient: LinearGradient {
-        LinearGradient(
-            gradient: Gradient(stops: [
-                .init(color: Color(.systemBackground).opacity(0.8), location: 0),
-                .init(color: Color(.secondarySystemBackground).opacity(0.4), location: 1)
-            ]),
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-    }
-    
-    private var chartContainerBorder: some View {
-        RoundedRectangle(cornerRadius: 20, style: .continuous)
-            .stroke(borderGradient, lineWidth: 0.5)
-    }
-    
-    private var borderGradient: LinearGradient {
-        LinearGradient(
-            gradient: Gradient(colors: [
-                Color(.systemGray4).opacity(0.3),
-                Color(.systemGray5).opacity(0.1)
-            ]),
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
     }
     
     private func errorSymbol(for error: String) -> String {
@@ -355,11 +146,159 @@ struct StreakView: View {
     }
 }
 
-struct StreakDayCard: View {
+// MARK: - Horizontal Date Picker
+
+struct HorizontalDatePickerView: View {
+    @Binding var selectedDay: StreakDayData?
+    let streakData: [StreakDayData]
+    
+    private var currentMonthName: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        return formatter.string(from: Date())
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(currentMonthName)
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundColor(.primary)
+                .padding(.horizontal, 4)
+            
+            Text("Select Date")
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 4)
+            
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(streakData.sorted(by: { $0.date < $1.date })) { day in
+                            HorizontalDateItemView(
+                                day: day,
+                                isSelected: selectedDay?.id == day.id,
+                                viewModel: StreakViewModel(accessToken: nil)
+                            ) {
+                                selectDay(day)
+                            }
+                            .id(day.id) // Add ID for scroll positioning
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                }
+                .scrollIndicators(.hidden)
+                .onAppear {
+                    // Scroll to the selected date (today) when view appears
+                    if let selectedDay = selectedDay {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            withAnimation(.easeOut(duration: 0.5)) {
+                                proxy.scrollTo(selectedDay.id, anchor: .center)
+                            }
+                        }
+                    }
+                }
+                .onChange(of: streakData) { _, newData in
+                    // Scroll to current day when new data loads
+                    let today = Date()
+                    if let currentDay = newData.first(where: { Calendar.current.isDate($0.date, inSameDayAs: today) }) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            withAnimation(.easeOut(duration: 0.5)) {
+                                proxy.scrollTo(currentDay.id, anchor: .center)
+                            }
+                        }
+                    }
+                }
+                .onChange(of: selectedDay) { _, newSelectedDay in
+                    // Scroll to newly selected date
+                    if let newSelectedDay = newSelectedDay {
+                        withAnimation(.easeOut(duration: 0.3)) {
+                            proxy.scrollTo(newSelectedDay.id, anchor: .center)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func selectDay(_ day: StreakDayData) {
+        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+        impactFeedback.impactOccurred()
+        
+        withAnimation(.easeOut(duration: 0.3)) {
+            selectedDay = selectedDay?.id == day.id ? day : day
+        }
+    }
+}
+
+struct HorizontalDateItemView: View {
+    let day: StreakDayData
+    let isSelected: Bool
+    let viewModel: StreakViewModel
+    let onTap: () -> Void
+    
+    private var dayText: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d"
+        return formatter.string(from: day.date)
+    }
+    
+    private var weekdayText: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE"
+        return formatter.string(from: day.date)
+    }
+    
+    var body: some View {
+        Button(action: onTap) {
+            VStack(spacing: 8) {
+                Text(weekdayText)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(isSelected ? .white : .secondary)
+                
+                Text(dayText)
+                    .font(.system(.title2, design: .rounded))
+                    .fontWeight(.bold)
+                    .foregroundColor(isSelected ? .white : .primary)
+                
+                // Earnings indicator
+                Text(viewModel.formatCurrency(day.earnings))
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .foregroundColor(isSelected ? .white.opacity(0.9) : .secondary)
+                
+                // Data indicator dot
+                Circle()
+                    .fill(isSelected ? Color.white.opacity(0.8) : Color.accentColor)
+                    .frame(width: 4, height: 4)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(isSelected ? Color.accentColor : Color(.secondarySystemBackground))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(isSelected ? Color.clear : Color(.separator), lineWidth: 0.5)
+            )
+            .scaleEffect(isSelected ? 1.05 : 1.0)
+            .shadow(color: isSelected ? Color.accentColor.opacity(0.3) : Color.black.opacity(0.05), radius: isSelected ? 8 : 4, x: 0, y: 2)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
+    }
+}
+
+// MARK: - Selected Day Metrics (Updated)
+
+struct SelectedDayMetricsView: View {
     let day: StreakDayData
     let viewModel: StreakViewModel
-    @State private var isPressed = false
-    @State private var showDetailedMetrics = false
+    let showCloseButton: Bool
+    @State private var showAllMetrics = true // Always show all metrics
     
     private var dayOfWeek: String {
         let formatter = DateFormatter()
@@ -368,115 +307,33 @@ struct StreakDayCard: View {
     }
     
     private var formattedDate: String {
-        day.date.formatted(date: .abbreviated, time: .omitted)
+        day.date.formatted(date: .complete, time: .omitted)
     }
     
-    private var dayIcon: String {
-        switch dayOfWeek.lowercased() {
-        case "monday":
-            return "calendar.circle.fill"
-        case "tuesday":
-            return "calendar.badge.plus"
-        case "wednesday":
-            return "calendar"
-        case "thursday":
-            return "calendar.badge.clock"
-        case "friday":
-            return "calendar.badge.checkmark"
-        case "saturday":
-            return "sun.max.fill"
-        case "sunday":
-            return "moon.stars.fill"
-        default:
-            return "calendar"
-        }
-    }
-    
-    private var dayColor: Color {
-        switch dayOfWeek.lowercased() {
-        case "monday":
-            return .blue
-        case "tuesday":
-            return .green
-        case "wednesday":
-            return .orange
-        case "thursday":
-            return .purple
-        case "friday":
-            return .pink
-        case "saturday":
-            return .yellow
-        case "sunday":
-            return .indigo
-        default:
-            return .accentColor
-        }
+    init(day: StreakDayData, viewModel: StreakViewModel, showCloseButton: Bool = true) {
+        self.day = day
+        self.viewModel = viewModel
+        self.showCloseButton = showCloseButton
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Header Section
-            headerSection
-            
-            // Divider
-            Rectangle()
-                .fill(Color(.systemGray5))
-                .frame(height: 1)
-                .padding(.horizontal, 20)
-            
-            // Main Metrics Section
-            mainMetricsSection
-            
-            // Detailed Metrics Section (expandable)
-            if showDetailedMetrics {
-                detailedMetricsSection
-            }
-            
-            // Expand/Collapse Button
-            expandButton
-        }
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
-        .scaleEffect(isPressed ? 0.98 : 1.0)
-        .animation(.easeInOut(duration: 0.1), value: isPressed)
-        .animation(.easeInOut(duration: 0.3), value: showDetailedMetrics)
-        .onTapGesture {
-            // Haptic feedback
-            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-            impactFeedback.impactOccurred()
-            
-            withAnimation(.easeInOut(duration: 0.1)) {
-                isPressed = true
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                withAnimation(.easeInOut(duration: 0.1)) {
-                    isPressed = false
-                }
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    showDetailedMetrics.toggle()
-                }
-            }
-        }
-    }
-    
-    private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 16) {
             HStack {
-                // Day icon and date
+                    // Day info
                 HStack(spacing: 12) {
-                    Image(systemName: dayIcon)
-                        .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(dayColor)
-                        .frame(width: 32, height: 32)
-                        .background(dayColor.opacity(0.1))
+                        Image(systemName: "calendar.circle.fill")
+                            .font(.system(size: 24, weight: .medium))
+                            .foregroundColor(.accentColor)
+                            .frame(width: 40, height: 40)
+                            .background(Color.accentColor.opacity(0.1))
                         .clipShape(Circle())
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(dayOfWeek)
-                            .font(.headline)
-                            .fontWeight(.semibold)
+                                .font(.title2)
+                                .fontWeight(.bold)
                             .foregroundColor(.primary)
                         
                         Text(formattedDate)
@@ -487,35 +344,27 @@ struct StreakDayCard: View {
                 
                 Spacer()
                 
-                // Delta indicator (if available)
-                if let delta = day.delta {
-                    VStack(alignment: .trailing, spacing: 2) {
-                        HStack(spacing: 4) {
-                            Image(systemName: day.deltaPositive == true ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
-                                .foregroundColor(day.deltaPositive == true ? .green : .red)
-                                .font(.system(size: 14, weight: .medium))
-                            
-                            Text(viewModel.formatCurrency(delta))
-                                .font(.caption)
-                                .fontWeight(.medium)
-                                .foregroundColor(day.deltaPositive == true ? .green : .red)
+                    // Close button (only if showCloseButton is true)
+                    if showCloseButton {
+                        Button(action: {
+                            withAnimation(.easeOut(duration: 0.3)) {
+                                // This will be handled by the parent view
+                            }
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 24))
+                                .foregroundColor(.secondary)
+                                .background(Color(.systemBackground))
+                                .clipShape(Circle())
                         }
-                        
-                        Text("vs previous")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                            .textCase(.uppercase)
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 6)
-                    .background((day.deltaPositive == true ? Color.green : Color.red).opacity(0.08))
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .buttonStyle(PlainButtonStyle())
                 }
             }
             
             // Main earnings display
+                HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Daily Earnings")
+                        Text("Total Earnings")
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .textCase(.uppercase)
@@ -526,229 +375,336 @@ struct StreakDayCard: View {
                     .fontWeight(.bold)
                     .foregroundColor(.primary)
             }
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 16)
-    }
-    
-    private var mainMetricsSection: some View {
-        HStack(alignment: .top, spacing: 0) {
-            StreakMetricPill(
+                    
+                    Spacer()
+                    
+                    // Delta indicator
+                    if let delta = day.delta {
+                        VStack(alignment: .trailing, spacing: 4) {
+                            HStack(spacing: 6) {
+                                Image(systemName: day.deltaPositive == true ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
+                                    .foregroundColor(day.deltaPositive == true ? .green : .red)
+                                    .font(.system(size: 16, weight: .medium))
+                                
+                                Text(viewModel.formatCurrency(abs(delta)))
+                                    .font(.callout)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(day.deltaPositive == true ? .green : .red)
+                            }
+                            
+                            Text("vs previous day")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                                .textCase(.uppercase)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background((day.deltaPositive == true ? Color.green : Color.red).opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    }
+                }
+            }
+            .padding(20)
+            
+            // Primary Metrics Grid
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ], spacing: 16) {
+                DayMetricCard(
                 icon: "cursorarrow.click.2",
                 title: "Clicks",
                 value: "\(day.clicks)",
                 color: .blue
             )
-            .frame(maxWidth: .infinity, alignment: .leading)
             
-            Divider()
-                .frame(height: 40)
-            
-            StreakMetricPill(
+                DayMetricCard(
                 icon: "eye.fill",
                 title: "Impressions",
                 value: "\(day.impressions)",
                 color: .orange
             )
-            .frame(maxWidth: .infinity, alignment: .leading)
             
-            Divider()
-                .frame(height: 40)
-            
-            StreakMetricPill(
+                DayMetricCard(
                 icon: "percent",
                 title: "CTR",
                 value: viewModel.formatPercentage(day.impressionCTR),
                 color: .purple
             )
-            .frame(maxWidth: .infinity, alignment: .leading)
+                
+                DayMetricCard(
+                    icon: "dollarsign.circle.fill",
+                    title: "Cost/Click",
+                    value: viewModel.formatCurrency(day.costPerClick),
+                    color: .pink
+                )
         }
         .padding(.horizontal, 20)
-        .padding(.vertical, 16)
-    }
+            .padding(.bottom, 16)
     
-    private var detailedMetricsSection: some View {
+            // Additional Metrics (always visible now)
         VStack(spacing: 0) {
             Rectangle()
-                .fill(Color(.systemGray5))
-                .frame(height: 1)
+                    .fill(Color(.separator))
+                    .frame(height: 0.5)
                 .padding(.horizontal, 20)
             
             LazyVGrid(columns: [
                 GridItem(.flexible()),
                 GridItem(.flexible())
             ], spacing: 16) {
-                StreakDetailedMetricRow(
+                    DayMetricCard(
                     icon: "doc.text.fill",
                     title: "Requests",
                     value: "\(day.requests)",
                     color: .indigo
                 )
                 
-                StreakDetailedMetricRow(
+                    DayMetricCard(
                     icon: "newspaper.fill",
                     title: "Page Views",
                     value: "\(day.pageViews)",
                     color: .teal
                 )
-                
-                StreakDetailedMetricRow(
-                    icon: "dollarsign.circle.fill",
-                    title: "Cost Per Click",
-                    value: viewModel.formatCurrency(day.costPerClick),
-                    color: .pink
-                )
-                
-                StreakDetailedMetricRow(
-                    icon: "chart.line.uptrend.xyaxis",
-                    title: "Revenue",
-                    value: viewModel.formatCurrency(day.earnings),
-                    color: .green
-                )
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 16)
-            .padding(.bottom, 12)
-        }
-    }
-    
-    private var expandButton: some View {
-        HStack {
-            Spacer()
-            
-            Button(action: {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    showDetailedMetrics.toggle()
                 }
-            }) {
-                HStack(spacing: 6) {
-                    Text(showDetailedMetrics ? "Less Details" : "More Details")
-                        .font(.caption)
-                        .fontWeight(.medium)
-                    
-                    Image(systemName: showDetailedMetrics ? "chevron.up" : "chevron.down")
-                        .font(.system(size: 10, weight: .medium))
-                }
-                .foregroundColor(.accentColor)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(Color.accentColor.opacity(0.08))
-                .clipShape(Capsule())
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
             }
-            .buttonStyle(PlainButtonStyle())
-            
-            Spacer()
         }
-        .padding(.bottom, 16)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.06), radius: 12, x: 0, y: 4)
     }
 }
 
-struct StreakMetricPill: View {
+struct DayMetricCard: View {
     let icon: String
     let title: String
     let value: String
     let color: Color
     
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 18, weight: .medium))
                 .foregroundColor(color)
-                .frame(width: 28, height: 28)
+                    .frame(width: 32, height: 32)
                 .background(color.opacity(0.1))
                 .clipShape(Circle())
+                
+                Spacer()
+            }
             
-            VStack(spacing: 2) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(value)
-                    .font(.system(.body, design: .rounded))
-                    .fontWeight(.semibold)
+                    .font(.system(.title2, design: .rounded))
+                    .fontWeight(.bold)
                     .foregroundColor(.primary)
                     .lineLimit(1)
                 
-                Text(title)
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                    .fontWeight(.medium)
-                    .textCase(.uppercase)
-                    .lineLimit(1)
-            }
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
-
-struct StreakDetailedMetricRow: View {
-    let icon: String
-    let title: String
-    let value: String
-    let color: Color
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(color)
-                .frame(width: 24, height: 24)
-                .background(color.opacity(0.1))
-                .clipShape(Circle())
-            
-            VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .fontWeight(.medium)
-                
-                Text(value)
-                    .font(.system(.subheadline, design: .rounded))
-                    .fontWeight(.semibold)
-                    .foregroundColor(.primary)
-                    .lineLimit(1)
+                    .textCase(.uppercase)
             }
-            
-            Spacer()
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(Color(.tertiarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .padding(16)
+        .background(
+            LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: color.opacity(0.08), location: 0),
+                    .init(color: color.opacity(0.04), location: 0.7),
+                    .init(color: color.opacity(0.02), location: 1)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(color.opacity(0.1), lineWidth: 0.5)
+        )
+        .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 2)
     }
 }
 
-struct EnhancedChartOverlayView: View {
-    let proxy: ChartProxy
-    let geometry: GeometryProxy
+// MARK: - Overview Cards
+
+struct OverviewCardsView: View {
+    let streakData: [StreakDayData]
     let viewModel: StreakViewModel
-    @Binding var selectedDay: StreakDayData?
+    @State private var isExpanded = false
+    
+    private var totalEarnings: Double {
+        streakData.reduce(0) { $0 + $1.earnings }
+    }
+    
+    private var totalClicks: Int {
+        streakData.reduce(0) { $0 + $1.clicks }
+    }
+    
+    private var totalImpressions: Int {
+        streakData.reduce(0) { $0 + $1.impressions }
+    }
+    
+    private var averageCTR: Double {
+        let totalCTR = streakData.reduce(0) { $0 + $1.impressionCTR }
+        return streakData.isEmpty ? 0 : totalCTR / Double(streakData.count)
+    }
     
     var body: some View {
-        Rectangle()
-            .fill(Color.clear)
-            .contentShape(Rectangle())
-            .onTapGesture { location in
-                guard let plotFrame = proxy.plotFrame else { return }
-                let x = location.x - geometry[plotFrame].origin.x
-                guard let date = proxy.value(atX: x) as Date? else { return }
-                
-                // Find the closest day
-                let closestDay = viewModel.streakData.min(by: {
-                    abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date))
-                })
-                
-                // Haptic feedback
-                let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        VStack(alignment: .leading, spacing: 0) {
+            // Collapsible Header
+            Button(action: {
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
                 impactFeedback.impactOccurred()
                 
-                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                    selectedDay = selectedDay?.id == closestDay?.id ? nil : closestDay
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    isExpanded.toggle()
                 }
-            }
-            .onLongPressGesture(minimumDuration: 0.0, maximumDistance: 50) {
-                // This handles the immediate press down for better responsiveness
-            } onPressingChanged: { pressing in
-                if !pressing {
-                    // This ensures the tap gesture fires reliably
+            }) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("7-Day Overview")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                        
+                        if !isExpanded {
+                            Text("Total: \(viewModel.formatCurrency(totalEarnings))")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    HStack(spacing: 8) {
+                        // Quick summary when collapsed
+                        if !isExpanded {
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text("\(totalClicks) clicks")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                Text("\(totalImpressions) views")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        
+                        // Expand/Collapse icon
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.secondary)
+                            .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                    }
                 }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(Color(.separator), lineWidth: 0.5)
+                )
             }
+            .buttonStyle(PlainButtonStyle())
+            
+            // Expandable Content
+            if isExpanded {
+                VStack(spacing: 16) {
+                    LazyVGrid(columns: [
+                        GridItem(.flexible()),
+                        GridItem(.flexible())
+                    ], spacing: 16) {
+                        OverviewCard(
+                            icon: "banknote.fill",
+                            title: "Total Earnings",
+                            value: viewModel.formatCurrency(totalEarnings),
+                            color: .green
+                        )
+                        
+                        OverviewCard(
+                            icon: "cursorarrow.click.2",
+                            title: "Total Clicks",
+                            value: "\(totalClicks)",
+                            color: .blue
+                        )
+                        
+                        OverviewCard(
+                            icon: "eye.fill",
+                            title: "Total Impressions",
+                            value: "\(totalImpressions)",
+                            color: .orange
+                        )
+                        
+                        OverviewCard(
+                            icon: "percent",
+                            title: "Average CTR",
+                            value: viewModel.formatPercentage(averageCTR),
+                            color: .purple
+                        )
+                    }
+                }
+                .padding(.top, 12)
+                .transition(.asymmetric(
+                    insertion: .move(edge: .bottom).combined(with: .opacity),
+                    removal: .move(edge: .bottom).combined(with: .opacity)
+                ))
+            }
+        }
+    }
+}
+
+struct OverviewCard: View {
+    let icon: String
+    let title: String
+    let value: String
+    let color: Color
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+            Image(systemName: icon)
+                    .font(.system(size: 20, weight: .medium))
+                .foregroundColor(color)
+                    .frame(width: 36, height: 36)
+                .background(color.opacity(0.1))
+                .clipShape(Circle())
+            
+                Spacer()
+            }
+            
+            VStack(alignment: .leading, spacing: 6) {
+                Text(value)
+                    .font(.system(.title, design: .rounded))
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+                
+                Text(title)
+                    .font(.callout)
+                    .foregroundColor(.secondary)
+                    .fontWeight(.medium)
+            }
+        }
+        .padding(20)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.06), radius: 12, x: 0, y: 4)
+    }
+}
+
+// MARK: - Extensions
+
+extension Date {
+    func isSameDay(as date: Date) -> Bool {
+        Calendar.current.isDate(self, inSameDayAs: date)
     }
 }
 

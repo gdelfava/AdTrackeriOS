@@ -89,6 +89,7 @@ struct PaymentsView: View {
             .onAppear {
                 if let token = authViewModel.accessToken, !viewModel.hasLoaded {
                     viewModel.accessToken = token
+                    viewModel.authViewModel = authViewModel
                     Task { await viewModel.fetchPayments() }
                 }
             }

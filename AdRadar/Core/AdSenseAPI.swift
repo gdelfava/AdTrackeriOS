@@ -276,8 +276,19 @@ class AdSenseAPI {
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             print("Payments JSON: \(String(data: data, encoding: .utf8) ?? "<no data>")")
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                return .failure(.requestFailed("Request failed"))
+            guard let httpResponse = response as? HTTPURLResponse else {
+                return .failure(.invalidResponse)
+            }
+            
+            switch httpResponse.statusCode {
+            case 200:
+                break // Continue processing
+            case 401:
+                return .failure(.unauthorized)
+            case 403:
+                return .failure(.requestFailed("Access forbidden"))
+            default:
+                return .failure(.requestFailed("Request failed with status \(httpResponse.statusCode)"))
             }
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
             if let payments = json?["payments"] as? [[String: Any]] {
@@ -311,8 +322,19 @@ class AdSenseAPI {
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             print("Payments JSON: \(String(data: data, encoding: .utf8) ?? "<no data>")")
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                return .failure(.requestFailed("Request failed"))
+            guard let httpResponse = response as? HTTPURLResponse else {
+                return .failure(.invalidResponse)
+            }
+            
+            switch httpResponse.statusCode {
+            case 200:
+                break // Continue processing
+            case 401:
+                return .failure(.unauthorized)
+            case 403:
+                return .failure(.requestFailed("Access forbidden"))
+            default:
+                return .failure(.requestFailed("Request failed with status \(httpResponse.statusCode)"))
             }
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
             if let payments = json?["payments"] as? [[String: Any]] {
@@ -357,8 +379,19 @@ class AdSenseAPI {
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             print("Payments JSON: \(String(data: data, encoding: .utf8) ?? "<no data>")")
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                return .failure(.requestFailed("Request failed"))
+            guard let httpResponse = response as? HTTPURLResponse else {
+                return .failure(.invalidResponse)
+            }
+            
+            switch httpResponse.statusCode {
+            case 200:
+                break // Continue processing
+            case 401:
+                return .failure(.unauthorized)
+            case 403:
+                return .failure(.requestFailed("Access forbidden"))
+            default:
+                return .failure(.requestFailed("Request failed with status \(httpResponse.statusCode)"))
             }
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
             if let payments = json?["payments"] as? [[String: Any]] {
@@ -414,8 +447,19 @@ class AdSenseAPI {
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             print("Payments JSON: \(String(data: data, encoding: .utf8) ?? "<no data>")")
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                return .failure(.requestFailed("Request failed"))
+            guard let httpResponse = response as? HTTPURLResponse else {
+                return .failure(.invalidResponse)
+            }
+            
+            switch httpResponse.statusCode {
+            case 200:
+                break // Continue processing
+            case 401:
+                return .failure(.unauthorized)
+            case 403:
+                return .failure(.requestFailed("Access forbidden"))
+            default:
+                return .failure(.requestFailed("Request failed with status \(httpResponse.statusCode)"))
             }
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
             if let payments = json?["payments"] as? [[String: Any]] {
