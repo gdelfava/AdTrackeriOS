@@ -180,7 +180,7 @@ struct SummaryView: View {
                         .padding(.top, 32)
                     }
                 }
-                .padding(.top)
+                .padding(.top, 20)
             }
             .background(
                 LinearGradient(
@@ -308,10 +308,6 @@ struct HeroSectionHeader: View {
             }
             
             Spacer()
-            
-            Image(systemName: "star.circle.fill")
-                .font(.system(size: 24, weight: .medium))
-                .foregroundColor(.yellow)
         }
     }
 }
@@ -1155,7 +1151,7 @@ struct DayMetricsSheet: View {
                             .padding(.horizontal, 20)
                             .padding(.bottom, 20)
                     }
-                    .padding(.top, 8)
+                    .padding(.top, 20)
                 }
             }
             .navigationTitle("")
@@ -1195,11 +1191,11 @@ struct DayMetricsSheet: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                    .frame(width: 64, height: 64)
+                    .frame(width: 60, height: 60)
                     .shadow(color: Color.accentColor.opacity(0.3), radius: 15, x: 0, y: 8)
                 
                 Image(systemName: "chart.bar.doc.horizontal.fill")
-                    .font(.system(size: 28, weight: .medium))
+                    .font(.system(size: 24, weight: .medium))
                     .foregroundColor(.white)
             }
             

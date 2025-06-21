@@ -14,6 +14,7 @@ struct SlideOverMenuView: View {
     @Binding var showTargetingView: Bool
     @State private var showMail = false
     @State private var mailResult: Result<MFMailComposeResult, Error>? = nil
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         GeometryReader { geometry in
@@ -62,11 +63,35 @@ struct SlideOverMenuView: View {
                             .padding(.bottom, 24)
                         }
                         .background(
-                            LinearGradient(
-                                gradient: Gradient(colors: [Color.accentColor, Color.accentColor.opacity(0.8)]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
+                            ZStack {
+                                // Base gradient matching app's accent color and design
+                                LinearGradient(
+                                    gradient: Gradient(stops: [
+                                        .init(color: colorScheme == .dark ? 
+                                            Color.accentColor.opacity(0.7) : Color.accentColor.opacity(0.95), location: 0),
+                                        .init(color: colorScheme == .dark ? 
+                                            Color.accentColor.opacity(0.6) : Color.accentColor.opacity(0.85), location: 0.4),
+                                        .init(color: colorScheme == .dark ? 
+                                            Color.blue.opacity(0.5) : Color.blue.opacity(0.8), location: 0.7),
+                                        .init(color: colorScheme == .dark ? 
+                                            Color.indigo.opacity(0.4) : Color.indigo.opacity(0.75), location: 1)
+                                    ]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                                
+                                // Subtle overlay for depth matching app's style
+                                LinearGradient(
+                                    gradient: Gradient(stops: [
+                                        .init(color: Color.clear, location: 0),
+                                        .init(color: Color.black.opacity(colorScheme == .dark ? 0.15 : 0.08), location: 0.6),
+                                        .init(color: Color.black.opacity(colorScheme == .dark ? 0.25 : 0.15), location: 1)
+                                    ]),
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                                .blendMode(.multiply)
+                            }
                         )
                     }
                     

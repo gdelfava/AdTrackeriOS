@@ -195,7 +195,7 @@ struct SettingsView: View {
                             // User info with enhanced typography
                             VStack(spacing: 8) {
                                 Text(settingsViewModel.name)
-                                    .font(.title)
+                                    .soraTitle2()
                                     .fontWeight(.bold)
                                     .foregroundStyle(
                                         LinearGradient(
@@ -206,7 +206,7 @@ struct SettingsView: View {
                                     )
                                 
                                 Text(settingsViewModel.email)
-                                    .font(.subheadline)
+                                    .soraSubheadline()
                                     .fontWeight(.medium)
                                     .foregroundColor(.secondary)
                                     .padding(.horizontal, 16)
@@ -373,12 +373,12 @@ struct SettingsView: View {
                                     
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text("Sign Out")
-                                            .font(.body)
+                                            .soraBody()
                                             .fontWeight(.medium)
                                             .foregroundColor(.red)
                                         
                                         Text("Sign out of your account")
-                                            .font(.caption)
+                                            .soraCaption()
                                             .foregroundColor(.secondary)
                                     }
                                     
@@ -480,11 +480,11 @@ struct SettingsView: View {
                         .foregroundColor(.secondary)
                     
                     Text("Email Not Available")
-                        .font(.title2)
+                        .soraTitle2()
                         .fontWeight(.bold)
                     
                     Text("Email is not configured on this device. Please contact us directly at apps@delteqis.co.za")
-                        .font(.body)
+                        .soraBody()
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
@@ -507,7 +507,7 @@ struct ModernSectionView<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title.uppercased())
-                .font(.caption)
+                .soraCaption()
                 .fontWeight(.semibold)
                 .foregroundColor(.secondary)
                 .padding(.horizontal, 4)
@@ -559,12 +559,12 @@ struct ModernSettingsRow: View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(.body)
+                        .soraBody()
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
                     
                     Text(subtitle)
-                        .font(.caption)
+                        .soraCaption()
                         .foregroundColor(.secondary)
                 }
                 
@@ -624,12 +624,12 @@ struct EnhancedAccountInfoRow: View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(.body)
+                        .soraBody()
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
                     
                     Text(value)
-                        .font(.caption)
+                        .soraCaption()
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                         .truncationMode(.middle)
@@ -728,7 +728,7 @@ struct WidgetSupportSheet: View {
                             .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
                         
                         Text("Widget Support")
-                            .font(.title2)
+                            .soraTitle2()
                             .fontWeight(.bold)
                     }
                     .padding(.top)
@@ -775,11 +775,11 @@ struct WidgetSupportSheet: View {
                     // Footer
                     VStack(spacing: 8) {
                         Text("Thanks for your support!")
-                            .font(.headline)
+                            .soraHeadline()
                             .fontWeight(.semibold)
                         
                         Text("— Guilio")
-                            .font(.subheadline)
+                            .soraSubheadline()
                             .foregroundColor(.secondary)
                     }
                     .padding(.top, 8)
@@ -823,11 +823,11 @@ struct SupportInfoCard: View {
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(title)
-                    .font(.headline)
+                    .soraHeadline()
                     .fontWeight(.semibold)
                 
                 Text(description)
-                    .font(.body)
+                    .soraBody()
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -882,7 +882,7 @@ struct PaymentThresholdInfoSheet: View {
                         .shadow(color: Color.green.opacity(0.2), radius: 8, x: 0, y: 4)
                         
                         Text("Payment Threshold")
-                            .font(.title2)
+                            .soraTitle2()
                             .fontWeight(.bold)
                     }
                     .padding(.top)
@@ -956,11 +956,11 @@ struct PaymentInfoCard: View {
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(title)
-                    .font(.headline)
+                    .soraHeadline()
                     .fontWeight(.semibold)
                 
                 Text(description)
-                    .font(.body)
+                    .soraBody()
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -999,7 +999,7 @@ struct PaymentThresholdRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 8) {
                     Text("Payment Threshold")
-                        .font(.body)
+                        .soraBody()
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
                     
@@ -1043,7 +1043,7 @@ struct PaymentThresholdRow: View {
                     }
                 } else {
                     Text(formatCurrency(settingsViewModel.paymentThreshold))
-                        .font(.caption)
+                        .soraCaption()
                         .foregroundColor(.secondary)
                 }
             }
@@ -1067,6 +1067,7 @@ struct PaymentThresholdRow: View {
             Button("OK") { }
         } message: {
             Text("Please enter a valid amount greater than 0.")
+                .soraBody()
         }
         .fullScreenCover(isPresented: $showInfoSheet) {
             PaymentThresholdInfoSheet()
