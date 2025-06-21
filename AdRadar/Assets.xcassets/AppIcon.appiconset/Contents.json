@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "icon-final-v1-iOS-Default-1024x1024@1x.png",
+      "filename" : "logoadr-test.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,7 +13,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "icon-final-v1-iOS-Dark-1024x1024@1x.png",
+      "filename" : "logoadr-test-dark.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
