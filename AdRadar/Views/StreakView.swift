@@ -8,6 +8,7 @@ struct StreakView: View {
     @State private var calendarAppeared = false
     @State private var overviewAppeared = false
     @State private var detailsAppeared = false
+    @State private var animateFloatingElements = false
     @Binding var showSlideOverMenu: Bool
     @Binding var selectedTab: Int
     
@@ -30,7 +31,23 @@ struct StreakView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
+            ZStack {
+                // Modern gradient background - always full screen
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(.systemBackground),
+                        Color.accentColor.opacity(0.1),
+                        Color(.systemBackground)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea(.all)
+                
+                // Floating elements for visual interest
+                StreakFloatingElementsView(animate: $animateFloatingElements)
+                
+                ScrollView {
                 VStack(spacing: 24) {
                     if let error = viewModel.error {
                         ErrorBannerView(message: error, symbol: errorSymbol(for: error))
@@ -73,6 +90,7 @@ struct StreakView: View {
                     }
                 }
                 .padding(.vertical)
+                }
             }
             .refreshable {
                 if let token = authViewModel.accessToken {
@@ -126,6 +144,11 @@ struct StreakView: View {
             withAnimation(.easeOut(duration: 0.5).delay(0.4)) {
                 detailsAppeared = true
             }
+            
+            // Animate floating elements
+            withAnimation(.easeOut(duration: 0.8).delay(0.2)) {
+                animateFloatingElements = true
+            }
         }
         .onChange(of: viewModel.streakData) { _, newData in
             // Auto-select current day when data loads, fallback to first day
@@ -166,7 +189,7 @@ struct HorizontalDatePickerView: View {
                 .foregroundColor(.primary)
                 .padding(.horizontal, 4)
             
-            Text("Select Date")
+            Text("Select an Earnings Date")
                 .soraSubheadline()
                 .foregroundColor(.secondary)
                 .padding(.horizontal, 4)
@@ -260,7 +283,7 @@ struct HorizontalDateItemView: View {
                     .soraTitle2()
                     .foregroundColor(isSelected ? .white : .primary)
                 
-                // Earnings indicator
+                // Earnings value
                 Text(viewModel.formatCurrency(day.earnings))
                     .soraCaption2()
                     .foregroundColor(isSelected ? .white.opacity(0.9) : .secondary)
@@ -270,17 +293,33 @@ struct HorizontalDateItemView: View {
                     .fill(isSelected ? Color.white.opacity(0.8) : Color.accentColor)
                     .frame(width: 4, height: 4)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .frame(width: 60, height: 80)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 8)
             .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(isSelected ? Color.accentColor : Color(.secondarySystemBackground))
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(
+                        isSelected ? 
+                        LinearGradient(
+                            gradient: Gradient(stops: [
+                                .init(color: Color.accentColor.opacity(0.9), location: 0),
+                                .init(color: Color.accentColor.opacity(0.8), location: 0.4),
+                                .init(color: Color.accentColor.opacity(0.7), location: 1)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ) :
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color(.secondarySystemBackground)]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .stroke(isSelected ? Color.clear : Color(.separator), lineWidth: 0.5)
             )
-            .scaleEffect(isSelected ? 1.05 : 1.0)
             .shadow(color: isSelected ? Color.accentColor.opacity(0.3) : Color.black.opacity(0.05), radius: isSelected ? 8 : 4, x: 0, y: 2)
         }
         .buttonStyle(PlainButtonStyle())
@@ -691,6 +730,53 @@ struct OverviewCard: View {
 extension Date {
     func isSameDay(as date: Date) -> Bool {
         Calendar.current.isDate(self, inSameDayAs: date)
+    }
+}
+
+// MARK: - Streak Floating Elements
+struct StreakFloatingElementsView: View {
+    @Binding var animate: Bool
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                // Floating circles positioned for streak content
+                Circle()
+                    .fill(Color.accentColor.opacity(0.06))
+                    .frame(width: 45, height: 45)
+                    .position(x: geometry.size.width * 0.12, y: geometry.size.height * 0.25)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.2).delay(0.4), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.04))
+                    .frame(width: 65, height: 65)
+                    .position(x: geometry.size.width * 0.88, y: geometry.size.height * 0.18)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.7).delay(0.9), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.05))
+                    .frame(width: 30, height: 30)
+                    .position(x: geometry.size.width * 0.08, y: geometry.size.height * 0.55)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.1).delay(1.3), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.03))
+                    .frame(width: 55, height: 55)
+                    .position(x: geometry.size.width * 0.92, y: geometry.size.height * 0.72)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.5).delay(1.7), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.07))
+                    .frame(width: 20, height: 20)
+                    .position(x: geometry.size.width * 0.25, y: geometry.size.height * 0.88)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.0).delay(2.1), value: animate)
+            }
+        }
     }
 }
 

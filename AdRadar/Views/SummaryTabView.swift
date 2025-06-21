@@ -169,10 +169,10 @@ struct ModernTabBar: View {
                 alignment: .top
             )
             .shadow(
-                color: Color.black.opacity(colorScheme == .dark ? 0.3 : 0.1),
-                radius: 20,
+                color: Color.black.opacity(colorScheme == .dark ? 0.1 : 0.03),
+                radius: 12,
                 x: 0,
-                y: -5
+                y: -3
             )
             .safeAreaInset(edge: .bottom) {
                 // Add safe area padding at the bottom

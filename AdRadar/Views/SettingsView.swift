@@ -135,6 +135,7 @@ struct SettingsView: View {
     @State private var accountInfoAppeared = false
     @State private var supportAppeared = false
     @State private var generalAppeared = false
+    @State private var animateFloatingElements = false
     @Binding var showSlideOverMenu: Bool
     @Binding var selectedTab: Int
     
@@ -146,9 +147,20 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                // Modern background
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
+                // Modern gradient background - always full screen
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(.systemGroupedBackground),
+                        Color.accentColor.opacity(0.1),
+                        Color(.systemGroupedBackground)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea(.all)
+                
+                // Floating elements for visual interest
+                SettingsFloatingElementsView(animate: $animateFloatingElements)
                 
                 ScrollView {
                     LazyVStack(spacing: 28) {
@@ -447,6 +459,11 @@ struct SettingsView: View {
             
             withAnimation(.easeOut(duration: 0.6).delay(0.7)) {
                 generalAppeared = true
+            }
+            
+            // Animate floating elements
+            withAnimation(.easeOut(duration: 0.8).delay(0.2)) {
+                animateFloatingElements = true
             }
         }
         .onDisappear {
@@ -1081,6 +1098,53 @@ struct PaymentThresholdRow: View {
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 2
         return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
+}
+
+// MARK: - Settings Floating Elements
+struct SettingsFloatingElementsView: View {
+    @Binding var animate: Bool
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                // Floating circles positioned for settings content
+                Circle()
+                    .fill(Color.accentColor.opacity(0.04))
+                    .frame(width: 55, height: 55)
+                    .position(x: geometry.size.width * 0.18, y: geometry.size.height * 0.2)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.0).delay(0.6), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.06))
+                    .frame(width: 40, height: 40)
+                    .position(x: geometry.size.width * 0.82, y: geometry.size.height * 0.15)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.4).delay(1.1), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.05))
+                    .frame(width: 30, height: 30)
+                    .position(x: geometry.size.width * 0.12, y: geometry.size.height * 0.45)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.2).delay(1.5), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.03))
+                    .frame(width: 60, height: 60)
+                    .position(x: geometry.size.width * 0.88, y: geometry.size.height * 0.65)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.3).delay(1.9), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.07))
+                    .frame(width: 35, height: 35)
+                    .position(x: geometry.size.width * 0.25, y: geometry.size.height * 0.85)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.1).delay(2.3), value: animate)
+            }
+        }
     }
 }
 

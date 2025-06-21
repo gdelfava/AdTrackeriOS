@@ -1,7 +1,7 @@
-// Main content view for Adsense Tracker
+// Main content view for AdRadar
 //
 //  ContentView.swift
-//  Adsense Tracker
+//  AdRadar
 //
 //  Created by Guilio Del Fava on 2025/06/12.
 //
@@ -49,6 +49,7 @@ struct ContentView: View {
     }
 }
 
+// MARK: - Why Google Modal
 struct WhyGoogleModal: View {
     @Binding var isPresented: Bool
     @Environment(\.colorScheme) private var colorScheme
@@ -69,20 +70,20 @@ struct WhyGoogleModal: View {
                 // Modern icon treatment
                 ZStack {
                     Circle()
-                        .fill(Color(.systemBlue).opacity(0.1))
+                        .fill(Color.accentColor.opacity(0.1))
                         .frame(width: 100, height: 100)
                         .scaleEffect(animateContent ? 1.0 : 0.8)
                         .opacity(animateContent ? 1.0 : 0.0)
                     
                     Circle()
-                        .fill(Color(.systemBlue).opacity(0.15))
+                        .fill(Color.accentColor.opacity(0.15))
                         .frame(width: 80, height: 80)
                         .scaleEffect(animateContent ? 1.0 : 0.6)
                         .opacity(animateContent ? 1.0 : 0.0)
                     
                     Image(systemName: "shield.checkered")
                         .font(.system(size: 32, weight: .medium))
-                        .foregroundColor(.blue)
+                        .foregroundColor(.accentColor)
                         .scaleEffect(animateContent ? 1.0 : 0.4)
                         .opacity(animateContent ? 1.0 : 0.0)
                 }
@@ -90,7 +91,7 @@ struct WhyGoogleModal: View {
                 
                 // Title
                 Text("Why Google Sign-In?")
-                    .font(.title2.weight(.bold))
+                    .font(.sora(.bold, size: 24))
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.center)
                     .opacity(animateContent ? 1.0 : 0.0)
@@ -115,7 +116,7 @@ struct WhyGoogleModal: View {
                     // Data section
                     InfoSection(
                         icon: "chart.bar.fill",
-                        iconColor: .blue,
+                        iconColor: .accentColor,
                         title: "Real AdSense Data",
                         description: "We need access to your AdSense account to provide accurate earnings and performance analytics.",
                         animateContent: animateContent,
@@ -144,19 +145,19 @@ struct WhyGoogleModal: View {
                     isPresented = false 
                 }) {
                     Text("Got it!")
-                        .font(.body.weight(.semibold))
+                        .font(.sora(.semibold, size: 17))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
                         .background(
                             LinearGradient(
-                                gradient: Gradient(colors: [Color(.systemBlue), Color(.systemPurple)]),
+                                gradient: Gradient(colors: [Color.accentColor, Color.accentColor.opacity(0.8)]),
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
                         )
                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                        .shadow(color: Color.blue.opacity(0.3), radius: 8, x: 0, y: 4)
+                        .shadow(color: Color.accentColor.opacity(0.3), radius: 8, x: 0, y: 4)
                 }
                 .buttonStyle(ModernButtonStyle())
                 .scaleEffect(animateContent ? 1.0 : 0.8)
@@ -178,6 +179,7 @@ struct WhyGoogleModal: View {
     }
 }
 
+// MARK: - Info Section Component
 struct InfoSection: View {
     let icon: String
     let iconColor: Color
@@ -202,12 +204,11 @@ struct InfoSection: View {
             // Content
             VStack(alignment: .leading, spacing: 8) {
                 Text(title)
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                    .font(.sora(.semibold, size: 16))
                     .foregroundColor(.primary)
                 
                 Text(description)
-                    .font(.body)
+                    .font(.sora(.regular, size: 14))
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -224,11 +225,13 @@ struct InfoSection: View {
     }
 }
 
+// MARK: - Modern Sign-In View
 struct ModernSignInView: View {
     let authViewModel: AuthViewModel
     @Binding var showWhyGoogle: Bool
     @State private var animateContent = false
     @State private var showSignInButton = false
+    @State private var animateFloatingElements = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -236,141 +239,186 @@ struct ModernSignInView: View {
                 // Modern gradient background
                 LinearGradient(
                     gradient: Gradient(colors: [
-                        Color(.systemBlue).opacity(0.8),
-                        Color(.systemPurple).opacity(0.6),
-                        Color(.systemIndigo).opacity(0.9)
+                        Color(.systemBackground),
+                        Color.accentColor.opacity(0.1),
+                        Color(.systemBackground)
                     ]),
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
                 .ignoresSafeArea()
                 
-                // Background pattern/decoration
-                VStack {
-                    Spacer()
-                    
-                    // Main content
+                // Floating elements for visual interest
+                FloatingElementsView(animate: $animateFloatingElements)
+                
+                ScrollView {
                     VStack(spacing: 0) {
-                        // Logo and branding section
+                        // Top spacing
+                        Rectangle()
+                            .fill(Color.clear)
+                            .frame(height: max(geometry.safeAreaInsets.top + 10, 20))
+                        
+                        // Main content
                         VStack(spacing: 32) {
-                            // App icon with layered circles (matching onboarding style)
-                            ZStack {
-                                Circle()
-                                    .fill(Color.white.opacity(0.1))
-                                    .frame(width: 200, height: 200)
-                                    .scaleEffect(animateContent ? 1.0 : 0.8)
-                                    .opacity(animateContent ? 1.0 : 0.0)
-                                
-                                Circle()
-                                    .fill(Color.white.opacity(0.15))
-                                    .frame(width: 160, height: 160)
-                                    .scaleEffect(animateContent ? 1.0 : 0.6)
-                                    .opacity(animateContent ? 1.0 : 0.0)
-                                
-                                Circle()
-                                    .fill(Color.white.opacity(0.2))
-                                    .frame(width: 120, height: 120)
+                            // Header section
+                            VStack(spacing: 24) {
+                                // App branding with modern circles (no icon)
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.accentColor.opacity(0.1))
+                                        .frame(width: 200, height: 200)
+                                        .scaleEffect(animateContent ? 1.0 : 0.8)
+                                        .opacity(animateContent ? 1.0 : 0.0)
+                                    
+                                    Circle()
+                                        .fill(Color.accentColor.opacity(0.15))
+                                        .frame(width: 160, height: 160)
+                                        .scaleEffect(animateContent ? 1.0 : 0.6)
+                                        .opacity(animateContent ? 1.0 : 0.0)
+                                    
+                                    // Central radar icon
+                                    ZStack {
+                                        Circle()
+                                            .fill(Color.accentColor.opacity(0.9))
+                                            .frame(width: 100, height: 100)
+                                        
+                                                                                 Image(systemName: "target")
+                                             .font(.system(size: 40, weight: .semibold))
+                                             .foregroundColor(.white)
+                                    }
                                     .scaleEffect(animateContent ? 1.0 : 0.4)
                                     .opacity(animateContent ? 1.0 : 0.0)
+                                    
+                                    // Pulsing effect
+                                    Circle()
+                                        .fill(Color.accentColor.opacity(0.3))
+                                        .frame(width: 100, height: 100)
+                                        .scaleEffect(animateContent ? 1.4 : 0.4)
+                                        .opacity(animateContent ? 0.0 : 0.8)
+                                        .animation(.easeOut(duration: 2.0).repeatForever(autoreverses: true), value: animateContent)
+                                }
+                                .animation(.easeOut(duration: 1.2).delay(0.3), value: animateContent)
                                 
-                                Image("LoginScreen")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 80, height: 80)
-                                    .clipShape(Circle())
-                                    .scaleEffect(animateContent ? 1.0 : 0.2)
-                                    .opacity(animateContent ? 1.0 : 0.0)
-                            }
-                            .animation(.easeOut(duration: 1.2).delay(0.3), value: animateContent)
-                            
-                            // App title and description
-                            VStack(spacing: 16) {
-                                VStack(spacing: 8) {
-                                    Text("AdRadar")
-                                        .font(.system(.largeTitle, design: .rounded, weight: .bold))
-                                        .foregroundColor(.white)
+                                // App title and description
+                                VStack(spacing: 16) {
+                                    VStack(spacing: 8) {
+                                        Text("AdRadar")
+                                            .font(.sora(.bold, size: 48))
+                                            .foregroundColor(.primary)
+                                            .opacity(animateContent ? 1.0 : 0.0)
+                                            .offset(y: animateContent ? 0 : 30)
+                                            .animation(.easeOut(duration: 0.8).delay(0.8), value: animateContent)
+                                        
+                                        Text("for AdSense")
+                                            .font(.sora(.medium, size: 20))
+                                            .foregroundColor(.secondary)
+                                            .opacity(animateContent ? 1.0 : 0.0)
+                                            .offset(y: animateContent ? 0 : 20)
+                                            .animation(.easeOut(duration: 0.8).delay(1.0), value: animateContent)
+                                    }
+                                    
+                                    Text("Track your earnings with beautiful analytics and detailed insights")
+                                        .font(.sora(.regular, size: 18))
+                                        .multilineTextAlignment(.center)
+                                        .foregroundColor(.secondary)
+                                        .padding(.horizontal, 40)
                                         .opacity(animateContent ? 1.0 : 0.0)
                                         .offset(y: animateContent ? 0 : 30)
-                                        .animation(.easeOut(duration: 0.8).delay(0.8), value: animateContent)
-                                    
-                                    Text("for AdSense")
-                                        .font(.title2.weight(.medium))
-                                        .foregroundColor(.white.opacity(0.9))
-                                        .opacity(animateContent ? 1.0 : 0.0)
-                                        .offset(y: animateContent ? 0 : 20)
-                                        .animation(.easeOut(duration: 0.8).delay(1.0), value: animateContent)
+                                        .animation(.easeOut(duration: 0.8).delay(1.2), value: animateContent)
                                 }
-                                
-                                Text("Track your earnings with beautiful analytics")
-                                    .font(.title3)
-                                    .multilineTextAlignment(.center)
-                                    .foregroundColor(.white.opacity(0.8))
-                                    .padding(.horizontal, 40)
-                                    .opacity(animateContent ? 1.0 : 0.0)
-                                    .offset(y: animateContent ? 0 : 30)
-                                    .animation(.easeOut(duration: 0.8).delay(1.2), value: animateContent)
-                            }
-                        }
-                        
-                        Spacer()
-                        
-                        // Sign in section
-                        VStack(spacing: 24) {
-                            // Modern Google Sign In Button
-                            Button(action: {
-                                let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-                                impactFeedback.impactOccurred()
-                                authViewModel.signIn()
-                            }) {
-                                HStack(spacing: 16) {
-                                    // Google Sign In icon
-                                    Image("GoogleSignIn")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 24, height: 24)
-                                    
-                                    Text("Continue with Google")
-                                        .font(.body.weight(.semibold))
-                                        .foregroundColor(.black)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 56)
-                                .background(Color.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                                .shadow(color: Color.black.opacity(0.1), radius: 12, x: 0, y: 4)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                        .stroke(Color.black.opacity(0.05), lineWidth: 1)
-                                )
-                            }
-                            .buttonStyle(ModernButtonStyle())
-                            .scaleEffect(showSignInButton ? 1.0 : 0.8)
-                            .opacity(showSignInButton ? 1.0 : 0.0)
-                            .animation(.easeOut(duration: 0.6).delay(1.6), value: showSignInButton)
+                                                         }
                             
-                            // Info button
-                            Button(action: { 
-                                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                                impactFeedback.impactOccurred()
-                                showWhyGoogle = true 
-                            }) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "info.circle")
-                                        .font(.system(size: 16, weight: .medium))
-                                    Text("Why Google Sign-In?")
-                                        .font(.body.weight(.medium))
+                            // Sign in section
+                            VStack(spacing: 16) {
+                                // Modern Google Sign In Button
+                                Button(action: {
+                                    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                                    impactFeedback.impactOccurred()
+                                    authViewModel.signIn()
+                                }) {
+                                    HStack(spacing: 16) {
+                                        // Google Sign In icon
+                                        Image("GoogleSignIn")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 24, height: 24)
+                                        
+                                        Text("Continue with Google")
+                                            .font(.sora(.semibold, size: 17))
+                                            .foregroundColor(.primary)
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 56)
+                                    .background(Color(.secondarySystemGroupedBackground))
+                                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                    .shadow(color: Color.primary.opacity(0.1), radius: 12, x: 0, y: 4)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                            .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                    )
                                 }
-                                .foregroundColor(.white.opacity(0.8))
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 12)
-                                .background(Color.white.opacity(0.1))
-                                .clipShape(Capsule())
+                                .buttonStyle(ModernButtonStyle())
+                                .scaleEffect(showSignInButton ? 1.0 : 0.8)
+                                .opacity(showSignInButton ? 1.0 : 0.0)
+                                .animation(.easeOut(duration: 0.6).delay(1.4), value: showSignInButton)
+                                
+                                // Info text
+                                Button(action: { 
+                                    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                                    impactFeedback.impactOccurred()
+                                    showWhyGoogle = true 
+                                }) {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "info.circle")
+                                            .font(.system(size: 14, weight: .medium))
+                                        Text("Why Google Sign-In?")
+                                            .font(.sora(.medium, size: 14))
+                                    }
+                                    .foregroundColor(.secondary)
+                                }
+                                .opacity(showSignInButton ? 1.0 : 0.0)
+                                .animation(.easeOut(duration: 0.6).delay(1.6), value: showSignInButton)
                             }
-                            .opacity(showSignInButton ? 1.0 : 0.0)
-                            .animation(.easeOut(duration: 0.6).delay(1.8), value: showSignInButton)
+                            .padding(.horizontal, 32)
+                            
+                            // Features preview
+                            VStack(spacing: 16) {
+                                Text("What you'll get")
+                                    .font(.sora(.semibold, size: 18))
+                                    .foregroundColor(.primary)
+                                    .opacity(animateContent ? 1.0 : 0.0)
+                                    .animation(.easeOut(duration: 0.6).delay(1.8), value: animateContent)
+                                
+                                VStack(spacing: 12) {
+                                    FeatureRow(
+                                        icon: "chart.bar.fill",
+                                        title: "Real-time Analytics",
+                                        description: "Daily earnings & performance",
+                                        delay: 2.0
+                                    )
+                                    
+                                    FeatureRow(
+                                        icon: "globe",
+                                        title: "Global Insights",
+                                        description: "Country & platform breakdowns",
+                                        delay: 2.2
+                                    )
+                                    
+                                    FeatureRow(
+                                        icon: "lock.shield",
+                                        title: "Secure Access",
+                                        description: "Safe Google OAuth integration",
+                                        delay: 2.4
+                                    )
+                                }
+                            }
+                            .padding(.horizontal, 24)
                         }
-                        .padding(.horizontal, 32)
-                        .padding(.bottom, max(geometry.safeAreaInsets.bottom + 32, 48))
+                        
+                        // Bottom spacing
+                        Rectangle()
+                            .fill(Color.clear)
+                            .frame(height: max(geometry.safeAreaInsets.bottom + 50, 80))
                     }
                 }
             }
@@ -378,14 +426,96 @@ struct ModernSignInView: View {
         .onAppear {
             withAnimation(.easeOut(duration: 0.8).delay(0.2)) {
                 animateContent = true
+                animateFloatingElements = true
             }
-            withAnimation(.easeOut(duration: 0.6).delay(1.4)) {
+            withAnimation(.easeOut(duration: 0.6).delay(2.0)) {
                 showSignInButton = true
             }
         }
     }
 }
 
+// MARK: - Feature Row Component
+struct FeatureRow: View {
+    let icon: String
+    let title: String
+    let description: String
+    let delay: Double
+    @State private var animate = false
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            // Icon
+            ZStack {
+                Circle()
+                    .fill(Color.accentColor.opacity(0.1))
+                    .frame(width: 40, height: 40)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(.accentColor)
+            }
+            
+            // Content
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.sora(.semibold, size: 16))
+                    .foregroundColor(.primary)
+                
+                Text(description)
+                    .font(.sora(.regular, size: 14))
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .opacity(animate ? 1.0 : 0.0)
+        .offset(x: animate ? 0 : -30)
+        .animation(.easeOut(duration: 0.6).delay(delay), value: animate)
+        .onAppear {
+            animate = true
+        }
+    }
+}
+
+// MARK: - Floating Elements
+struct FloatingElementsView: View {
+    @Binding var animate: Bool
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                // Floating circles
+                Circle()
+                    .fill(Color.accentColor.opacity(0.1))
+                    .frame(width: 60, height: 60)
+                    .position(x: geometry.size.width * 0.2, y: geometry.size.height * 0.3)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.0).delay(0.5), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.05))
+                    .frame(width: 80, height: 80)
+                    .position(x: geometry.size.width * 0.8, y: geometry.size.height * 0.2)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.5).delay(1.0), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.08))
+                    .frame(width: 40, height: 40)
+                    .position(x: geometry.size.width * 0.1, y: geometry.size.height * 0.7)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.2).delay(1.5), value: animate)
+            }
+        }
+    }
+}
+
+// MARK: - Modern Button Style
 struct ModernButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

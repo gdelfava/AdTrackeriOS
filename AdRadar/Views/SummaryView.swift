@@ -4,6 +4,7 @@ struct SummaryView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var viewModel: SummaryViewModel
     @State private var cardAppearances: [Bool] = Array(repeating: false, count: 6)
+    @State private var animateFloatingElements = false
     @Binding var showSlideOverMenu: Bool
     @Binding var selectedTab: Int
     
@@ -15,7 +16,23 @@ struct SummaryView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
+            ZStack {
+                // Modern gradient background - always full screen
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(.systemBackground),
+                        Color.accentColor.opacity(0.1),
+                        Color(.systemBackground)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea(.all)
+                
+                // Floating elements for visual interest
+                SummaryFloatingElementsView(animate: $animateFloatingElements)
+                
+                ScrollView {
                 VStack(alignment: .center, spacing: 0) {
                     if let errorMessage = viewModel.errorMessage {
                         Text(errorMessage)
@@ -29,14 +46,7 @@ struct SummaryView: View {
                             .foregroundColor(.red)
                             .padding()
                     }
-                    if let lastUpdate = viewModel.lastUpdateTime {
-                        Text("Last updated: \(lastUpdate.formatted(.relative(presentation: .named))) on \(lastUpdate.formatted(.dateTime.weekday(.wide)))")
-                            .soraCaption()
-                            .foregroundColor(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal)
-                            .padding(.top, 8)
-                    }
+
                     if viewModel.isLoading {
                         Spacer()
                         ProgressView("Loading...")
@@ -51,10 +61,11 @@ struct SummaryView: View {
                         LazyVStack(spacing: 24) {
                             // HERO SECTION - Today's performance
                             VStack(spacing: 16) {
-                                HeroSectionHeader()
+                                HeroSectionHeader(lastUpdateTime: viewModel.lastUpdateTime)
+                                    .padding(.horizontal, 20)
                                 
                                 HeroSummaryCard(
-                                    title: "Today so far",
+                                    title: "Today So Far",
                                     value: data.today,
                                     subtitle: "vs yesterday",
                                     delta: data.todayDelta,
@@ -63,8 +74,8 @@ struct SummaryView: View {
                                 )
                                 .opacity(cardAppearances[0] ? 1 : 0)
                                 .offset(y: cardAppearances[0] ? 0 : 30)
+                                .padding(.horizontal, 16)
                             }
-                            .padding(.horizontal, 20)
                             .padding(.top, 8)
                             
                             // RECENT SECTION - Yesterday & Last 7 Days
@@ -107,7 +118,7 @@ struct SummaryView: View {
                                 
                                 HStack(spacing: 12) {
                                     MonthlyCompactCard(
-                                        title: "This month",
+                                        title: "This Month",
                                         value: data.thisMonth,
                                         subtitle: "vs same day last month",
                                         delta: data.thisMonthDelta,
@@ -120,7 +131,7 @@ struct SummaryView: View {
                                     .offset(y: cardAppearances[3] ? 0 : 20)
                                     
                                     MonthlyCompactCard(
-                                        title: "Last month",
+                                        title: "Last Month",
                                         value: data.lastMonth,
                                         subtitle: "vs previous month",
                                         delta: data.lastMonthDelta,
@@ -140,7 +151,7 @@ struct SummaryView: View {
                                 SectionHeader(title: "All Time", icon: "infinity.circle.fill", color: .indigo)
                                 
                                 LifetimeSummaryCard(
-                                    title: "Last three years",
+                                    title: "Last Three Years",
                                     value: data.lifetime,
                                     subtitle: "AdRadar for Adsense",
                                     onTap: { Task { await viewModel.fetchMetrics(forCard: .lastThreeYears) } }
@@ -181,18 +192,8 @@ struct SummaryView: View {
                     }
                 }
                 .padding(.top, 20)
+                }
             }
-            .background(
-                LinearGradient(
-                    gradient: Gradient(stops: [
-                        .init(color: Color(.systemBackground), location: 0),
-                        .init(color: Color(.secondarySystemBackground).opacity(0.3), location: 0.8),
-                        .init(color: Color(.systemBackground), location: 1)
-                    ]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
             .refreshable {
                 if let token = authViewModel.accessToken {
                     viewModel.accessToken = token
@@ -231,6 +232,11 @@ struct SummaryView: View {
                 viewModel.accessToken = token
                 viewModel.authViewModel = authViewModel
                 Task { await viewModel.fetchSummary() }
+            }
+            
+            // Animate floating elements
+            withAnimation(.easeOut(duration: 0.8).delay(0.2)) {
+                animateFloatingElements = true
             }
         }
         .overlay(
@@ -295,6 +301,8 @@ struct SummaryView: View {
 // MARK: - Hero Section Components
 
 struct HeroSectionHeader: View {
+    let lastUpdateTime: Date?
+    
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
@@ -302,9 +310,15 @@ struct HeroSectionHeader: View {
                     .soraTitle2()
                     .foregroundColor(.primary)
                 
-                Text("Real-time earnings overview")
-                    .soraSubheadline()
-                    .foregroundColor(.secondary)
+                if let lastUpdate = lastUpdateTime {
+                    Text("Last updated: \(lastUpdate.formatted(.relative(presentation: .named))) on \(lastUpdate.formatted(.dateTime.weekday(.wide)))")
+                        .soraCaption()
+                        .foregroundColor(.secondary)
+                } else {
+                    Text("Fetching latest data...")
+                        .soraCaption()
+                        .foregroundColor(.secondary)
+                }
             }
             
             Spacer()
@@ -376,23 +390,28 @@ struct HeroSummaryCard: View {
                         .foregroundColor(.primary)
                         .multilineTextAlignment(.leading)
                     
-                    // Delta indicator
+                    // Delta indicator with improved layout
                     if let delta = delta, let positive = deltaPositive {
-                        HStack(spacing: 8) {
-                            Image(systemName: positive ? "chart.line.uptrend.xyaxis" : "chart.line.downtrend.xyaxis")
-                                .foregroundColor(positive ? .green : .red)
-                                .font(.system(size: 16, weight: .semibold))
-                            
-                            Text(delta)
-                                .soraSubheadline()
-                                .foregroundColor(positive ? .green : .red)
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack(spacing: 8) {
+                                Image(systemName: positive ? "chart.line.uptrend.xyaxis" : "chart.line.downtrend.xyaxis")
+                                    .foregroundColor(positive ? .green : .red)
+                                    .font(.system(size: 16, weight: .semibold))
+                                
+                                Text(delta)
+                                    .soraSubheadline()
+                                    .foregroundColor(positive ? .green : .red)
+                                
+                                Spacer()
+                            }
                             
                             Text("compared to yesterday")
                                 .soraCaption()
                                 .foregroundColor(.secondary)
                         }
                         .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
+                        .padding(.vertical, 12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .background(
                             RoundedRectangle(cornerRadius: 12, style: .continuous)
                                 .fill((positive ? Color.green : Color.red).opacity(0.1))
@@ -400,7 +419,8 @@ struct HeroSummaryCard: View {
                     }
                 }
             }
-            .padding(24)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 24)
         }
         .background(
             ZStack {
@@ -1354,6 +1374,53 @@ struct EnhancedMetricCard: View {
         .padding(12)
         .background(Color(.tertiarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+}
+
+// MARK: - Summary Floating Elements
+struct SummaryFloatingElementsView: View {
+    @Binding var animate: Bool
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                // Floating circles positioned for summary content
+                Circle()
+                    .fill(Color.accentColor.opacity(0.08))
+                    .frame(width: 40, height: 40)
+                    .position(x: geometry.size.width * 0.15, y: geometry.size.height * 0.2)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.0).delay(0.3), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.05))
+                    .frame(width: 60, height: 60)
+                    .position(x: geometry.size.width * 0.85, y: geometry.size.height * 0.15)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.5).delay(0.8), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.06))
+                    .frame(width: 35, height: 35)
+                    .position(x: geometry.size.width * 0.1, y: geometry.size.height * 0.6)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.2).delay(1.2), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.04))
+                    .frame(width: 50, height: 50)
+                    .position(x: geometry.size.width * 0.9, y: geometry.size.height * 0.7)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.8).delay(1.6), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.07))
+                    .frame(width: 25, height: 25)
+                    .position(x: geometry.size.width * 0.3, y: geometry.size.height * 0.85)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.1).delay(2.0), value: animate)
+            }
+        }
     }
 }
 

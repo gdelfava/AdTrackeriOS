@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Combine
 
 @main
 struct AdRadar_App: App {
@@ -63,7 +64,7 @@ struct AdRadar_App: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SplashScreenWrapper()
                 .applySoraFonts()
                 .environmentObject(NetworkMonitor.shared)
                 .onAppear {
@@ -72,6 +73,30 @@ struct AdRadar_App: App {
                         MemoryManager.shared.performMaintenanceCleanup()
                     }
                 }
+        }
+    }
+}
+
+// MARK: - Splash Screen Wrapper
+struct SplashScreenWrapper: View {
+    @State private var showSplash = true
+    
+    var body: some View {
+        ZStack {
+            if showSplash {
+                SplashScreenView()
+                    .transition(.opacity)
+                    .zIndex(1)
+            } else {
+                ContentView()
+                    .transition(.opacity)
+                    .zIndex(0)
+            }
+        }
+        .onReceive(Timer.publish(every: 3.5, on: .main, in: .common).autoconnect()) { _ in
+            withAnimation(.easeInOut(duration: 0.8)) {
+                showSplash = false
+            }
         }
     }
 } 

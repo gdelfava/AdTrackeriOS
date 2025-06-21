@@ -7,6 +7,7 @@ struct PaymentsView: View {
     @Environment(\.colorScheme) private var uiColorScheme
     @State private var unpaidCardAppeared = false
     @State private var previousCardAppeared = false
+    @State private var animateFloatingElements = false
     @Binding var showSlideOverMenu: Bool
     @Binding var selectedTab: Int
     
@@ -18,7 +19,23 @@ struct PaymentsView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
+            ZStack {
+                // Modern gradient background - always full screen
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(.systemBackground),
+                        Color.accentColor.opacity(0.1),
+                        Color(.systemBackground)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea(.all)
+                
+                // Floating elements for visual interest
+                PaymentsFloatingElementsView(animate: $animateFloatingElements)
+                
+                ScrollView {
                 VStack(spacing: 16) {
                     if viewModel.isLoading {
                         Spacer()
@@ -85,13 +102,18 @@ struct PaymentsView: View {
                     }
                 }
                 .padding(.top)
+                }
             }
-            .background(Color(.systemBackground))
             .onAppear {
                 if let token = authViewModel.accessToken, !viewModel.hasLoaded {
                     viewModel.accessToken = token
                     viewModel.authViewModel = authViewModel
                     Task { await viewModel.fetchPayments() }
+                }
+                
+                // Animate floating elements
+                withAnimation(.easeOut(duration: 0.8).delay(0.2)) {
+                    animateFloatingElements = true
                 }
             }
             .navigationTitle("Payments")
@@ -710,6 +732,53 @@ struct PaymentProgressView: View {
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 2
         return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
+}
+
+// MARK: - Payments Floating Elements
+struct PaymentsFloatingElementsView: View {
+    @Binding var animate: Bool
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                // Floating circles positioned for payments content
+                Circle()
+                    .fill(Color.accentColor.opacity(0.05))
+                    .frame(width: 50, height: 50)
+                    .position(x: geometry.size.width * 0.15, y: geometry.size.height * 0.22)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.1).delay(0.5), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.03))
+                    .frame(width: 70, height: 70)
+                    .position(x: geometry.size.width * 0.85, y: geometry.size.height * 0.16)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.6).delay(1.0), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.06))
+                    .frame(width: 35, height: 35)
+                    .position(x: geometry.size.width * 0.1, y: geometry.size.height * 0.58)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.3).delay(1.4), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.04))
+                    .frame(width: 45, height: 45)
+                    .position(x: geometry.size.width * 0.9, y: geometry.size.height * 0.75)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.4).delay(1.8), value: animate)
+                
+                Circle()
+                    .fill(Color.accentColor.opacity(0.07))
+                    .frame(width: 25, height: 25)
+                    .position(x: geometry.size.width * 0.3, y: geometry.size.height * 0.92)
+                    .scaleEffect(animate ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 2.0).delay(2.2), value: animate)
+            }
+        }
     }
 }
 
