@@ -379,9 +379,9 @@ struct HeroSummaryCard: View {
                     
                     Spacer()
                     
-                    Image(systemName: "chevron.right.circle.fill")
+                    Image(systemName: "chevron.right")
                         .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(.green.opacity(0.6))
+                        .foregroundColor(.secondary)
                 }
                 
                 // Main value
@@ -738,9 +738,9 @@ struct LifetimeSummaryCard: View {
                     
                     Spacer()
                     
-                    Image(systemName: "chevron.right.circle")
+                    Image(systemName: "chevron.right")
                         .font(.system(size: 18, weight: .medium))
-                        .foregroundColor(.indigo.opacity(0.6))
+                        .foregroundColor(.secondary)
                 }
                 
                 // Value

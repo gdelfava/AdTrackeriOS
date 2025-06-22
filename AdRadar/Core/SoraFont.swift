@@ -5,6 +5,10 @@ extension Font {
     
     // MARK: - Sora Font Family
     static func sora(_ weight: SoraWeight, size: CGFloat) -> Font {
+        // Use memory manager for optimized font loading
+        if let optimizedFont = MemoryManager.shared.optimizedFont(name: weight.fontName, size: size) {
+            return Font(optimizedFont)
+        }
         return .custom(weight.fontName, size: size)
     }
     

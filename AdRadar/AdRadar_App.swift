@@ -11,8 +11,12 @@ import Combine
 
 @main
 struct AdRadar_App: App {
+    @StateObject private var authViewModel = AuthViewModel()
+    
     init() {
         setupAppEnvironment()
+        // Initialize memory monitoring
+        setupMemoryMonitoring()
     }
     
     private func setupAppEnvironment() {
@@ -65,21 +69,54 @@ struct AdRadar_App: App {
     var body: some Scene {
         WindowGroup {
             SplashScreenWrapper()
-                .applySoraFonts()
+                .environmentObject(authViewModel)
                 .environmentObject(NetworkMonitor.shared)
-                .onAppear {
-                    // Perform any additional setup after UI is ready
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        MemoryManager.shared.performMaintenanceCleanup()
+                .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+                    // Check memory when app becomes active
+                    let memoryPressureDetected = MemoryManager.shared.checkMemoryPressure()
+                    if memoryPressureDetected {
+                        print("[App] Memory pressure detected on app activation - cleanup performed")
                     }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+                    // Clean up when app goes to background
+                    MemoryManager.shared.performMaintenanceCleanup()
                 }
         }
     }
+    
+    private func setupMemoryMonitoring() {
+        #if DEBUG
+        // Start periodic memory monitoring in debug builds
+        startPeriodicMemoryLogging()
+        #endif
+    }
+    
+    #if DEBUG
+    private func startPeriodicMemoryLogging() {
+        Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { _ in
+            let usage = MemoryManager.shared.getCurrentMemoryUsage()
+            let usageMB = Double(usage) / (1024 * 1024)
+            
+            if usageMB > 250 {
+                print("⚠️ [MemoryMonitor] High memory usage: \(String(format: "%.1f", usageMB)) MB")
+                let cleanupPerformed = MemoryManager.shared.checkMemoryPressure()
+                if cleanupPerformed {
+                    print("🧹 [MemoryMonitor] Automatic cleanup performed")
+                }
+            } else {
+                print("📊 [MemoryMonitor] Memory usage: \(String(format: "%.1f", usageMB)) MB")
+            }
+        }
+    }
+    #endif
 }
 
 // MARK: - Splash Screen Wrapper
 struct SplashScreenWrapper: View {
     @State private var showSplash = true
+    @EnvironmentObject var authViewModel: AuthViewModel
+    @EnvironmentObject var networkMonitor: NetworkMonitor
     
     var body: some View {
         ZStack {
@@ -89,6 +126,8 @@ struct SplashScreenWrapper: View {
                     .zIndex(1)
             } else {
                 ContentView()
+                    .environmentObject(authViewModel)
+                    .environmentObject(networkMonitor)
                     .transition(.opacity)
                     .zIndex(0)
             }

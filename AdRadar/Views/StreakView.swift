@@ -70,7 +70,7 @@ struct StreakView: View {
                         .offset(y: calendarAppeared ? 0 : 20)
                         .padding(.horizontal, 20)
                         
-                        // 7-Day Overview Cards
+                                                // 7-Day Overview Cards
                         OverviewCardsView(streakData: viewModel.streakData, viewModel: viewModel)
                             .opacity(overviewAppeared ? 1 : 0)
                             .offset(y: overviewAppeared ? 0 : 20)
@@ -728,6 +728,8 @@ struct OverviewCard: View {
     }
 }
 
+
+
 // MARK: - Extensions
 
 extension Date {
@@ -782,6 +784,8 @@ struct StreakFloatingElementsView: View {
         }
     }
 }
+
+
 
 #Preview {
     StreakView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))
