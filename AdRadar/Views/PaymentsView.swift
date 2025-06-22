@@ -51,7 +51,7 @@ struct PaymentsView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             // Payment threshold progress - shown above the unpaid earnings card
                             PaymentProgressView(
-                                unpaidValue: data.unpaidEarningsValue,
+                                currentMonthEarnings: data.currentMonthEarningsValue,
                                 paymentThreshold: settingsViewModel.paymentThreshold
                             )
                             .opacity(unpaidCardAppeared ? 1 : 0)
@@ -623,13 +623,13 @@ struct PaymentDetailedMetricRow: View {
 // MARK: - Payment Progress View
 
 struct PaymentProgressView: View {
-    let unpaidValue: Double
+    let currentMonthEarnings: Double
     let paymentThreshold: Double
     
     @State private var animatedProgress: CGFloat = 0
     
     private var progress: Double {
-        min(unpaidValue / paymentThreshold, 1.0)
+        min(currentMonthEarnings / paymentThreshold, 1.0)
     }
     
     private var progressPercentage: Int {
@@ -637,7 +637,15 @@ struct PaymentProgressView: View {
     }
     
     private var remainingAmount: Double {
-        max(paymentThreshold - unpaidValue, 0)
+        max(paymentThreshold - currentMonthEarnings, 0)
+    }
+    
+    private var nextMonthName: String {
+        let calendar = Calendar.current
+        let nextMonth = calendar.date(byAdding: .month, value: 1, to: Date()) ?? Date()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM"
+        return formatter.string(from: nextMonth)
     }
     
     var body: some View {
@@ -648,9 +656,9 @@ struct PaymentProgressView: View {
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.blue)
                 
-                                        Text("Payment Threshold Progress")
-                            .soraSubheadline()
-                            .foregroundColor(.primary)
+                Text("\(nextMonthName) Threshold Progress")
+                    .soraSubheadline()
+                    .foregroundColor(.primary)
                 
                 Spacer()
                 
@@ -689,11 +697,11 @@ struct PaymentProgressView: View {
             // Progress details
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Current Earnings")
+                    Text("Current Month Earnings")
                         .soraCaption2()
                         .foregroundColor(.secondary)
                     
-                    Text(formatCurrency(unpaidValue))
+                    Text(formatCurrency(currentMonthEarnings))
                         .soraCaption()
                         .foregroundColor(.primary)
                 }
@@ -702,7 +710,7 @@ struct PaymentProgressView: View {
                 
                 if progress < 1.0 {
                     VStack(alignment: .trailing, spacing: 2) {
-                        Text("Needed for Payment")
+                        Text("Needed for \(nextMonthName) Payment")
                             .soraCaption2()
                             .foregroundColor(.secondary)
                         
@@ -712,7 +720,7 @@ struct PaymentProgressView: View {
                     }
                 } else {
                     VStack(alignment: .trailing, spacing: 2) {
-                        Text("Ready for Payment!")
+                        Text("Ready for \(nextMonthName) Payment!")
                             .soraCaption2()
                             .foregroundColor(.green)
                         

@@ -96,6 +96,8 @@ struct StreakView: View {
                 if let token = authViewModel.accessToken {
                     viewModel.accessToken = token
                     viewModel.authViewModel = authViewModel
+                    // Reset selected day to allow auto-selection of current day after refresh
+                    selectedDay = nil
                     await viewModel.fetchStreakData()
                 }
             }

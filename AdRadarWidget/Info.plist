@@ -9,5 +9,13 @@
 	</dict>
 	<key>AppGroupIdentifier</key>
 	<string>group.com.delteqws.AdRadar</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Sora-Light.ttf</string>
+		<string>Sora-Regular.ttf</string>
+		<string>Sora-Medium.ttf</string>
+		<string>Sora-SemiBold.ttf</string>
+		<string>Sora-Bold.ttf</string>
+	</array>
 </dict>
 </plist>

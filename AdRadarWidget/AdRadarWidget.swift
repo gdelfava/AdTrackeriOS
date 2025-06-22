@@ -9,6 +9,148 @@ import WidgetKit
 import SwiftUI
 import Intents
 
+// MARK: - Sora Font System for Widget
+extension Font {
+    // MARK: - Sora Font Family with Fallback
+    static func sora(_ weight: SoraWeight, size: CGFloat) -> Font {
+        let fontName = weight.fontName
+        // Try to create UIFont first to verify availability
+        if let _ = UIFont(name: fontName, size: size) {
+            return .custom(fontName, size: size)
+        } else {
+            // If Sora font fails, use system font with matching weight
+            print("[AdRadarWidget] Font \(fontName) not available, using system fallback")
+            return .system(size: size, weight: weight.systemWeight, design: .rounded)
+        }
+    }
+    
+    // MARK: - Widget-Specific Sora Fonts
+    static var soraWidgetTitle: Font { .sora(.semibold, size: 20) }
+    static var soraWidgetValue: Font { .sora(.bold, size: 46) }
+    static var soraWidgetMetric: Font { .sora(.regular, size: 16) }
+    static var soraWidgetMetricValue: Font { .sora(.regular, size: 14) }
+    static var soraWidgetCaption: Font { .sora(.regular, size: 10) }
+    static var soraWidgetBrand: Font { .sora(.regular, size: 11) }
+    static var soraWidgetCellTitle: Font { .sora(.regular, size: 11) }
+    static var soraWidgetCellValue: Font { .sora(.bold, size: 22) }
+}
+
+enum SoraWeight: String, CaseIterable {
+    case light = "Light"
+    case regular = "Regular"
+    case medium = "Medium"
+    case semibold = "SemiBold"
+    case bold = "Bold"
+    
+    var fontName: String {
+        return "Sora-\(self.rawValue)"
+    }
+    
+    var systemWeight: Font.Weight {
+        switch self {
+        case .light: return .light
+        case .regular: return .regular
+        case .medium: return .medium
+        case .semibold: return .semibold
+        case .bold: return .bold
+        }
+    }
+}
+
+// MARK: - Font Loading and Registration
+class SoraFontManager {
+    static let shared = SoraFontManager()
+    private var fontsRegistered = false
+    
+    private init() {}
+    
+    func registerFonts() {
+        guard !fontsRegistered else { return }
+        
+        let fontNames: [String] = [
+            "Sora-Light",
+            "Sora-Regular", 
+            "Sora-Medium",
+            "Sora-SemiBold",
+            "Sora-Bold"
+        ]
+        
+        // Try to register fonts from bundle
+        for fontName in fontNames {
+            if let fontURL = Bundle.main.url(forResource: fontName, withExtension: "ttf") {
+                var error: Unmanaged<CFError>?
+                if CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, &error) {
+                    print("[AdRadarWidget] ✅ Successfully registered: \(fontName)")
+                } else {
+                    print("[AdRadarWidget] ❌ Failed to register: \(fontName)")
+                }
+            } else {
+                print("[AdRadarWidget] ❌ Font file not found: \(fontName).ttf")
+            }
+        }
+        
+        fontsRegistered = true
+        verifyFontAvailability()
+    }
+    
+    private func verifyFontAvailability() {
+        let fontNames = SoraWeight.allCases.map { $0.fontName }
+        
+        print("[AdRadarWidget] Verifying font availability:")
+        for fontName in fontNames {
+            if UIFont.fontNames(forFamilyName: "Sora").contains(fontName) ||
+               UIFont(name: fontName, size: 12) != nil {
+                print("[AdRadarWidget] ✅ \(fontName) - Available")
+            } else {
+                print("[AdRadarWidget] ❌ \(fontName) - Not available")
+            }
+        }
+        
+        // List all available Sora fonts
+        let soraFonts = UIFont.fontNames(forFamilyName: "Sora")
+        print("[AdRadarWidget] Available Sora fonts: \(soraFonts)")
+    }
+}
+
+extension View {
+    func soraFont(_ weight: SoraWeight, size: CGFloat) -> some View {
+        self.font(.sora(weight, size: size))
+    }
+    
+    // Widget-specific Sora font modifiers
+    func soraWidgetTitle() -> some View {
+        self.font(.soraWidgetTitle)
+    }
+    
+    func soraWidgetValue() -> some View {
+        self.font(.soraWidgetValue)
+    }
+    
+    func soraWidgetMetric() -> some View {
+        self.font(.soraWidgetMetric)
+    }
+    
+    func soraWidgetMetricValue() -> some View {
+        self.font(.soraWidgetMetricValue)
+    }
+    
+    func soraWidgetCaption() -> some View {
+        self.font(.soraWidgetCaption)
+    }
+    
+    func soraWidgetBrand() -> some View {
+        self.font(.soraWidgetBrand)
+    }
+    
+    func soraWidgetCellTitle() -> some View {
+        self.font(.soraWidgetCellTitle)
+    }
+    
+    func soraWidgetCellValue() -> some View {
+        self.font(.soraWidgetCellValue)
+    }
+}
+
 // Copy of AdSenseSummaryData for widget use (should match the main app)
 struct AdSenseSummaryData: Codable {
     let today: String
@@ -71,6 +213,11 @@ struct AdSenseAPI {
 }
 
 struct Provider: TimelineProvider {
+    init() {
+        // Register fonts when provider initializes
+        SoraFontManager.shared.registerFonts()
+    }
+    
     func placeholder(in context: Context) -> AdRadarWidgetEntry {
         AdRadarWidgetEntry(date: Date(), summary: nil, lastUpdate: "--:--")
     }
@@ -105,11 +252,10 @@ struct EarningsCell: View {
                     .foregroundColor(.accentColor)
                 Spacer()
                 Text(value)
-                    .font(.title2)
-                    .bold()
+                    .soraWidgetCellValue()
             }
             Text(title)
-                .font(.headline)
+                .soraWidgetMetric()
                 .foregroundColor(.secondary)
         }
         .padding()
@@ -137,7 +283,7 @@ struct WidgetCellView: View {
                         .font(.system(size: 12, weight: .bold))
                 }
                 Text(title)
-                    .font(.caption2)
+                    .soraWidgetCellTitle()
                     .foregroundColor(colorScheme == .dark ? .white : .secondary)
                     .lineLimit(1)
                 Spacer()
@@ -145,7 +291,7 @@ struct WidgetCellView: View {
             Spacer()
             HStack {
                 Text(value)
-                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                    .soraWidgetCellValue()
                     .foregroundColor(colorScheme == .dark ? .white : .primary)
                 Spacer()
             }
@@ -176,81 +322,89 @@ struct AdRadarWidgetEntryView: View {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 VStack(alignment: .leading){
                     Text("Today")
-                        .font(.system(size: 20, weight: .semibold))
+                        .soraWidgetTitle()
                         .foregroundColor(.primary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                     HStack(spacing: 2) {
                         Text("Last Updated: ")
-                            .font(.system(size: 10))
+                            .soraWidgetCaption()
                         Image(systemName: "clock")
                             .font(.system(size: 10))
                         Text(entry.lastUpdate)
-                            .font(.system(size: 10))
+                            .soraWidgetCaption()
                     }
                     .foregroundColor(.secondary)
                 }
                 Spacer()
                 HStack(alignment: .lastTextBaseline, spacing: 2) {
                     Text("AdRadar")
-                        .font(.caption2)
-                        .fontWeight(.regular)
-                        .fontDesign(.rounded)
+                        .soraWidgetBrand()
                 }
                 .foregroundColor(.secondary)
             }
             // Today value (reduce spacing)
             if let today = entry.summary?.today {
                 Text(today)
-                    .font(.system(size: 54, weight: .bold, design: .rounded))
+                    .soraWidgetValue()
                     .foregroundColor(.primary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
-                    .padding(.top, 8)
+                    .padding(.top, 2)
             } else {
                 Text("--")
-                    .font(.system(size: 24, weight: .bold))
+                    .soraFont(.bold, size: 24)
                     .foregroundColor(.secondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
-                    .padding(.top, 8)
+                    .padding(.top, 2)
             }
             // Row for Yesterday, This Month, Last Month
-            Spacer(minLength: 4)
+            Spacer(minLength: 2)
             HStack(alignment: .top, spacing: 2) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Yesterday")
-                        .font(.system(size: 16, weight: .regular))
+                        .soraFont(.semibold, size: 12)
+                        .soraWidgetMetric()
                         .foregroundColor(.primary)
                     Text(entry.summary?.yesterday ?? "--")
-                        .font(.system(size: 14, weight: .regular, design: .rounded))
+                        .soraFont(.semibold, size: 10)
+                        .soraWidgetMetricValue()
                         .foregroundColor(.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("This Month")
-                        .font(.system(size: 16, weight: .regular))
+                        .soraFont(.semibold, size: 12)
+                        .soraWidgetMetric()
                         .foregroundColor(.primary)
                     Text(entry.summary?.thisMonth ?? "--")
-                        .font(.system(size: 14, weight: .regular, design: .rounded))
+                        .soraFont(.semibold, size: 10)
+                        .soraWidgetMetricValue()
                         .foregroundColor(.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Last Month")
-                        .font(.system(size: 16, weight: .regular))
+                        .soraFont(.semibold, size: 12)
+                        .soraWidgetMetric()
                         .foregroundColor(.primary)
                     Text(entry.summary?.lastMonth ?? "--")
-                        .font(.system(size: 14, weight: .regular, design: .rounded))
+                        .soraFont(.semibold, size: 10)
+                        .soraWidgetMetricValue()
                         .foregroundColor(.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.top, 4)
+            .padding(.top, 2)
             Spacer(minLength: 0)
         }
         .padding([.leading, .trailing, .bottom, .top], 16)
         .containerBackground(colorScheme == .dark ? Color.black : Color.white, for: .widget)
+        .onAppear {
+            // Ensure fonts are registered when view appears
+            SoraFontManager.shared.registerFonts()
+        }
     }
 }
 

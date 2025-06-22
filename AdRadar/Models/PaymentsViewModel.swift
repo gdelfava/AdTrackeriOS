@@ -6,6 +6,8 @@ struct PaymentsData {
     let unpaidEarningsValue: Double // Raw value for calculations
     let previousPaymentDate: String
     let previousPaymentAmount: String
+    let currentMonthEarnings: String
+    let currentMonthEarningsValue: Double // Raw value for progress calculations
 }
 
 class PaymentsViewModel: ObservableObject {
@@ -132,14 +134,26 @@ class PaymentsViewModel: ObservableObject {
                 return
             }
             
-            // 2. Fetch unpaid earnings and previous payment in parallel
+            // 2. Fetch unpaid earnings, previous payment, and current month earnings in parallel
             // Capture the token value to avoid concurrency warnings
             let currentWorkingToken = workingToken
+            
+            // Calculate current month date range
+            let calendar = Calendar.current
+            let now = Date()
+            let currentMonthStart = calendar.date(from: calendar.dateComponents([.year, .month], from: now))!
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let currentMonthStartStr = dateFormatter.string(from: currentMonthStart)
+            let currentMonthEndStr = dateFormatter.string(from: now)
+            
             async let unpaidResult = AdSenseAPI.shared.fetchUnpaidEarnings(accessToken: currentWorkingToken, accountID: accountID)
             async let prevPaymentResult = AdSenseAPI.shared.fetchPreviousPayment(accessToken: currentWorkingToken, accountID: accountID)
+            async let currentMonthResult = AdSenseAPI.shared.fetchReport(accessToken: currentWorkingToken, accountID: accountID, startDate: currentMonthStartStr, endDate: currentMonthEndStr)
             
             let unpaid = await unpaidResult
             let prev = await prevPaymentResult
+            let currentMonth = await currentMonthResult
             
             // Check for cancellation after async operations
             if Task.isCancelled {
@@ -147,12 +161,15 @@ class PaymentsViewModel: ObservableObject {
                 return
             }
             
-            // Check for 401 errors in either request
+            // Check for 401 errors in any request
             var needsRetry = false
             if case .failure(let error) = unpaid, case .unauthorized = error {
                 needsRetry = true
             }
             if case .failure(let error) = prev, case .unauthorized = error {
+                needsRetry = true
+            }
+            if case .failure(let error) = currentMonth, case .unauthorized = error {
                 needsRetry = true
             }
             
@@ -188,6 +205,8 @@ class PaymentsViewModel: ObservableObject {
             }
             
             if case .success(let unpaidEarnings) = unpaid, !Task.isCancelled {
+                let currentMonthEarnings = (try? currentMonth.get()) ?? 0.0
+                
                 switch prev {
                 case .success(let prevPayment?):
                     // Normal case: payment exists
@@ -195,7 +214,9 @@ class PaymentsViewModel: ObservableObject {
                         unpaidEarnings: formatCurrency(unpaidEarnings),
                         unpaidEarningsValue: unpaidEarnings,
                         previousPaymentDate: formatDate(prevPayment.date),
-                        previousPaymentAmount: formatCurrency(prevPayment.amount)
+                        previousPaymentAmount: formatCurrency(prevPayment.amount),
+                        currentMonthEarnings: formatCurrency(currentMonthEarnings),
+                        currentMonthEarningsValue: currentMonthEarnings
                     )
                     if !Task.isCancelled {
                         self.paymentsData = data
@@ -203,12 +224,14 @@ class PaymentsViewModel: ObservableObject {
                         self.hasLoaded = true
                     }
                 case .success(nil):
-                    // No payments yet
+                    // No previous payment exists
                     let data = PaymentsData(
                         unpaidEarnings: formatCurrency(unpaidEarnings),
                         unpaidEarningsValue: unpaidEarnings,
                         previousPaymentDate: "No payments yet",
-                        previousPaymentAmount: "-"
+                        previousPaymentAmount: "-",
+                        currentMonthEarnings: formatCurrency(currentMonthEarnings),
+                        currentMonthEarningsValue: currentMonthEarnings
                     )
                     if !Task.isCancelled {
                         self.paymentsData = data
