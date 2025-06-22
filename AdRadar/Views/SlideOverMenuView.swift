@@ -12,6 +12,7 @@ struct SlideOverMenuView: View {
     @Binding var showCountriesView: Bool
     @Binding var showAdNetworkView: Bool
     @Binding var showTargetingView: Bool
+    @Binding var showAppsView: Bool
     @State private var showMail = false
     @State private var mailResult: Result<MFMailComposeResult, Error>? = nil
     @Environment(\.colorScheme) private var colorScheme
@@ -168,6 +169,18 @@ struct SlideOverMenuView: View {
                                     action: {
                                         hapticFeedback()
                                         showTargetingView = true
+                                        dismissMenu()
+                                    }
+                                )
+                                
+                                ModernMenuRow(
+                                    icon: "apps.iphone", 
+                                    title: "AdMob Apps", 
+                                    subtitle: "Mobile app metrics",
+                                    iconColor: .cyan,
+                                    action: {
+                                        hapticFeedback()
+                                        showAppsView = true
                                         dismissMenu()
                                     }
                                 )
@@ -486,7 +499,7 @@ struct MenuItemView: View {
 }
 
 #Preview {
-    SlideOverMenuView(isPresented: .constant(true), selectedTab: .constant(0), showDomainsView: .constant(false), showAdSizeView: .constant(false), showPlatformsView: .constant(false), showCountriesView: .constant(false), showAdNetworkView: .constant(false), showTargetingView: .constant(false))
+    SlideOverMenuView(isPresented: .constant(true), selectedTab: .constant(0), showDomainsView: .constant(false), showAdSizeView: .constant(false), showPlatformsView: .constant(false), showCountriesView: .constant(false), showAdNetworkView: .constant(false), showTargetingView: .constant(false), showAppsView: .constant(false))
         .environmentObject(AuthViewModel())
         .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
 } 

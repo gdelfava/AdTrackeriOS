@@ -69,7 +69,8 @@ class AuthViewModel: ObservableObject {
             print("No root view controller found")
             return
         }
-        let scopes = ["https://www.googleapis.com/auth/adsense.readonly"]
+        let scopes = ["https://www.googleapis.com/auth/adsense.readonly", "https://www.googleapis.com/auth/admob.readonly"]
+        print("Requesting scopes: \(scopes)")
         GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController, hint: nil, additionalScopes: scopes) { [weak self] signInResult, error in
             if let error = error {
                 print("Google Sign-In error: \(error.localizedDescription)")
@@ -86,6 +87,7 @@ class AuthViewModel: ObservableObject {
                         self?.accessToken = accessToken
                         self?.isSignedIn = true
                         self?.saveTokenToKeychain(accessToken)
+                        print("Sign-in successful. Granted scopes: \(result.user.grantedScopes ?? [])")
                         if let profile = result.user.profile {
                             self?.userName = profile.name
                             self?.userEmail = profile.email
@@ -119,6 +121,76 @@ class AuthViewModel: ObservableObject {
         defaults.removeObject(forKey: userNameKey)
         defaults.removeObject(forKey: userEmailKey)
         defaults.removeObject(forKey: userProfileImageURLKey)
+    }
+    
+    func requestAdditionalScopes() {
+        guard let rootViewController = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .flatMap({ $0.windows })
+                .first(where: { $0.isKeyWindow })?.rootViewController else {
+            print("No root view controller found")
+            return
+        }
+        
+        // Sign out first to force fresh authentication with new scopes
+        GIDSignIn.sharedInstance.signOut()
+        
+        // Use the full scopes list including the new AdMob scope
+        let allScopes = ["https://www.googleapis.com/auth/adsense.readonly", "https://www.googleapis.com/auth/admob.readonly"]
+        
+        // Configure Google Sign-In with the scopes
+        if let configuration = GIDSignIn.sharedInstance.configuration {
+            let newConfig = GIDConfiguration(clientID: configuration.clientID)
+            GIDSignIn.sharedInstance.configuration = newConfig
+        }
+        
+        GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController, hint: nil, additionalScopes: allScopes) { [weak self] signInResult, error in
+            if let error = error {
+                print("Error requesting additional scopes: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    // If sign-in fails, restore signed-out state
+                    self?.accessToken = nil
+                    self?.isSignedIn = false
+                    self?.deleteTokenFromKeychain()
+                }
+                return
+            }
+            
+            guard let result = signInResult else { return }
+            
+            result.user.refreshTokensIfNeeded { auth, error in
+                if let error = error {
+                    print("Auth error after scope addition: \(error.localizedDescription)")
+                    return
+                }
+                
+                if let accessToken = auth?.accessToken.tokenString {
+                    DispatchQueue.main.async {
+                        self?.accessToken = accessToken
+                        self?.isSignedIn = true
+                        self?.saveTokenToKeychain(accessToken)
+                        
+                        // Update user info
+                        if let profile = result.user.profile {
+                            self?.userName = profile.name
+                            self?.userEmail = profile.email
+                            self?.userProfileImageURL = profile.hasImage ? profile.imageURL(withDimension: 200) : nil
+                            
+                            // Save to UserDefaults
+                            let defaults = UserDefaults.standard
+                            defaults.set(profile.name, forKey: self?.userNameKey ?? "userName")
+                            defaults.set(profile.email, forKey: self?.userEmailKey ?? "userEmail")
+                            if let url = self?.userProfileImageURL?.absoluteString {
+                                defaults.set(url, forKey: self?.userProfileImageURLKey ?? "userProfileImageURL")
+                            }
+                        }
+                        
+                        print("Successfully requested additional scopes and updated token")
+                        print("Granted scopes: \(result.user.grantedScopes ?? [])")
+                    }
+                }
+            }
+        }
     }
     
     func refreshTokenIfNeeded() async -> Bool {
