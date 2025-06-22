@@ -136,6 +136,22 @@ struct PlatformView: View {
                     .soraLargeTitle()
                     .foregroundColor(.accentColor)
             }
+            
+            HStack {
+                Image(systemName: "iphone")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                Text("\(viewModel.platforms.count) platform\(viewModel.platforms.count == 1 ? "" : "s")")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Text("Period: \(viewModel.selectedFilter.rawValue)")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+            }
         }
         .padding()
         .background(Color(.secondarySystemBackground))

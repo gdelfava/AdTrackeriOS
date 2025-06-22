@@ -34,9 +34,7 @@ class StreakViewModel: ObservableObject {
     init(accessToken: String?, authViewModel: AuthViewModel? = nil) {
         self.accessToken = accessToken
         self.authViewModel = authViewModel
-        if accessToken != nil {
-            fetchTask = Task { await fetchStreakData() }
-        }
+        // Remove automatic fetching - only fetch when explicitly called
     }
     
     deinit {

@@ -154,7 +154,7 @@ struct TargetingView: View {
     private var totalEarningsCard: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("Total Targeting Earnings")
+                Text("Total Earnings")
                     .soraHeadline()
                     .foregroundColor(.primary)
                 

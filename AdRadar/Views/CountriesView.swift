@@ -146,6 +146,22 @@ struct CountriesView: View {
                     .soraLargeTitle()
                     .foregroundColor(.accentColor)
             }
+            
+            HStack {
+                Image(systemName: "flag")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                Text("\(viewModel.countries.count) countr\(viewModel.countries.count == 1 ? "y" : "ies")")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Text("Period: \(viewModel.selectedFilter.rawValue)")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+            }
         }
         .padding()
         .background(Color(.secondarySystemBackground))

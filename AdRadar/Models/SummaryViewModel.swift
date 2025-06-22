@@ -37,9 +37,7 @@ class SummaryViewModel: ObservableObject {
         self.authViewModel = authViewModel
         // Load last update time from UserDefaultsManager
         self.lastUpdateTime = UserDefaultsManager.shared.getLastUpdateDate()
-        if accessToken != nil {
-            fetchTask = Task { await fetchSummary() }
-        }
+        // Remove automatic fetching - only fetch when explicitly called
     }
     
     deinit {

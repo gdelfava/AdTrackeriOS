@@ -20,23 +20,29 @@ struct SummaryTabView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                // Main content area
-                Group {
-                    switch selectedTab {
-                    case 0:
-                        SummaryView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
-                    case 1:
-                        StreakView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
-                    case 2:
-                        PaymentsView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
-                    case 3:
-                        SettingsView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
-                    default:
-                        SummaryView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
-                    }
+                // Main content area - Use ZStack with opacity to prevent view recreation
+                ZStack {
+                    SummaryView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
+                        .environmentObject(settingsViewModel)
+                        .opacity(selectedTab == 0 ? 1 : 0)
+                        .allowsHitTesting(selectedTab == 0)
+                    
+                    StreakView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
+                        .environmentObject(settingsViewModel)
+                        .opacity(selectedTab == 1 ? 1 : 0)
+                        .allowsHitTesting(selectedTab == 1)
+                    
+                    PaymentsView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
+                        .environmentObject(settingsViewModel)
+                        .opacity(selectedTab == 2 ? 1 : 0)
+                        .allowsHitTesting(selectedTab == 2)
+                    
+                    SettingsView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
+                        .environmentObject(settingsViewModel)
+                        .opacity(selectedTab == 3 ? 1 : 0)
+                        .allowsHitTesting(selectedTab == 3)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .environmentObject(settingsViewModel)
                 
                 // Custom Modern Tab Bar
                 ModernTabBar(selectedTab: $selectedTab)

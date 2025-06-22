@@ -136,6 +136,22 @@ struct AdSizeView: View {
                     .soraLargeTitle()
                     .foregroundColor(.accentColor)
             }
+            
+            HStack {
+                Image(systemName: "rectangle.3.group")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                Text("\(viewModel.adSizes.count) adSize\(viewModel.adSizes.count == 1 ? "" : "s")")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Text("Period: \(viewModel.selectedFilter.rawValue)")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+            }
         }
         .padding()
         .background(Color(.secondarySystemBackground))

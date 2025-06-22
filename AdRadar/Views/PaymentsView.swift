@@ -104,7 +104,15 @@ struct PaymentsView: View {
                 .padding(.top)
                 }
             }
+            .refreshable {
+                if let token = authViewModel.accessToken {
+                    viewModel.accessToken = token
+                    viewModel.authViewModel = authViewModel
+                    await viewModel.fetchPayments()
+                }
+            }
             .onAppear {
+                // Only fetch data on first load, not on every tab switch
                 if let token = authViewModel.accessToken, !viewModel.hasLoaded {
                     viewModel.accessToken = token
                     viewModel.authViewModel = authViewModel

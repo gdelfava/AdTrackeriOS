@@ -126,13 +126,14 @@ struct StreakView: View {
             }
         }
         .onAppear {
+            // Only fetch data on first load, not on every tab switch
             if let token = authViewModel.accessToken, !viewModel.hasLoaded {
                 viewModel.accessToken = token
                 viewModel.authViewModel = authViewModel
                 Task { await viewModel.fetchStreakData() }
             }
             
-            // Staggered animations
+            // Staggered animations (these can run every time)
             withAnimation(.easeOut(duration: 0.5)) {
                 calendarAppeared = true
             }
@@ -665,7 +666,7 @@ struct OverviewCardsView: View {
                         
                         OverviewCard(
                             icon: "eye.fill",
-                            title: "Total Impressions",
+                            title: "Total Impress.",
                             value: "\(totalImpressions)",
                             color: .orange
                         )

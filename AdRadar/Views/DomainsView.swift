@@ -136,6 +136,22 @@ struct DomainsView: View {
                     .soraLargeTitle()
                     .foregroundColor(.accentColor)
             }
+            
+            HStack {
+                Image(systemName: "globe")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                Text("\(viewModel.domains.count) domain\(viewModel.domains.count == 1 ? "" : "s")")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Text("Period: \(viewModel.selectedFilter.rawValue)")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+            }
         }
         .padding()
         .background(Color(.secondarySystemBackground))

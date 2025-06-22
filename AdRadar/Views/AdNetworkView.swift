@@ -146,6 +146,22 @@ struct AdNetworkView: View {
                     .soraLargeTitle()
                     .foregroundColor(.accentColor)
             }
+            
+            HStack {
+                Image(systemName: "network")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                Text("\(viewModel.adNetworks.count) adNetwork\(viewModel.adNetworks.count == 1 ? "" : "s")")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Text("Period: \(viewModel.selectedFilter.rawValue)")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+            }
         }
         .padding()
         .background(Color(.secondarySystemBackground))

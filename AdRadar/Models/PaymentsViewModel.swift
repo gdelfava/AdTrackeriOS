@@ -17,32 +17,55 @@ class PaymentsViewModel: ObservableObject {
     var accessToken: String?
     var authViewModel: AuthViewModel?
     private var accountID: String?
+    private var currentTask: Task<Void, Never>?
     
     init(accessToken: String?) {
         self.accessToken = accessToken
-        if accessToken != nil {
-            Task { await fetchPayments() }
-        }
+        // Remove automatic fetching - only fetch when explicitly called
     }
     
     @MainActor
     func fetchPayments() async {
-        if hasLoaded { return }
         guard let currentToken = accessToken else { 
             self.error = "No access token available. Please sign in again."
             return 
         }
         
+        // Cancel any existing task to prevent conflicts
+        currentTask?.cancel()
+        
+        // Create new task
+        currentTask = Task {
+            await performFetchPayments(with: currentToken)
+        }
+        
+        await currentTask?.value
+    }
+    
+    @MainActor
+    private func performFetchPayments(with token: String) async {
+        // Check if task was cancelled before starting
+        if Task.isCancelled {
+            return
+        }
+        
+        self.isLoading = true
+        self.error = nil
+        
         let maxRetries = 2
         var retryCount = 0
-        var workingToken = currentToken
+        var workingToken = token
         
-        while retryCount < maxRetries {
-            self.isLoading = true
-            self.error = nil
-            
+        while retryCount < maxRetries && !Task.isCancelled {
             // 1. Fetch account ID
             let accountResult = await AdSenseAPI.fetchAccountID(accessToken: workingToken)
+            
+            // Check for cancellation after each async operation
+            if Task.isCancelled {
+                self.isLoading = false
+                return
+            }
+            
             switch accountResult {
             case .success(let accountID):
                 self.accountID = accountID
@@ -51,40 +74,60 @@ class PaymentsViewModel: ObservableObject {
                 case .unauthorized:
                     if let authVM = authViewModel {
                         let refreshed = await authVM.refreshTokenIfNeeded()
-                        if refreshed {
+                        if refreshed && !Task.isCancelled {
                             workingToken = authVM.accessToken ?? workingToken
                             retryCount += 1
                             continue
                         }
                     }
-                    self.error = "Session expired. Please sign in again."
+                    if !Task.isCancelled {
+                        self.error = "Session expired. Please sign in again."
+                    }
                     self.isLoading = false
                     return
                 case .noAccountID:
-                    self.error = "No AdSense account found."
+                    if !Task.isCancelled {
+                        self.error = "No AdSense account found."
+                    }
                     self.isLoading = false
                     return
                 case .requestFailed(let message):
-                    self.error = "Failed to get AdSense account: \(message)"
+                    // Handle cancellation more gracefully
+                    if message.contains("Request was cancelled") || Task.isCancelled {
+                        // Silently ignore cancellation errors during refresh
+                        self.isLoading = false
+                        return
+                    }
+                    if !Task.isCancelled {
+                        self.error = "Failed to get AdSense account: \(message)"
+                    }
                     self.isLoading = false
                     return
                 case .invalidURL:
-                    self.error = "Invalid API URL configuration."
+                    if !Task.isCancelled {
+                        self.error = "Invalid API URL configuration."
+                    }
                     self.isLoading = false
                     return
                 case .invalidResponse:
-                    self.error = "Invalid response from AdSense API."
+                    if !Task.isCancelled {
+                        self.error = "Invalid response from AdSense API."
+                    }
                     self.isLoading = false
                     return
                 case .decodingError(let message):
-                    self.error = "Data parsing error: \(message)"
+                    if !Task.isCancelled {
+                        self.error = "Data parsing error: \(message)"
+                    }
                     self.isLoading = false
                     return
                 }
             }
             
-            guard let accountID = self.accountID else {
-                self.error = "No AdSense account found."
+            guard let accountID = self.accountID, !Task.isCancelled else {
+                if !Task.isCancelled {
+                    self.error = "No AdSense account found."
+                }
                 self.isLoading = false
                 return
             }
@@ -94,8 +137,15 @@ class PaymentsViewModel: ObservableObject {
             let currentWorkingToken = workingToken
             async let unpaidResult = AdSenseAPI.shared.fetchUnpaidEarnings(accessToken: currentWorkingToken, accountID: accountID)
             async let prevPaymentResult = AdSenseAPI.shared.fetchPreviousPayment(accessToken: currentWorkingToken, accountID: accountID)
+            
             let unpaid = await unpaidResult
             let prev = await prevPaymentResult
+            
+            // Check for cancellation after async operations
+            if Task.isCancelled {
+                self.isLoading = false
+                return
+            }
             
             // Check for 401 errors in either request
             var needsRetry = false
@@ -106,16 +156,18 @@ class PaymentsViewModel: ObservableObject {
                 needsRetry = true
             }
             
-            if needsRetry {
+            if needsRetry && !Task.isCancelled {
                 if let authVM = authViewModel {
                     let refreshed = await authVM.refreshTokenIfNeeded()
-                    if refreshed {
+                    if refreshed && !Task.isCancelled {
                         workingToken = authVM.accessToken ?? workingToken
                         retryCount += 1
                         continue
                     }
                 }
-                self.error = "Session expired. Please sign in again."
+                if !Task.isCancelled {
+                    self.error = "Session expired. Please sign in again."
+                }
                 self.isLoading = false
                 return
             }
@@ -135,7 +187,7 @@ class PaymentsViewModel: ObservableObject {
                 return formatter.string(from: date)
             }
             
-            if case .success(let unpaidEarnings) = unpaid {
+            if case .success(let unpaidEarnings) = unpaid, !Task.isCancelled {
                 switch prev {
                 case .success(let prevPayment?):
                     // Normal case: payment exists
@@ -145,9 +197,11 @@ class PaymentsViewModel: ObservableObject {
                         previousPaymentDate: formatDate(prevPayment.date),
                         previousPaymentAmount: formatCurrency(prevPayment.amount)
                     )
-                    self.paymentsData = data
-                    self.error = nil
-                    self.hasLoaded = true
+                    if !Task.isCancelled {
+                        self.paymentsData = data
+                        self.error = nil
+                        self.hasLoaded = true
+                    }
                 case .success(nil):
                     // No payments yet
                     let data = PaymentsData(
@@ -156,34 +210,62 @@ class PaymentsViewModel: ObservableObject {
                         previousPaymentDate: "No payments yet",
                         previousPaymentAmount: "-"
                     )
-                    self.paymentsData = data
-                    self.error = nil
-                    self.hasLoaded = true
+                    if !Task.isCancelled {
+                        self.paymentsData = data
+                        self.error = nil
+                        self.hasLoaded = true
+                    }
                 case .failure(let err):
                     switch err {
                     case .unauthorized:
                         // This case is already handled above
                         break
+                    case .requestFailed(let message):
+                        // Handle cancellation more gracefully
+                        if message.contains("Request was cancelled") || Task.isCancelled {
+                            // Silently ignore cancellation errors during refresh
+                            break
+                        }
+                        if !Task.isCancelled {
+                            self.error = "Failed to load previous payment: \(message)"
+                        }
                     default:
-                        self.error = "Failed to load previous payment: \(err)"
+                        if !Task.isCancelled {
+                            self.error = "Failed to load previous payment: \(err)"
+                        }
                     }
                 }
-            } else if case .failure(let err) = unpaid {
+            } else if case .failure(let err) = unpaid, !Task.isCancelled {
                 switch err {
                 case .unauthorized:
                     // This case is already handled above
                     break
+                case .requestFailed(let message):
+                    // Handle cancellation more gracefully
+                    if message.contains("Request was cancelled") || Task.isCancelled {
+                        // Silently ignore cancellation errors during refresh
+                        break
+                    }
+                    if !Task.isCancelled {
+                        self.error = "Failed to load unpaid earnings: \(message)"
+                    }
                 default:
-                    self.error = "Failed to load unpaid earnings: \(err)"
+                    if !Task.isCancelled {
+                        self.error = "Failed to load unpaid earnings: \(err)"
+                    }
                 }
             }
             
-            self.isLoading = false
+            if !Task.isCancelled {
+                self.isLoading = false
+            }
             break // Exit the retry loop
         }
         
-        if retryCount >= maxRetries {
+        if retryCount >= maxRetries && !Task.isCancelled {
             self.error = "Failed to refresh authentication. Please sign in again."
+            self.isLoading = false
+        } else if !Task.isCancelled {
             self.isLoading = false
         }
     }
