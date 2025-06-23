@@ -199,4 +199,81 @@ class StreakViewModel: ObservableObject {
         formatter.maximumFractionDigits = 2
         return formatter.string(from: NSNumber(value: value)) ?? "0%"
     }
+    
+    // MARK: - Performance Insights Helpers
+    
+    var bestPerformingDay: StreakDayData? {
+        streakData.max(by: { $0.earnings < $1.earnings })
+    }
+    
+    var weeklyTrend: TrendDirection {
+        guard streakData.count >= 2 else { return .neutral }
+        
+        let sortedData = streakData.sorted { $0.date < $1.date }
+        let firstHalf = Array(sortedData.prefix(sortedData.count / 2))
+        let secondHalf = Array(sortedData.suffix(sortedData.count / 2))
+        
+        let firstHalfAvg = firstHalf.reduce(0) { $0 + $1.earnings } / Double(firstHalf.count)
+        let secondHalfAvg = secondHalf.reduce(0) { $0 + $1.earnings } / Double(secondHalf.count)
+        
+        let difference = secondHalfAvg - firstHalfAvg
+        
+        if abs(difference) < 0.01 {
+            return .neutral
+        } else if difference > 0 {
+            return .up
+        } else {
+            return .down
+        }
+    }
+    
+    var performanceConsistency: Double {
+        guard !streakData.isEmpty else { return 0.0 }
+        
+        let earnings = streakData.map { $0.earnings }
+        let mean = earnings.reduce(0, +) / Double(earnings.count)
+        
+        let variance = earnings.reduce(0) { sum, earning in
+            sum + pow(earning - mean, 2)
+        } / Double(earnings.count)
+        
+        let standardDeviation = sqrt(variance)
+        
+        // Calculate coefficient of variation (CV)
+        let coefficientOfVariation = mean > 0 ? standardDeviation / mean : 1.0
+        
+        // Convert to consistency score (lower CV = higher consistency)
+        // Cap at 100% and ensure minimum of 0%
+        let consistencyScore = max(0.0, min(1.0, 1.0 - coefficientOfVariation))
+        
+        return consistencyScore
+    }
+}
+
+enum TrendDirection {
+    case up, down, neutral
+    
+    var icon: String {
+        switch self {
+        case .up: return "chart.line.uptrend.xyaxis"
+        case .down: return "chart.line.downtrend.xyaxis"
+        case .neutral: return "chart.line.flattrend.xyaxis"
+        }
+    }
+    
+    var color: Color {
+        switch self {
+        case .up: return .green
+        case .down: return .red
+        case .neutral: return .orange
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .up: return "Trending Up"
+        case .down: return "Trending Down"
+        case .neutral: return "Stable"
+        }
+    }
 } 

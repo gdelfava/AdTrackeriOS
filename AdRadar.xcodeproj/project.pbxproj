@@ -398,7 +398,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AdRadar/AdRadar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250622.3;
+				CURRENT_PROJECT_VERSION = 20250623.1;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -414,7 +414,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.5.3;
+				MARKETING_VERSION = 1.9.5.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -430,7 +430,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AdRadar/AdRadar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250622.3;
+				CURRENT_PROJECT_VERSION = 20250623.1;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -446,7 +446,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.5.3;
+				MARKETING_VERSION = 1.9.5.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -462,7 +462,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AdRadarWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250622.3;
+				CURRENT_PROJECT_VERSION = 20250623.1;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AdRadarWidget/Info.plist;
@@ -473,7 +473,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.9.5.3;
+				MARKETING_VERSION = 1.9.5.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar.AdRadarWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -490,7 +490,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AdRadarWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250622.3;
+				CURRENT_PROJECT_VERSION = 20250623.1;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AdRadarWidget/Info.plist;
@@ -501,7 +501,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.9.5.3;
+				MARKETING_VERSION = 1.9.5.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar.AdRadarWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
