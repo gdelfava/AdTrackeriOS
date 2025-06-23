@@ -9,6 +9,12 @@ import SwiftUI
 
 @main
 struct AdRadarWatch_Watch_AppApp: App {
+    
+    init() {
+        // Load custom fonts
+        WatchFontConfiguration.loadFonts()
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7C0F3BC02E0965200016BA18 /* AdRadarWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 7C0F3BB62E09651E0016BA18 /* AdRadarWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7C82EBA12DFAABDD001A8B8D /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 7C82EBA02DFAABDD001A8B8D /* GoogleSignIn */; };
 		7C82EBA32DFAABDD001A8B8D /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 7C82EBA22DFAABDD001A8B8D /* GoogleSignInSwift */; };
 		7CEB39492DFAF6B1002884DB /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CEB39482DFAF6B1002884DB /* WidgetKit.framework */; };
@@ -15,6 +16,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		7C0F3BBE2E0965200016BA18 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C82EB892DFAAA5F001A8B8D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7C0F3BB52E09651E0016BA18;
+			remoteInfo = "AdRadarWatch Watch App";
+		};
 		7CEB395A2DFAF6B3002884DB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7C82EB892DFAAA5F001A8B8D /* Project object */;
@@ -25,6 +33,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		7C0F3BC42E0965200016BA18 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				7C0F3BC02E0965200016BA18 /* AdRadarWatch Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7CEB39612DFAF6B3002884DB /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -39,6 +58,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7C0F3BB62E09651E0016BA18 /* AdRadarWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AdRadarWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C82EB912DFAAA5F001A8B8D /* AdRadar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AdRadar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7CEB39462DFAF6B1002884DB /* AdRadarWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AdRadarWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7CEB39482DFAF6B1002884DB /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -64,6 +84,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		7C0F3BB72E09651E0016BA18 /* AdRadarWatch Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "AdRadarWatch Watch App";
+			sourceTree = "<group>";
+		};
 		7C82EB932DFAAA5F001A8B8D /* AdRadar */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -83,6 +108,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		7C0F3BB32E09651E0016BA18 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7C82EB8E2DFAAA5F001A8B8D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -110,6 +142,7 @@
 				7CEB39632DFAF942002884DB /* AdRadarWidgetExtension.entitlements */,
 				7C82EB932DFAAA5F001A8B8D /* AdRadar */,
 				7CEB394C2DFAF6B2002884DB /* AdRadarWidget */,
+				7C0F3BB72E09651E0016BA18 /* AdRadarWatch Watch App */,
 				7CEB39472DFAF6B1002884DB /* Frameworks */,
 				7C82EB922DFAAA5F001A8B8D /* Products */,
 			);
@@ -120,6 +153,7 @@
 			children = (
 				7C82EB912DFAAA5F001A8B8D /* AdRadar.app */,
 				7CEB39462DFAF6B1002884DB /* AdRadarWidgetExtension.appex */,
+				7C0F3BB62E09651E0016BA18 /* AdRadarWatch Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -136,6 +170,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		7C0F3BB52E09651E0016BA18 /* AdRadarWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7C0F3BC12E0965200016BA18 /* Build configuration list for PBXNativeTarget "AdRadarWatch Watch App" */;
+			buildPhases = (
+				7C0F3BB22E09651E0016BA18 /* Sources */,
+				7C0F3BB32E09651E0016BA18 /* Frameworks */,
+				7C0F3BB42E09651E0016BA18 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				7C0F3BB72E09651E0016BA18 /* AdRadarWatch Watch App */,
+			);
+			name = "AdRadarWatch Watch App";
+			packageProductDependencies = (
+			);
+			productName = "AdRadarWatch Watch App";
+			productReference = 7C0F3BB62E09651E0016BA18 /* AdRadarWatch Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 		7C82EB902DFAAA5F001A8B8D /* AdRadar */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7C82EB9C2DFAAA5F001A8B8D /* Build configuration list for PBXNativeTarget "AdRadar" */;
@@ -144,11 +200,13 @@
 				7C82EB8E2DFAAA5F001A8B8D /* Frameworks */,
 				7C82EB8F2DFAAA5F001A8B8D /* Resources */,
 				7CEB39612DFAF6B3002884DB /* Embed Foundation Extensions */,
+				7C0F3BC42E0965200016BA18 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				7CEB395B2DFAF6B3002884DB /* PBXTargetDependency */,
+				7C0F3BBF2E0965200016BA18 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				7C82EB932DFAAA5F001A8B8D /* AdRadar */,
@@ -194,6 +252,9 @@
 				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
+					7C0F3BB52E09651E0016BA18 = {
+						CreatedOnToolsVersion = 16.4;
+					};
 					7C82EB902DFAAA5F001A8B8D = {
 						CreatedOnToolsVersion = 16.4;
 					};
@@ -221,11 +282,19 @@
 			targets = (
 				7C82EB902DFAAA5F001A8B8D /* AdRadar */,
 				7CEB39452DFAF6B1002884DB /* AdRadarWidgetExtension */,
+				7C0F3BB52E09651E0016BA18 /* AdRadarWatch Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		7C0F3BB42E09651E0016BA18 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7C82EB8F2DFAAA5F001A8B8D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -243,6 +312,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		7C0F3BB22E09651E0016BA18 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7C82EB8D2DFAAA5F001A8B8D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -260,6 +336,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		7C0F3BBF2E0965200016BA18 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7C0F3BB52E09651E0016BA18 /* AdRadarWatch Watch App */;
+			targetProxy = 7C0F3BBE2E0965200016BA18 /* PBXContainerItemProxy */;
+		};
 		7CEB395B2DFAF6B3002884DB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7CEB39452DFAF6B1002884DB /* AdRadarWidgetExtension */;
@@ -268,6 +349,64 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		7C0F3BC22E0965200016BA18 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 20250623.2;
+				DEVELOPMENT_TEAM = XB29ZAF479;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = AdRadarWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.delteqws.AdRadar;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.9.5.5;
+				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.5;
+			};
+			name = Debug;
+		};
+		7C0F3BC32E0965200016BA18 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 20250623.2;
+				DEVELOPMENT_TEAM = XB29ZAF479;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = AdRadarWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.delteqws.AdRadar;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.9.5.5;
+				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.5;
+			};
+			name = Release;
+		};
 		7C82EB9A2DFAAA5F001A8B8D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -398,7 +537,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AdRadar/AdRadar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250623.1;
+				CURRENT_PROJECT_VERSION = 20250623.2;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -414,7 +553,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.5.4;
+				MARKETING_VERSION = 1.9.5.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -430,7 +569,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AdRadar/AdRadar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250623.1;
+				CURRENT_PROJECT_VERSION = 20250623.2;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -446,7 +585,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.5.4;
+				MARKETING_VERSION = 1.9.5.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -462,7 +601,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AdRadarWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250623.1;
+				CURRENT_PROJECT_VERSION = 20250623.2;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AdRadarWidget/Info.plist;
@@ -473,7 +612,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.9.5.4;
+				MARKETING_VERSION = 1.9.5.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar.AdRadarWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -490,7 +629,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AdRadarWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250623.1;
+				CURRENT_PROJECT_VERSION = 20250623.2;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AdRadarWidget/Info.plist;
@@ -501,7 +640,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.9.5.4;
+				MARKETING_VERSION = 1.9.5.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar.AdRadarWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -514,6 +653,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		7C0F3BC12E0965200016BA18 /* Build configuration list for PBXNativeTarget "AdRadarWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7C0F3BC22E0965200016BA18 /* Debug */,
+				7C0F3BC32E0965200016BA18 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		7C82EB8C2DFAAA5F001A8B8D /* Build configuration list for PBXProject "AdRadar" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

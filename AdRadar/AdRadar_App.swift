@@ -46,6 +46,11 @@ struct AdRadar_App: App {
         DispatchQueue.main.async {
             _ = MemoryManager.shared
         }
+        
+        // Initialize WatchDataSyncService for Apple Watch connectivity
+        Task { @MainActor in
+            _ = WatchDataSyncService.shared
+        }
     }
     
     private func logInitializationStatus() {

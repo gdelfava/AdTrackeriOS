@@ -251,6 +251,20 @@ class SummaryViewModel: ObservableObject {
                 self.lastUpdateTime = now
                 self.hasLoaded = true
                 self.isLoading = false
+                
+                // Send data to Apple Watch
+                Task {
+                    // Try to get today's detailed metrics to send with summary
+                    let todayMetricsResult = await AdSenseAPI.shared.fetchMetricsForRange(
+                        accountID: accountID, 
+                        accessToken: token, 
+                        startDate: today, 
+                        endDate: today
+                    )
+                    
+                    let todayMetrics: AdSenseDayMetrics? = try? todayMetricsResult.get()
+                    WatchDataSyncService.shared.sendSummaryData(summary, todayMetrics: todayMetrics)
+                }
                 return
             }
             self.error = "Failed to fetch summary data after multiple attempts."
