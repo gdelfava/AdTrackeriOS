@@ -25,6 +25,9 @@ class StreakViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var error: String? = nil
     @Published var hasLoaded: Bool = false
+    @Published var lastUpdateTime: Date? = nil
+    @Published var showEmptyState: Bool = false
+    @Published var emptyStateMessage: String? = nil
     
     var accessToken: String?
     private var accountID: String?
@@ -50,6 +53,8 @@ class StreakViewModel: ObservableObject {
             guard let token = accessToken else { return }
             isLoading = true
             error = nil
+            showEmptyState = false
+            emptyStateMessage = nil
             
             // Fetch account ID with retry logic
             var retryCount = 0
@@ -76,25 +81,38 @@ class StreakViewModel: ObservableObject {
                                     continue
                                 }
                             }
-                            self.error = "Session expired. Please sign in again."
+                            self.showEmptyState = true
+                            self.emptyStateMessage = "Please sign in again to continue viewing your streak data."
+                            self.error = nil
                             self.isLoading = false
                             return
                         case .requestFailed(let message):
                             if message.contains("cancelled") {
                                 return // Task was cancelled, exit gracefully
                             }
-                            self.error = "Failed to get AdSense account: \(message)"
+                            // Instead of showing error, show empty state
+                            if retryCount >= maxRetries - 1 {
+                                self.showEmptyState = true
+                                self.emptyStateMessage = "Unable to connect to AdSense. Please check your connection and try again."
+                                self.error = nil
+                                self.isLoading = false
+                                return
+                            }
                             retryCount += 1
                             continue
                         default:
-                            self.error = "Failed to get AdSense account: \(err)"
+                            self.showEmptyState = true
+                            self.emptyStateMessage = "Unable to access your AdSense account. Please try again later."
+                            self.error = nil
                             self.isLoading = false
                             return
                         }
                     }
                     
                     guard let accountID = self.accountID else {
-                        self.error = "No AdSense account found."
+                        self.showEmptyState = true
+                        self.emptyStateMessage = "No AdSense account found. Please ensure you have an active AdSense account."
+                        self.error = nil
                         self.isLoading = false
                         return
                     }
@@ -157,13 +175,27 @@ class StreakViewModel: ObservableObject {
                             if error.localizedDescription.contains("cancelled") {
                                 return // Task was cancelled, exit gracefully
                             }
-                            self.error = "Failed to fetch data for \(currentDate.formatted(date: .abbreviated, time: .omitted)): \(error)"
+                            // Check for specific empty state conditions
+                            if case .requestFailed(let message) = error,
+                               message.contains("NEEDS_ATTENTION|") {
+                                let actualMessage = String(message.dropFirst("NEEDS_ATTENTION|".count))
+                                self.showEmptyState = true
+                                self.emptyStateMessage = actualMessage
+                                self.error = nil
+                                self.isLoading = false
+                                return
+                            }
+                            // Show empty state for any other API errors instead of error message
+                            self.showEmptyState = true
+                            self.emptyStateMessage = "Unable to load streak data at this time. Please check your connection and try again."
+                            self.error = nil
                             self.isLoading = false
                             return
                         }
                     }
                     
                     self.streakData = newStreakData.sorted { $0.date > $1.date }
+                    self.lastUpdateTime = Date()
                     self.isLoading = false
                     self.hasLoaded = true
                     return
@@ -172,7 +204,14 @@ class StreakViewModel: ObservableObject {
                     if error is CancellationError {
                         return // Task was cancelled, exit gracefully
                     }
-                    self.error = "An unexpected error occurred: \(error.localizedDescription)"
+                    // Show empty state instead of error for unexpected errors
+                    if retryCount >= maxRetries - 1 {
+                        self.showEmptyState = true
+                        self.emptyStateMessage = "Unable to load streak data. Please try again later."
+                        self.error = nil
+                        self.isLoading = false
+                        return
+                    }
                     retryCount += 1
                 }
             }

@@ -18,11 +18,12 @@ class AuthViewModel: ObservableObject {
     private let userProfileImageURLKey = "userProfileImageURL"
     
     init() {
-        // Try to load token from Keychain on init
+        // Load cached values synchronously (these are fast local operations)
         if let token = loadTokenFromKeychain() {
             self.accessToken = token
             self.isSignedIn = true
         }
+        
         // Load user info from UserDefaults
         let defaults = UserDefaults.standard
         self.userName = defaults.string(forKey: userNameKey) ?? ""
@@ -30,32 +31,51 @@ class AuthViewModel: ObservableObject {
         if let urlString = defaults.string(forKey: userProfileImageURLKey), let url = URL(string: urlString) {
             self.userProfileImageURL = url
         }
-        // Restore Google Sign-In session
-        GIDSignIn.sharedInstance.restorePreviousSignIn { [weak self] user, error in
-            guard let self = self else { return }
-            if let user = user, error == nil {
-                user.refreshTokensIfNeeded { auth, error in
-                    if let accessToken = auth?.accessToken.tokenString {
-                        DispatchQueue.main.async {
-                            self.accessToken = accessToken
-                            self.isSignedIn = true
-                            self.saveTokenToKeychain(accessToken)
-                            if let profile = user.profile {
-                                self.userName = profile.name
-                                self.userEmail = profile.email
-                                self.userProfileImageURL = profile.hasImage ? profile.imageURL(withDimension: 200) : nil
-                                // Save to UserDefaults
-                                let defaults = UserDefaults.standard
-                                defaults.set(profile.name, forKey: self.userNameKey)
-                                defaults.set(profile.email, forKey: self.userEmailKey)
-                                if let url = self.userProfileImageURL?.absoluteString {
-                                    defaults.set(url, forKey: self.userProfileImageURLKey)
-                                } else {
-                                    defaults.removeObject(forKey: self.userProfileImageURLKey)
+        
+        // Defer Google Sign-In restoration to async method to prevent blocking init
+        Task {
+            await restoreGoogleSignInSession()
+        }
+    }
+    
+    /// Restores Google Sign-In session asynchronously to avoid blocking main thread during init
+    private func restoreGoogleSignInSession() async {
+        await withCheckedContinuation { continuation in
+            GIDSignIn.sharedInstance.restorePreviousSignIn { [weak self] user, error in
+                guard let self = self else {
+                    continuation.resume()
+                    return
+                }
+                
+                if let user = user, error == nil {
+                    user.refreshTokensIfNeeded { auth, error in
+                        if let accessToken = auth?.accessToken.tokenString {
+                            Task { @MainActor in
+                                self.accessToken = accessToken
+                                self.isSignedIn = true
+                                self.saveTokenToKeychain(accessToken)
+                                if let profile = user.profile {
+                                    self.userName = profile.name
+                                    self.userEmail = profile.email
+                                    self.userProfileImageURL = profile.hasImage ? profile.imageURL(withDimension: 200) : nil
+                                    // Save to UserDefaults
+                                    let defaults = UserDefaults.standard
+                                    defaults.set(profile.name, forKey: self.userNameKey)
+                                    defaults.set(profile.email, forKey: self.userEmailKey)
+                                    if let url = self.userProfileImageURL?.absoluteString {
+                                        defaults.set(url, forKey: self.userProfileImageURLKey)
+                                    } else {
+                                        defaults.removeObject(forKey: self.userProfileImageURLKey)
+                                    }
                                 }
+                                continuation.resume()
                             }
+                        } else {
+                            continuation.resume()
                         }
                     }
+                } else {
+                    continuation.resume()
                 }
             }
         }

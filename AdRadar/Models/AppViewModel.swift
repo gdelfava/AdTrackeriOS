@@ -8,6 +8,8 @@ class AppViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var selectedFilter: DateFilter = .last7Days
     @Published var hasLoaded = false
+    @Published var showEmptyState: Bool = false
+    @Published var emptyStateMessage: String? = nil
     
     var accessToken: String?
     var authViewModel: AuthViewModel?
@@ -26,6 +28,8 @@ class AppViewModel: ObservableObject {
         
         isLoading = true
         errorMessage = nil
+        showEmptyState = false
+        emptyStateMessage = nil
         
         // First, get the AdMob account ID if we don't have it
         if admobAccountID == nil {
@@ -119,14 +123,25 @@ class AppViewModel: ObservableObject {
                     await fetchAppData()
                     return
                 } else {
-                    errorMessage = "Authentication failed. Please sign in again."
+                    showEmptyState = true
+                    emptyStateMessage = "Please sign in again to access your AdMob data."
+                    errorMessage = nil
                 }
             } else {
-                errorMessage = "Authentication failed. Please sign in again."
+                showEmptyState = true
+                emptyStateMessage = "Please sign in again to access your AdMob data."
+                errorMessage = nil
             }
         case .requestFailed(let message):
+            // Check for specific UNAUTHENTICATED status
+            if message.contains("UNAUTHENTICATED|") {
+                showEmptyState = true
+                // Show specific message for missing AdMob account
+                emptyStateMessage = "NO_ADMOB_ACCOUNT"
+                errorMessage = nil
+            }
             // Check if this is a scope issue
-            if message.contains("insufficient authentication scopes") || message.contains("Access forbidden") {
+            else if message.contains("insufficient authentication scopes") || message.contains("Access forbidden") {
                 errorMessage = "AdMob access requires additional permissions. Please grant AdMob access in your Google account settings or contact support."
             } else {
                 errorMessage = message

@@ -6,7 +6,7 @@ class AdNetworkViewModel: ObservableObject {
     @Published var adNetworks: [AdNetworkData] = []
     @Published var isLoading = false
     @Published var error: String?
-    @Published var selectedFilter: DateFilter = .today
+    @Published var selectedFilter: DateFilter = .last7Days
     @Published var hasLoaded = false
     
     var accessToken: String?

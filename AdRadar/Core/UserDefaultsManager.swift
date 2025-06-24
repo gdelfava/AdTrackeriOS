@@ -58,16 +58,25 @@ class UserDefaultsManager {
         return standardDefaults
     }
     
+    // MARK: - Async Synchronization
+    
+    /// Performs synchronization on background queue to avoid blocking main thread
+    private func asyncSync() {
+        guard useSharedContainer else { return }
+        
+        Task.detached(priority: .utility) {
+            self.safeDefaults().synchronize()
+        }
+    }
+    
     // MARK: - Shared Container Methods
     
     func setValue(_ value: Any?, forKey key: String) {
         let defaults = safeDefaults()
         defaults.set(value, forKey: key)
         
-        // Only synchronize if we're using shared container
-        if useSharedContainer {
-            defaults.synchronize()
-        }
+        // Use async synchronization to prevent blocking
+        asyncSync()
     }
     
     func getValue(forKey key: String) -> Any? {
@@ -78,9 +87,8 @@ class UserDefaultsManager {
         let defaults = safeDefaults()
         defaults.removeObject(forKey: key)
         
-        if useSharedContainer {
-            defaults.synchronize()
-        }
+        // Use async synchronization to prevent blocking
+        asyncSync()
     }
     
     // MARK: - Type-Specific Methods

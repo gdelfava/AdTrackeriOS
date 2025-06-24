@@ -49,9 +49,10 @@ struct StreakView: View {
                 
                 ScrollView {
                 VStack(spacing: 24) {
-                    if let error = viewModel.error {
-                        ErrorBannerView(message: error, symbol: errorSymbol(for: error))
-                            .padding(.horizontal)
+                    // Last Updated Header
+                    if !viewModel.isLoading && !viewModel.streakData.isEmpty {
+                        StreakHeaderView(lastUpdateTime: viewModel.lastUpdateTime)
+                            .padding(.horizontal, 20)
                     }
                     
                     if viewModel.isLoading {
@@ -59,6 +60,10 @@ struct StreakView: View {
                         ProgressView("Loading...")
                             .soraBody()
                             .padding()
+                        Spacer()
+                    } else if viewModel.showEmptyState {
+                        Spacer()
+                        StreakEmptyStateView(message: viewModel.emptyStateMessage ?? "")
                         Spacer()
                     } else {
                                                 // Compact Horizontal Date Picker
@@ -1272,6 +1277,109 @@ struct StreakFloatingElementsView: View {
 }
 
 
+
+// MARK: - Streak Header View
+
+struct StreakHeaderView: View {
+    let lastUpdateTime: Date?
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            if let lastUpdate = lastUpdateTime {
+                Text("Last updated: \(lastUpdate.formatted(.relative(presentation: .named))) on \(lastUpdate.formatted(.dateTime.weekday(.wide)))")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+            } else {
+                Text("Fetching latest data...")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+// MARK: - Streak Empty State View
+
+struct StreakEmptyStateView: View {
+    let message: String
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            // Icon
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 48, weight: .medium))
+                .foregroundColor(.orange)
+            
+            // Content
+            VStack(spacing: 12) {
+                Text("Account Attention Required")
+                    .soraFont(.semibold, size: 20)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.center)
+                
+                Text(message.isEmpty ? "Your AdSense account requires attention. Please check your account settings and resolve any pending issues to continue viewing your streak data." : message)
+                    .soraBody()
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16)
+            }
+            
+            // Action suggestion
+            VStack(spacing: 8) {
+                Text("What you can do:")
+                    .soraSubheadline()
+                    .foregroundColor(.primary)
+                
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("•")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                        Text("Log into your AdSense account and check for any alerts or notifications")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("•")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                        Text("Verify your account information and payment details are up to date")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("•")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                        Text("Resolve any policy violations or account issues")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("•")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                        Text("Try refreshing once issues are resolved")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding(.horizontal, 16)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 32)
+        .padding(.vertical, 40)
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+        .padding(.horizontal, 16)
+    }
+}
 
 #Preview {
     StreakView(showSlideOverMenu: .constant(false), selectedTab: .constant(0))

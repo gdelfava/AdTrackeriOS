@@ -35,9 +35,11 @@ class SummaryViewModel: ObservableObject {
     init(accessToken: String?, authViewModel: AuthViewModel? = nil) {
         self.accessToken = accessToken
         self.authViewModel = authViewModel
-        // Load last update time from UserDefaultsManager
-        self.lastUpdateTime = UserDefaultsManager.shared.getLastUpdateDate()
-        // Remove automatic fetching - only fetch when explicitly called
+        // Remove synchronous UserDefaults access from init - defer to async methods
+        // This prevents blocking the main thread during view initialization
+        Task {
+            await loadLastUpdateTime()
+        }
     }
     
     deinit {
@@ -386,6 +388,20 @@ class SummaryViewModel: ObservableObject {
                     self.metricsTask = newTask
                 }
             }
+        }
+    }
+    
+    // MARK: - Async Initialization Methods
+    
+    /// Loads the last update time asynchronously to avoid blocking main thread during init
+    private func loadLastUpdateTime() async {
+        // Perform UserDefaults access on background queue
+        let lastUpdate = await Task.detached {
+            UserDefaultsManager.shared.getLastUpdateDate()
+        }.value
+        
+        await MainActor.run {
+            self.lastUpdateTime = lastUpdate
         }
     }
 }

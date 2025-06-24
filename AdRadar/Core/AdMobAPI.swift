@@ -131,7 +131,12 @@ class AdMobAPI {
     
     /// Fetches the user's AdMob account ID
     static func fetchAccountID(accessToken: String) async -> Result<String, AdMobError> {
-        guard NetworkMonitor.shared.shouldProceedWithRequest() else {
+        // Check network connection asynchronously
+        let isConnected = await Task.detached {
+            NetworkMonitor.shared.isConnected
+        }.value
+        
+        guard isConnected else {
             return .failure(.requestFailed("No internet connection"))
         }
         
@@ -179,6 +184,16 @@ class AdMobAPI {
                     return .failure(.decodingError(error.localizedDescription))
                 }
             case 401:
+                // Check for specific UNAUTHENTICATED status
+                if let errorMessage = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let error = errorMessage["error"] as? [String: Any] {
+                    let message = error["message"] as? String ?? "Authentication required"
+                    let status = error["status"] as? String
+                    if status == "UNAUTHENTICATED" {
+                        return .failure(.requestFailed("UNAUTHENTICATED|\(message)"))
+                    }
+                    return .failure(.requestFailed("Authentication Error: \(message)"))
+                }
                 return .failure(.unauthorized)
             case 403:
                 return .failure(.requestFailed("Access forbidden. Please check your AdMob permissions."))
@@ -334,6 +349,16 @@ class AdMobAPI {
                     return .failure(.decodingError(error.localizedDescription))
                 }
             case 401:
+                // Check for specific UNAUTHENTICATED status
+                if let errorMessage = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let error = errorMessage["error"] as? [String: Any] {
+                    let message = error["message"] as? String ?? "Authentication required"
+                    let status = error["status"] as? String
+                    if status == "UNAUTHENTICATED" {
+                        return .failure(.requestFailed("UNAUTHENTICATED|\(message)"))
+                    }
+                    return .failure(.requestFailed("Authentication Error: \(message)"))
+                }
                 return .failure(.unauthorized)
             case 403:
                 return .failure(.requestFailed("Access forbidden. Please check your AdMob permissions."))

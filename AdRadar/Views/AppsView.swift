@@ -81,6 +81,8 @@ struct AppsView: View {
                     .soraBody()
                     .padding()
                 Spacer()
+            } else if viewModel.showEmptyState {
+                AppsEmptyStateView(message: viewModel.emptyStateMessage ?? "")
             } else if let errorMessage = viewModel.errorMessage {
                 VStack(spacing: 16) {
                     Image(systemName: "exclamationmark.triangle")
@@ -493,6 +495,145 @@ struct AppCard: View {
             Spacer()
         }
         .padding(.bottom, 16)
+    }
+}
+
+// MARK: - Apps Empty State View
+
+struct AppsEmptyStateView: View {
+    let message: String
+    
+    private var isNoAdMobAccount: Bool {
+        message == "NO_ADMOB_ACCOUNT"
+    }
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            // Icon
+            Image(systemName: isNoAdMobAccount ? "apps.iphone.slash" : "exclamationmark.triangle.fill")
+                .font(.system(size: 48, weight: .medium))
+                .foregroundColor(isNoAdMobAccount ? .blue : .orange)
+            
+            // Content
+            VStack(spacing: 12) {
+                Text(isNoAdMobAccount ? "No AdMob Account Detected" : "AdMob Authentication Required")
+                    .soraFont(.semibold, size: 20)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.center)
+                
+                if isNoAdMobAccount {
+                    VStack(spacing: 8) {
+                        Text("To monetize your apps with AdMob, you'll need to create an AdMob account.")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                        
+                        Link("Create an account at admob.google.com", destination: URL(string: "https://admob.google.com/")!)
+                            .soraBody()
+                            .foregroundColor(.accentColor)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.horizontal, 16)
+                } else {
+                    Text(message.isEmpty ? "AdMob access requires proper authentication. Please check your Google account permissions and sign in again to access your app data." : message)
+                        .soraBody()
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                }
+            }
+            
+            // Action suggestion
+            VStack(spacing: 8) {
+                Text("What you can do:")
+                    .soraSubheadline()
+                    .foregroundColor(.primary)
+                
+                if isNoAdMobAccount {
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(alignment: .top, spacing: 8) {
+                            Text("•")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                            Text("Visit admob.google.com to create your free AdMob account")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        HStack(alignment: .top, spacing: 8) {
+                            Text("•")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                            Text("Connect your Google account during the AdMob signup process")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        HStack(alignment: .top, spacing: 8) {
+                            Text("•")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                            Text("Add your mobile apps to start earning revenue with ads")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        HStack(alignment: .top, spacing: 8) {
+                            Text("•")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                            Text("Return to AdRadar after setting up your AdMob account")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                } else {
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(alignment: .top, spacing: 8) {
+                            Text("•")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                            Text("Sign out and sign back in to refresh your authentication")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        HStack(alignment: .top, spacing: 8) {
+                            Text("•")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                            Text("Ensure AdMob permissions are granted in your Google account")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        HStack(alignment: .top, spacing: 8) {
+                            Text("•")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                            Text("Check that your Google account has access to AdMob")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        HStack(alignment: .top, spacing: 8) {
+                            Text("•")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                            Text("Contact support if the issue persists")
+                                .soraBody()
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.horizontal, 32)
+        .padding(.vertical, 40)
+        .background(Color(.systemBackground))
     }
 }
 

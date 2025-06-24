@@ -194,10 +194,12 @@ struct SummaryView: View {
                 .padding(.top, 20)
                 }
             }
-            .refreshable {
-                if let token = authViewModel.accessToken {
+                    .refreshable {
+            if let token = authViewModel.accessToken {
+                await MainActor.run {
                     viewModel.accessToken = token
                     viewModel.authViewModel = authViewModel
+                }
                     await viewModel.fetchSummary()
                 }
             }
@@ -228,16 +230,31 @@ struct SummaryView: View {
             }
         }
         .onAppear {
-            // Only fetch data on first load, not on every tab switch
-            if let token = authViewModel.accessToken, !viewModel.hasLoaded {
-                viewModel.accessToken = token
-                viewModel.authViewModel = authViewModel
-                Task { await viewModel.fetchSummary() }
+            // Defer data fetching to prevent blocking main thread during view loading
+            Task {
+                // Small delay to ensure view hierarchy is fully loaded
+                try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+                
+                // Only fetch data on first load, not on every tab switch
+                if let token = authViewModel.accessToken, !viewModel.hasLoaded {
+                    await MainActor.run {
+                        viewModel.accessToken = token
+                        viewModel.authViewModel = authViewModel
+                    }
+                    
+                    // Fetch summary data asynchronously
+                    await viewModel.fetchSummary()
+                }
             }
             
-            // Animate floating elements
-            withAnimation(.easeOut(duration: 0.8).delay(0.2)) {
-                animateFloatingElements = true
+            // Animate floating elements independently
+            Task {
+                try? await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
+                await MainActor.run {
+                    withAnimation(.easeOut(duration: 0.8)) {
+                        animateFloatingElements = true
+                    }
+                }
             }
         }
         .overlay(
@@ -305,25 +322,18 @@ struct HeroSectionHeader: View {
     let lastUpdateTime: Date?
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Today's Performance")
-                    .soraTitle2()
-                    .foregroundColor(.primary)
-                
-                if let lastUpdate = lastUpdateTime {
-                    Text("Last updated: \(lastUpdate.formatted(.relative(presentation: .named))) on \(lastUpdate.formatted(.dateTime.weekday(.wide)))")
-                        .soraCaption()
-                        .foregroundColor(.secondary)
-                } else {
-                    Text("Fetching latest data...")
-                        .soraCaption()
-                        .foregroundColor(.secondary)
-                }
+        VStack(alignment: .leading, spacing: 4) {
+            if let lastUpdate = lastUpdateTime {
+                Text("Last updated: \(lastUpdate.formatted(.relative(presentation: .named))) on \(lastUpdate.formatted(.dateTime.weekday(.wide)))")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+            } else {
+                Text("Fetching latest data...")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
             }
-            
-            Spacer()
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

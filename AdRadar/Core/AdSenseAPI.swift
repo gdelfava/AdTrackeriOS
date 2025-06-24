@@ -68,7 +68,12 @@ class AdSenseAPI {
     }
     
     func fetchSummaryData(accountID: String, accessToken: String, startDate: Date, endDate: Date) async -> Result<AdSenseSummaryData, AdSenseError> {
-        guard NetworkMonitor.shared.shouldProceedWithRequest() else {
+        // Check network connection asynchronously
+        let isConnected = await Task.detached {
+            NetworkMonitor.shared.isConnected
+        }.value
+        
+        guard isConnected else {
             return .failure(.requestFailed("No internet connection"))
         }
         
@@ -154,7 +159,12 @@ class AdSenseAPI {
     
     // Fetch the user's AdSense account ID
     static func fetchAccountID(accessToken: String) async -> Result<String, AdSenseError> {
-        guard NetworkMonitor.shared.shouldProceedWithRequest() else {
+        // Check network connection asynchronously
+        let isConnected = await Task.detached {
+            NetworkMonitor.shared.isConnected
+        }.value
+        
+        guard isConnected else {
             return .failure(.requestFailed("No internet connection"))
         }
         guard let url = URL(string: "https://adsense.googleapis.com/v2/accounts") else {
@@ -283,6 +293,17 @@ class AdSenseAPI {
             switch httpResponse.statusCode {
             case 200:
                 break // Continue processing
+            case 400:
+                if let errorMessage = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let error = errorMessage["error"] as? [String: Any] {
+                    let message = error["message"] as? String ?? "Bad request"
+                    let status = error["status"] as? String
+                    if status == "FAILED_PRECONDITION" {
+                        return .failure(.requestFailed("FAILED_PRECONDITION|\(message)"))
+                    }
+                    return .failure(.requestFailed("API Error: \(message)"))
+                }
+                return .failure(.requestFailed("Bad request. Please try again later."))
             case 401:
                 return .failure(.unauthorized)
             case 403:
@@ -329,6 +350,17 @@ class AdSenseAPI {
             switch httpResponse.statusCode {
             case 200:
                 break // Continue processing
+            case 400:
+                if let errorMessage = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let error = errorMessage["error"] as? [String: Any] {
+                    let message = error["message"] as? String ?? "Bad request"
+                    let status = error["status"] as? String
+                    if status == "FAILED_PRECONDITION" {
+                        return .failure(.requestFailed("FAILED_PRECONDITION|\(message)"))
+                    }
+                    return .failure(.requestFailed("API Error: \(message)"))
+                }
+                return .failure(.requestFailed("Bad request. Please try again later."))
             case 401:
                 return .failure(.unauthorized)
             case 403:
@@ -599,7 +631,22 @@ class AdSenseAPI {
             guard let httpResponse = response as? HTTPURLResponse else {
                 return .failure(.invalidResponse)
             }
-            if httpResponse.statusCode != 200 {
+            
+            switch httpResponse.statusCode {
+            case 200:
+                break // Continue processing
+            case 400:
+                if let errorMessage = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let error = errorMessage["error"] as? [String: Any] {
+                    let message = error["message"] as? String ?? "Bad request"
+                    let status = error["status"] as? String
+                    if status == "NEEDS_ATTENTION" {
+                        return .failure(.requestFailed("NEEDS_ATTENTION|\(message)"))
+                    }
+                    return .failure(.requestFailed("API Error: \(message)"))
+                }
+                return .failure(.requestFailed("Bad request. Please try again later."))
+            default:
                 return .failure(.requestFailed("HTTP \(httpResponse.statusCode): \(String(data: data, encoding: .utf8) ?? "No body")"))
             }
             let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]

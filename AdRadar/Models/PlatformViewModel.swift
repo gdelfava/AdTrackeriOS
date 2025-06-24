@@ -6,7 +6,7 @@ class PlatformViewModel: ObservableObject {
     @Published var platforms: [PlatformData] = []
     @Published var isLoading = false
     @Published var error: String?
-    @Published var selectedFilter: PlatformDateFilter = .today
+    @Published var selectedFilter: PlatformDateFilter = .last7Days
     @Published var hasLoaded = false
     
     var accessToken: String?

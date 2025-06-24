@@ -16,6 +16,9 @@ class SettingsViewModel: ObservableObject {
     // Payment Threshold
     @Published var paymentThreshold: Double = 100.0
     
+    // AdMob Apps Visibility
+    @Published var showAdMobApps: Bool = false
+    
     private var cancellables = Set<AnyCancellable>()
     var authViewModel: AuthViewModel
     
@@ -30,6 +33,9 @@ class SettingsViewModel: ObservableObject {
         self.publisherId = UserDefaults.standard.string(forKey: "publisherId") ?? ""
         self.publisherName = UserDefaults.standard.string(forKey: "publisherName") ?? ""
         self.timeZone = UserDefaults.standard.string(forKey: "timeZone") ?? Foundation.TimeZone.current.identifier
+        
+        // Initialize AdMob Apps visibility (default: false)
+        self.showAdMobApps = UserDefaults.standard.bool(forKey: "showAdMobApps")
         
         // Get currency from UserDefaults or use the user's locale currency
         if let savedCurrency = UserDefaults.standard.string(forKey: "currency") {
@@ -86,6 +92,11 @@ class SettingsViewModel: ObservableObject {
     func updatePaymentThreshold(_ threshold: Double) {
         self.paymentThreshold = threshold
         UserDefaults.standard.set(threshold, forKey: "paymentThreshold")
+    }
+    
+    func updateAdMobAppsVisibility(_ isVisible: Bool) {
+        self.showAdMobApps = isVisible
+        UserDefaults.standard.set(isVisible, forKey: "showAdMobApps")
     }
     
     @MainActor

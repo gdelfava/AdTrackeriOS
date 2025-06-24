@@ -12,9 +12,10 @@ struct SummaryTabView: View {
     @State private var showAdNetworkView = false
     @State private var showTargetingView = false
     @State private var showAppsView = false
+    @State private var isInitialized = false
     
     init() {
-        // We'll initialize settingsViewModel in onAppear to ensure we have access to authViewModel
+        // Initialize with a placeholder to prevent blocking
         _settingsViewModel = StateObject(wrappedValue: SettingsViewModel(authViewModel: AuthViewModel()))
     }
     
@@ -23,34 +24,49 @@ struct SummaryTabView: View {
             VStack(spacing: 0) {
                 // Main content area - Use ZStack with opacity to prevent view recreation
                 ZStack {
-                    SummaryView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
-                        .environmentObject(settingsViewModel)
-                        .opacity(selectedTab == 0 ? 1 : 0)
-                        .allowsHitTesting(selectedTab == 0)
-                    
-                    StreakView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
-                        .environmentObject(settingsViewModel)
-                        .opacity(selectedTab == 1 ? 1 : 0)
-                        .allowsHitTesting(selectedTab == 1)
-                    
-                    PaymentsView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
-                        .environmentObject(settingsViewModel)
-                        .opacity(selectedTab == 2 ? 1 : 0)
-                        .allowsHitTesting(selectedTab == 2)
-                    
-                    SettingsView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
-                        .environmentObject(settingsViewModel)
-                        .opacity(selectedTab == 3 ? 1 : 0)
-                        .allowsHitTesting(selectedTab == 3)
+                    if isInitialized {
+                        SummaryView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
+                            .environmentObject(settingsViewModel)
+                            .opacity(selectedTab == 0 ? 1 : 0)
+                            .allowsHitTesting(selectedTab == 0)
+                        
+                        StreakView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
+                            .environmentObject(settingsViewModel)
+                            .opacity(selectedTab == 1 ? 1 : 0)
+                            .allowsHitTesting(selectedTab == 1)
+                        
+                        PaymentsView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
+                            .environmentObject(settingsViewModel)
+                            .opacity(selectedTab == 2 ? 1 : 0)
+                            .allowsHitTesting(selectedTab == 2)
+                        
+                        SettingsView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
+                            .environmentObject(settingsViewModel)
+                            .opacity(selectedTab == 3 ? 1 : 0)
+                            .allowsHitTesting(selectedTab == 3)
+                    } else {
+                        // Loading state while initializing
+                        VStack {
+                            ProgressView()
+                                .scaleEffect(1.5)
+                            Text("Loading...")
+                                .font(.sora(.medium, size: 16))
+                                .foregroundColor(.secondary)
+                                .padding(.top, 12)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 
                 // Custom Modern Tab Bar
-                ModernTabBar(selectedTab: $selectedTab)
+                if isInitialized {
+                    ModernTabBar(selectedTab: $selectedTab)
+                }
             }
-            .onAppear {
-                // Update settingsViewModel with the correct authViewModel
-                settingsViewModel.authViewModel = authViewModel
+            .task {
+                // Defer initialization to async context
+                await initializeAsync()
             }
             
             // Slide-over menu
@@ -109,6 +125,19 @@ struct SummaryTabView: View {
         .fullScreenCover(isPresented: $showAppsView) {
             AppsView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
                 .environmentObject(authViewModel)
+        }
+    }
+    
+    private func initializeAsync() async {
+        // Small delay to ensure view hierarchy is loaded
+        try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 seconds
+        
+        await MainActor.run {
+            // Update settingsViewModel with the correct authViewModel
+            settingsViewModel.authViewModel = authViewModel
+            
+            // Mark as initialized
+            isInitialized = true
         }
     }
 }

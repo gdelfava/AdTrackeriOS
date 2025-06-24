@@ -367,40 +367,87 @@ struct SettingsView: View {
                         
                         // Enhanced General Section
                         ModernSectionView(title: "Account Actions") {
-                            Button(action: {
-                                let generator = UIImpactFeedbackGenerator(style: .medium)
-                                generator.impactOccurred()
-                                settingsViewModel.signOut(authViewModel: authViewModel)
-                            }) {
+                            VStack(spacing: 1) {
+                                // AdMob Apps Toggle
                                 HStack(spacing: 16) {
                                     ZStack {
                                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                            .fill(Color.red.opacity(0.1))
+                                            .fill(Color.cyan.opacity(0.1))
                                             .frame(width: 40, height: 40)
                                         
-                                        Image(systemName: "rectangle.portrait.and.arrow.right.fill")
+                                        Image(systemName: "apps.iphone")
                                             .font(.system(size: 18, weight: .medium))
-                                            .foregroundColor(.red)
+                                            .foregroundColor(.cyan)
                                     }
                                     
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text("Sign Out")
+                                        Text("Enable AdMob Apps")
                                             .soraBody()
                                             .fontWeight(.medium)
-                                            .foregroundColor(.red)
+                                            .foregroundColor(.primary)
                                         
-                                        Text("Sign out of your account")
+                                        Text("Display AdMob Apps Metrics")
                                             .soraCaption()
                                             .foregroundColor(.secondary)
                                     }
                                     
                                     Spacer()
+                                    
+                                    Toggle("", isOn: .init(
+                                        get: { settingsViewModel.showAdMobApps },
+                                        set: { newValue in
+                                            let generator = UIImpactFeedbackGenerator(style: .light)
+                                            generator.impactOccurred()
+                                            settingsViewModel.updateAdMobAppsVisibility(newValue)
+                                        }
+                                    ))
+                                    .labelsHidden()
                                 }
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 16)
                                 .background(Color(.secondarySystemGroupedBackground))
-                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                
+                                Divider()
+                                    .padding(.leading, 56)
+                                
+                                // Sign Out Button
+                                Button(action: {
+                                    let generator = UIImpactFeedbackGenerator(style: .medium)
+                                    generator.impactOccurred()
+                                    settingsViewModel.signOut(authViewModel: authViewModel)
+                                }) {
+                                    HStack(spacing: 16) {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                .fill(Color.red.opacity(0.1))
+                                                .frame(width: 40, height: 40)
+                                            
+                                            Image(systemName: "rectangle.portrait.and.arrow.right.fill")
+                                                .font(.system(size: 18, weight: .medium))
+                                                .foregroundColor(.red)
+                                        }
+                                        
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text("Sign Out")
+                                                .soraBody()
+                                                .fontWeight(.medium)
+                                                .foregroundColor(.red)
+                                            
+                                            Text("Sign out of your account")
+                                                .soraCaption()
+                                                .foregroundColor(.secondary)
+                                        }
+                                        
+                                        Spacer()
+                                    }
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 16)
+                                    .contentShape(Rectangle())
+                                }
+                                .buttonStyle(PlainButtonStyle())
                             }
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                         }
                         .opacity(generalAppeared ? 1 : 0)
                         .offset(y: generalAppeared ? 0 : 30)
@@ -730,23 +777,44 @@ struct MailView: UIViewControllerRepresentable {
 
 struct WidgetSupportSheet: View {
     @Environment(\.presentationMode) var presentationMode
+    @State private var animateContent = false
     
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 24) {
-                    // Header
-                    VStack(spacing: 16) {
-                        Image("LoginScreen")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 80, height: 80)
-                            .clipShape(RoundedRectangle(cornerRadius: 18))
-                            .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+                    // Header section with icon
+                    VStack(spacing: 24) {
+                        // Modern icon treatment
+                        ZStack {
+                            Circle()
+                                .fill(Color.accentColor.opacity(0.1))
+                                .frame(width: 100, height: 100)
+                                .scaleEffect(animateContent ? 1.0 : 0.8)
+                                .opacity(animateContent ? 1.0 : 0.0)
+                            
+                            Circle()
+                                .fill(Color.accentColor.opacity(0.15))
+                                .frame(width: 80, height: 80)
+                                .scaleEffect(animateContent ? 1.0 : 0.6)
+                                .opacity(animateContent ? 1.0 : 0.0)
+                            
+                            Image(systemName: "widget.small.badge.plus")
+                                .font(.system(size: 32, weight: .medium))
+                                .foregroundColor(.accentColor)
+                                .scaleEffect(animateContent ? 1.0 : 0.4)
+                                .opacity(animateContent ? 1.0 : 0.0)
+                        }
+                        .animation(.easeOut(duration: 1.0).delay(0.3), value: animateContent)
                         
+                        // Title
                         Text("Widget Support")
-                            .soraTitle2()
-                            .fontWeight(.bold)
+                            .font(.sora(.bold, size: 24))
+                            .foregroundColor(.primary)
+                            .multilineTextAlignment(.center)
+                            .opacity(animateContent ? 1.0 : 0.0)
+                            .offset(y: animateContent ? 0 : 20)
+                            .animation(.easeOut(duration: 0.8).delay(0.6), value: animateContent)
                     }
                     .padding(.top)
                     
@@ -804,7 +872,7 @@ struct WidgetSupportSheet: View {
                     Spacer(minLength: 100)
                 }
             }
-            .navigationTitle("Widget Support")
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -817,6 +885,11 @@ struct WidgetSupportSheet: View {
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.5).delay(0.1)) {
+                animateContent = true
+            }
+        }
     }
 }
 

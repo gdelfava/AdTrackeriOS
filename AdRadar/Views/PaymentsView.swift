@@ -43,12 +43,19 @@ struct PaymentsView: View {
                             .soraBody()
                             .padding()
                         Spacer()
+                    } else if viewModel.showEmptyState {
+                        Spacer()
+                        PaymentsEmptyStateView(message: viewModel.emptyStateMessage ?? "")
+                        Spacer()
                     } else if let error = viewModel.error {
                         Spacer()
                         ErrorBannerView(message: error, symbol: errorSymbol(for: error))
                         Spacer()
                     } else if let data = viewModel.paymentsData {
                         VStack(alignment: .leading, spacing: 12) {
+                            // Last Updated Header
+                            PaymentsHeaderView(lastUpdateTime: viewModel.lastUpdateTime)
+                            
                             // Payment threshold progress - shown above the unpaid earnings card
                             PaymentProgressView(
                                 currentMonthEarnings: data.currentMonthEarningsValue,
@@ -795,6 +802,100 @@ struct PaymentsFloatingElementsView: View {
                     .animation(.easeOut(duration: 2.0).delay(2.2), value: animate)
             }
         }
+    }
+}
+
+// MARK: - Payments Header View
+
+struct PaymentsHeaderView: View {
+    let lastUpdateTime: Date?
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            if let lastUpdate = lastUpdateTime {
+                Text("Last updated: \(lastUpdate.formatted(.relative(presentation: .named))) on \(lastUpdate.formatted(.dateTime.weekday(.wide)))")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+            } else {
+                Text("Fetching latest data...")
+                    .soraCaption()
+                    .foregroundColor(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+// MARK: - Payments Empty State View
+
+struct PaymentsEmptyStateView: View {
+    let message: String
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            // Icon
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 48, weight: .medium))
+                .foregroundColor(.orange)
+            
+            // Content
+            VStack(spacing: 12) {
+                Text("Payment Information Unavailable")
+                    .soraFont(.semibold, size: 20)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.center)
+                
+                Text(message.isEmpty ? "Payment information is currently unavailable. This may be due to account setup requirements or temporary restrictions." : message)
+                    .soraBody()
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16)
+            }
+            
+            // Action suggestion
+            VStack(spacing: 8) {
+                Text("What you can do:")
+                    .soraSubheadline()
+                    .foregroundColor(.primary)
+                
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("•")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                        Text("Ensure your AdSense account is fully set up and verified")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("•")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                        Text("Check that payment information is configured in your AdSense account")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("•")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                        Text("Try refreshing in a few minutes")
+                            .soraBody()
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding(.horizontal, 16)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 32)
+        .padding(.vertical, 40)
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+        .padding(.horizontal, 16)
     }
 }
 

@@ -94,6 +94,12 @@ struct SlideOverMenuView: View {
                                 .blendMode(.multiply)
                             }
                         )
+                        .clipShape(
+                            RoundedCornerShape(
+                                radius: 20,
+                                corners: [.topLeft, .bottomLeft, .bottomRight]
+                            )
+                        )
                     }
                     
                     // Main content with modern sections
@@ -173,17 +179,19 @@ struct SlideOverMenuView: View {
                                     }
                                 )
                                 
-                                ModernMenuRow(
-                                    icon: "apps.iphone", 
-                                    title: "AdMob Apps", 
-                                    subtitle: "Mobile app metrics",
-                                    iconColor: .cyan,
-                                    action: {
-                                        hapticFeedback()
-                                        showAppsView = true
-                                        dismissMenu()
-                                    }
-                                )
+                                if settingsViewModel.showAdMobApps {
+                                    ModernMenuRow(
+                                        icon: "apps.iphone", 
+                                        title: "AdMob Apps", 
+                                        subtitle: "Mobile app metrics",
+                                        iconColor: .cyan,
+                                        action: {
+                                            hapticFeedback()
+                                            showAppsView = true
+                                            dismissMenu()
+                                        }
+                                    )
+                                }
                             }
                             
                             // Account Section
@@ -254,19 +262,9 @@ struct SlideOverMenuView: View {
                                 )
                             }
                             
-                            // App info footer
-                            VStack(spacing: 8) {
-                                Text("AdRadar")
-                                    .soraCaption()
-                                    .foregroundColor(.secondary)
-                                
-                                Text("Not affiliated with Google or AdSense")
-                                    .soraCaption2()
-                                    .foregroundColor(.secondary)
-                                    .multilineTextAlignment(.center)
-                            }
-                            .padding(.vertical, 16)
-                            .padding(.bottom, 32)
+                            // Bottom spacing
+                            Spacer()
+                                .frame(height: 48)
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 24)

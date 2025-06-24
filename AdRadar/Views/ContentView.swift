@@ -174,7 +174,7 @@ struct WhyGoogleModal: View {
                 animateContent = true
             }
         }
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.large])
         .presentationDragIndicator(.hidden)
     }
 }
@@ -317,7 +317,7 @@ struct ModernSignInView: View {
                                             .animation(.easeOut(duration: 0.8).delay(1.0), value: animateContent)
                                     }
                                     
-                                    Text("Track your earnings with beautiful analytics and detailed insights")
+                                                                        Text("Track your earnings with beautiful analytics and detailed insights")
                                         .font(.sora(.regular, size: 18))
                                         .multilineTextAlignment(.center)
                                         .foregroundColor(.secondary)
@@ -326,7 +326,10 @@ struct ModernSignInView: View {
                                         .offset(y: animateContent ? 0 : 30)
                                         .animation(.easeOut(duration: 0.8).delay(1.2), value: animateContent)
                                 }
-                                                         }
+                            }
+                            
+                            // Spacer to push sign-in button to bottom
+                            Spacer()
                             
                             // Sign in section
                             VStack(spacing: 16) {
@@ -380,39 +383,6 @@ struct ModernSignInView: View {
                                 .animation(.easeOut(duration: 0.6).delay(1.6), value: showSignInButton)
                             }
                             .padding(.horizontal, 32)
-                            
-                            // Features preview
-                            VStack(spacing: 16) {
-                                Text("What you'll get")
-                                    .font(.sora(.semibold, size: 18))
-                                    .foregroundColor(.primary)
-                                    .opacity(animateContent ? 1.0 : 0.0)
-                                    .animation(.easeOut(duration: 0.6).delay(1.8), value: animateContent)
-                                
-                                VStack(spacing: 12) {
-                                    FeatureRow(
-                                        icon: "chart.bar.fill",
-                                        title: "Real-time Analytics",
-                                        description: "Daily earnings & performance",
-                                        delay: 2.0
-                                    )
-                                    
-                                    FeatureRow(
-                                        icon: "globe",
-                                        title: "Global Insights",
-                                        description: "Country & platform breakdowns",
-                                        delay: 2.2
-                                    )
-                                    
-                                    FeatureRow(
-                                        icon: "lock.shield",
-                                        title: "Secure Access",
-                                        description: "Safe Google OAuth integration",
-                                        delay: 2.4
-                                    )
-                                }
-                            }
-                            .padding(.horizontal, 24)
                         }
                         
                         // Bottom spacing

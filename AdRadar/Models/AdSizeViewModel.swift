@@ -6,7 +6,7 @@ class AdSizeViewModel: ObservableObject {
     @Published var adSizes: [AdSizeData] = []
     @Published var isLoading = false
     @Published var error: String?
-    @Published var selectedFilter: AdSizeDateFilter = .today
+    @Published var selectedFilter: AdSizeDateFilter = .last7Days
     @Published var hasLoaded = false
     
     var accessToken: String?

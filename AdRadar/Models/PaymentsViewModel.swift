@@ -15,6 +15,9 @@ class PaymentsViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var error: String? = nil
     @Published var hasLoaded: Bool = false
+    @Published var lastUpdateTime: Date? = nil
+    @Published var showEmptyState: Bool = false
+    @Published var emptyStateMessage: String? = nil
     
     var accessToken: String?
     var authViewModel: AuthViewModel?
@@ -53,6 +56,8 @@ class PaymentsViewModel: ObservableObject {
         
         self.isLoading = true
         self.error = nil
+        self.showEmptyState = false
+        self.emptyStateMessage = nil
         
         let maxRetries = 2
         var retryCount = 0
@@ -97,6 +102,17 @@ class PaymentsViewModel: ObservableObject {
                     // Handle cancellation more gracefully
                     if message.contains("Request was cancelled") || Task.isCancelled {
                         // Silently ignore cancellation errors during refresh
+                        self.isLoading = false
+                        return
+                    }
+                    // Check for specific empty state conditions
+                    if message.contains("FAILED_PRECONDITION|") {
+                        let actualMessage = String(message.dropFirst("FAILED_PRECONDITION|".count))
+                        if !Task.isCancelled {
+                            self.showEmptyState = true
+                            self.emptyStateMessage = actualMessage
+                            self.error = nil
+                        }
                         self.isLoading = false
                         return
                     }
@@ -220,6 +236,7 @@ class PaymentsViewModel: ObservableObject {
                     )
                     if !Task.isCancelled {
                         self.paymentsData = data
+                        self.lastUpdateTime = Date()
                         self.error = nil
                         self.hasLoaded = true
                     }
@@ -235,6 +252,7 @@ class PaymentsViewModel: ObservableObject {
                     )
                     if !Task.isCancelled {
                         self.paymentsData = data
+                        self.lastUpdateTime = Date()
                         self.error = nil
                         self.hasLoaded = true
                     }
@@ -248,6 +266,17 @@ class PaymentsViewModel: ObservableObject {
                         if message.contains("Request was cancelled") || Task.isCancelled {
                             // Silently ignore cancellation errors during refresh
                             break
+                        }
+                        // Check for specific empty state conditions
+                        if message.contains("FAILED_PRECONDITION|") {
+                            let actualMessage = String(message.dropFirst("FAILED_PRECONDITION|".count))
+                            if !Task.isCancelled {
+                                self.showEmptyState = true
+                                self.emptyStateMessage = actualMessage
+                                self.error = nil
+                            }
+                            self.isLoading = false
+                            return
                         }
                         if !Task.isCancelled {
                             self.error = "Failed to load previous payment: \(message)"
@@ -268,6 +297,17 @@ class PaymentsViewModel: ObservableObject {
                     if message.contains("Request was cancelled") || Task.isCancelled {
                         // Silently ignore cancellation errors during refresh
                         break
+                    }
+                    // Check for specific empty state conditions
+                    if message.contains("FAILED_PRECONDITION|") {
+                        let actualMessage = String(message.dropFirst("FAILED_PRECONDITION|".count))
+                        if !Task.isCancelled {
+                            self.showEmptyState = true
+                            self.emptyStateMessage = actualMessage
+                            self.error = nil
+                        }
+                        self.isLoading = false
+                        return
                     }
                     if !Task.isCancelled {
                         self.error = "Failed to load unpaid earnings: \(message)"
