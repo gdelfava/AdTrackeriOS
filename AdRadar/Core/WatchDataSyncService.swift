@@ -123,42 +123,45 @@ extension WatchDataSyncService: WCSessionDelegate {
         session.activate()
     }
     
-    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
-        print("📱 [iOS] Received message from watch: \(message)")
+    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
+        print("📱 [iOS] Received message from watch with reply handler: \(message)")
         
         if let action = message["action"] as? String, action == "requestUpdate" {
-            print("📱 [iOS] Watch requested data update")
+            print("📱 [iOS] Watch requested data update - responding via reply handler")
             
-            // Trigger a manual data fetch and send to watch
-            Task { @MainActor in
-                // For testing, send sample data immediately
-                let testContext: [String: Any] = [
-                    "todayEarnings": "R 15,75",
-                    "yesterdayEarnings": "R 12,30",
-                    "last7DaysEarnings": "R 95,40",
-                    "thisMonthEarnings": "R 380,25",
-                    "lastMonthEarnings": "R 325,90",
-                    "todayDelta": "+R 3,45 (+28.0%)",
-                    "todayDeltaPositive": true,
-                    "yesterdayDelta": "-R 0,50 (-3.9%)",
-                    "yesterdayDeltaPositive": false,
-                    "last7DaysDelta": "+R 20,15 (+26.8%)",
-                    "last7DaysDeltaPositive": true,
-                    "thisMonthDelta": "+R 54,35 (+16.7%)",
-                    "thisMonthDeltaPositive": true,
-                    "todayClicks": "189",
-                    "todayPageViews": "2,845",
-                    "todayImpressions": "9,320",
-                    "lastUpdated": Date().timeIntervalSince1970
-                ]
-                
-                do {
-                    try session.updateApplicationContext(testContext)
-                    print("📱 [iOS] Sent test data to watch in response to refresh request")
-                } catch {
-                    print("📱 [iOS] Failed to send test data: \(error)")
-                }
-            }
+            // For testing, send sample data immediately via reply handler
+            let testContext: [String: Any] = [
+                "todayEarnings": "R 15,75",
+                "yesterdayEarnings": "R 12,30",
+                "last7DaysEarnings": "R 95,40",
+                "thisMonthEarnings": "R 380,25",
+                "lastMonthEarnings": "R 325,90",
+                "todayDelta": "+R 3,45 (+28.0%)",
+                "todayDeltaPositive": true,
+                "yesterdayDelta": "-R 0,50 (-3.9%)",
+                "yesterdayDeltaPositive": false,
+                "last7DaysDelta": "+R 20,15 (+26.8%)",
+                "last7DaysDeltaPositive": true,
+                "thisMonthDelta": "+R 54,35 (+16.7%)",
+                "thisMonthDeltaPositive": true,
+                "todayClicks": "189",
+                "todayPageViews": "2,845",
+                "todayImpressions": "9,320",
+                "lastUpdated": Date().timeIntervalSince1970,
+                "status": "success"
+            ]
+            
+            // Send response via reply handler
+            replyHandler(testContext)
+            print("📱 [iOS] Sent test data to watch via reply handler")
+        } else {
+            // Send a basic acknowledgment if no specific action
+            replyHandler(["status": "received", "timestamp": Date().timeIntervalSince1970])
         }
+    }
+    
+    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+        print("📱 [iOS] Received message from watch (no reply handler): \(message)")
+        // Handle messages that don't expect a reply
     }
 } 
