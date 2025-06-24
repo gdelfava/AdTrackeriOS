@@ -25,15 +25,28 @@ class WatchDataSyncService: NSObject, ObservableObject {
         print("📱 [iOS] Session reachable: \(WCSession.default.isReachable)")
         print("📱 [iOS] Watch app installed: \(WCSession.default.isWatchAppInstalled)")
         
-        // For simulator testing, be less strict about reachability
+        // Check if WatchConnectivity is supported
+        guard WCSession.isSupported() else {
+            print("📱 [iOS] WatchConnectivity not supported on this device")
+            return
+        }
+        
+        // Check if session is activated
         guard WCSession.default.activationState == .activated else {
             print("📱 [iOS] Watch session not activated - state: \(WCSession.default.activationState.rawValue)")
             return
         }
         
-        // In simulators, even if not reachable, try to send via updateApplicationContext
+        // Check if watch app is installed
+        guard WCSession.default.isWatchAppInstalled else {
+            print("📱 [iOS] Watch app not installed - skipping data sync")
+            print("📱 [iOS] To install: Open Watch app on iPhone → My Watch → App Store → Install AdRadar")
+            return
+        }
+        
+        // Log connection status
         if !WCSession.default.isReachable {
-            print("📱 [iOS] Watch not reachable but trying updateApplicationContext anyway (simulator workaround)")
+            print("📱 [iOS] Watch not reachable but trying updateApplicationContext for background sync")
         }
         
         // Create dictionary with summary and metrics data
@@ -111,6 +124,18 @@ extension WatchDataSyncService: WCSessionDelegate {
         print("📱 [iOS] WC Session activated with state: \(activationState.rawValue)")
         print("📱 [iOS] Watch app installed: \(session.isWatchAppInstalled)")
         print("📱 [iOS] Session reachable: \(session.isReachable)")
+        
+        if !session.isWatchAppInstalled {
+            print("📱 [iOS] ⚠️  WATCH APP NOT INSTALLED")
+            print("📱 [iOS] 📲 To install the watch app:")
+            print("📱 [iOS] 1. Open the Watch app on your iPhone")
+            print("📱 [iOS] 2. Go to 'My Watch' tab")
+            print("📱 [iOS] 3. Scroll down to 'Available Apps'")
+            print("📱 [iOS] 4. Find 'AdRadar' and tap 'Install'")
+            print("📱 [iOS] 5. Wait for installation to complete")
+        } else {
+            print("📱 [iOS] ✅ Watch app is installed and ready")
+        }
     }
     
     nonisolated func sessionDidBecomeInactive(_ session: WCSession) {
