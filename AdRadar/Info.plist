@@ -33,5 +33,15 @@
             <string>Sora-SemiBold.ttf</string>
             <string>Sora-Bold.ttf</string>
         </array>
+        <key>UIBackgroundModes</key>
+        <array>
+            <string>background-app-refresh</string>
+            <string>background-processing</string>
+        </array>
+        <key>BGTaskSchedulerPermittedIdentifiers</key>
+        <array>
+            <string>com.delteqws.AdRadar.refresh</string>
+            <string>com.delteqws.AdRadar.processing</string>
+        </array>
     </dict>
 </plist>

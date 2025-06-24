@@ -1,5 +1,7 @@
 import SwiftUI
 
+// MARK: - Legacy Components (Updated for consistency)
+
 struct WatchSummaryCard: View {
     let title: String
     let value: String
@@ -10,15 +12,18 @@ struct WatchSummaryCard: View {
     let color: Color
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 6) {
             // Header with icon and title
-            HStack(spacing: 4) {
+            HStack(spacing: 6) {
                 Image(systemName: icon)
                     .foregroundColor(color)
-                    .font(.custom("Sora-Regular", size: 10))
+                    .font(.soraCaption())
+                    .frame(width: 16, height: 16)
+                    .background(color.opacity(0.15))
+                    .clipShape(Circle())
                 
                 Text(title)
-                    .font(.custom("Sora-Regular", size: 10))
+                    .soraCaption()
                     .foregroundColor(.secondary)
                 
                 Spacer()
@@ -26,20 +31,20 @@ struct WatchSummaryCard: View {
             
             // Main value
             Text(value)
-                .font(.custom("Sora-SemiBold", size: 20))
+                .soraDisplayMedium()
                 .foregroundColor(.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
             
             // Delta information
             if let delta = delta {
-                HStack(spacing: 2) {
+                HStack(spacing: 3) {
                     Image(systemName: deltaPositive == true ? "arrow.up" : "arrow.down")
-                        .font(.custom("Sora-Light", size: 9))
+                        .font(.soraFootnote())
                         .foregroundColor(deltaPositive == true ? .green : .red)
                     
                     Text(delta)
-                        .font(.custom("Sora-Light", size: 9))
+                        .soraFootnote()
                         .foregroundColor(deltaPositive == true ? .green : .red)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
@@ -49,21 +54,30 @@ struct WatchSummaryCard: View {
             // Subtitle
             if let subtitle = subtitle {
                 Text(subtitle)
-                    .font(.custom("Sora-Light", size: 9))
+                    .soraFootnote()
                     .foregroundColor(.secondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
             }
         }
-        .padding(8)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray.opacity(0.2))
+            LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: color.opacity(0.08), location: 0),
+                    .init(color: color.opacity(0.04), location: 1)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
         )
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(color.opacity(0.3), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(color.opacity(0.2), lineWidth: 0.5)
         )
+        .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)
     }
 }
 
@@ -73,56 +87,72 @@ struct WatchHeroCard: View {
     let subtitle: String
     let delta: String?
     let deltaPositive: Bool?
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 8) {
             // Title and subtitle
             VStack(spacing: 2) {
                 Text(title)
-                    .font(.custom("Sora-Medium", size: 14))
+                    .soraHeadline()
                     .foregroundColor(.primary)
                 
                 Text(subtitle)
-                    .font(.custom("Sora-Regular", size: 10))
+                    .soraCaption()
                     .foregroundColor(.secondary)
             }
             
             // Main value - large and prominent
             Text(value)
-                .font(.custom("Sora-Bold", size: 24))
+                .soraDisplayLarge()
                 .foregroundColor(.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
             
             // Delta with enhanced styling
             if let delta = delta {
-                HStack(spacing: 3) {
+                HStack(spacing: 4) {
                     Image(systemName: deltaPositive == true ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
-                        .font(.custom("Sora-Regular", size: 12))
+                        .font(.soraBodyMedium())
                         .foregroundColor(deltaPositive == true ? .green : .red)
                     
                     Text(delta)
-                        .font(.custom("Sora-Medium", size: 12))
+                        .soraBodyMedium()
                         .foregroundColor(deltaPositive == true ? .green : .red)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                 }
-                .padding(.horizontal, 8)
+                .padding(.horizontal, 10)
                 .padding(.vertical, 4)
                 .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill((deltaPositive == true ? Color.green : Color.red).opacity(0.1))
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill((deltaPositive == true ? Color.green : Color.red).opacity(0.15))
                 )
             }
         }
-        .padding(12)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.accentColor.opacity(0.1))
+            ZStack {
+                LinearGradient(
+                    gradient: Gradient(stops: [
+                        .init(color: Color.accentColor.opacity(0.12), location: 0),
+                        .init(color: Color.accentColor.opacity(0.06), location: 0.7),
+                        .init(color: Color.accentColor.opacity(0.02), location: 1)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                
+                // Use PatternOverlay from ContentView.swift to avoid duplication
+                PatternOverlay(color: .accentColor.opacity(0.03), spacing: 14, dotSize: 1)
+            }
         )
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.accentColor.opacity(colorScheme == .dark ? 0.3 : 0.2), radius: 8, x: 0, y: 4)
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.accentColor.opacity(0.3), lineWidth: 1.5)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.accentColor.opacity(0.2), lineWidth: 1)
         )
     }
 }
@@ -134,13 +164,16 @@ struct WatchMetricsCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack {
+            HStack(spacing: 6) {
                 Image(systemName: "chart.bar.fill")
                     .foregroundColor(.blue)
-                    .font(.custom("Sora-Regular", size: 10))
+                    .font(.soraCaption())
+                    .frame(width: 16, height: 16)
+                    .background(Color.blue.opacity(0.1))
+                    .clipShape(Circle())
                 
                 Text("Today's Stats")
-                    .font(.custom("Sora-Regular", size: 10))
+                    .soraCaption()
                     .foregroundColor(.secondary)
                 
                 Spacer()
@@ -148,48 +181,50 @@ struct WatchMetricsCard: View {
             
             VStack(spacing: 4) {
                 if let clicks = clicks {
-                    MetricRow(icon: "hand.tap.fill", label: "Clicks", value: clicks, color: .orange)
+                    LegacyMetricRow(icon: "cursorarrow.click", label: "Clicks", value: clicks, color: .orange)
                 }
                 
                 if let pageViews = pageViews {
-                    MetricRow(icon: "doc.text.fill", label: "Page Views", value: pageViews, color: .blue)
+                    LegacyMetricRow(icon: "doc.text.fill", label: "Page Views", value: pageViews, color: .blue)
                 }
                 
                 if let impressions = impressions {
-                    MetricRow(icon: "eye.fill", label: "Impressions", value: impressions, color: .green)
+                    LegacyMetricRow(icon: "eye.fill", label: "Impressions", value: impressions, color: .green)
                 }
             }
         }
-        .padding(8)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray.opacity(0.2))
-        )
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(Color.gray.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
     }
 }
 
-struct MetricRow: View {
+struct LegacyMetricRow: View {
     let icon: String
     let label: String
     let value: String
     let color: Color
     
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 8) {
             Image(systemName: icon)
                 .foregroundColor(color)
-                .font(.custom("Sora-Light", size: 9))
+                .font(.soraFootnote())
                 .frame(width: 12)
             
             Text(label)
-                .font(.custom("Sora-Light", size: 9))
+                .soraFootnote()
                 .foregroundColor(.secondary)
             
             Spacer()
             
             Text(value)
-                .font(.custom("Sora-Medium", size: 10))
+                .soraCaption()
                 .foregroundColor(.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
     }
 }
@@ -199,30 +234,27 @@ struct MetricRow: View {
         title: "Yesterday",
         value: "R 12,30",
         subtitle: "vs same day last week",
-        delta: "+R 0,50 (+4.2%)",
+        delta: "+15%",
         deltaPositive: true,
         icon: "calendar.badge.clock",
         color: .orange
     )
-    .padding()
 }
 
 #Preview("Hero Card") {
     WatchHeroCard(
         title: "Today So Far",
-        value: "R 15,75",
+        value: "R 5,67",
         subtitle: "vs yesterday",
-        delta: "+R 3,45 (+28.0%)",
+        delta: "+8%",
         deltaPositive: true
     )
-    .padding()
 }
 
 #Preview("Metrics Card") {
     WatchMetricsCard(
-        clicks: "35",
-        pageViews: "893",
-        impressions: "2,140"
+        clicks: "142",
+        pageViews: "1,234",
+        impressions: "5,678"
     )
-    .padding()
 } 

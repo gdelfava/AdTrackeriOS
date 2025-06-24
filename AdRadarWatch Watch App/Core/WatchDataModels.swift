@@ -1,7 +1,38 @@
 import Foundation
 import WatchConnectivity
 
-// MARK: - Summary Data Model
+// MARK: - Shared Data Models (synced with main app)
+struct SharedSummaryData: Codable, Equatable {
+    let todayEarnings: String
+    let yesterdayEarnings: String
+    let last7DaysEarnings: String
+    let thisMonthEarnings: String
+    let lastMonthEarnings: String
+    let lifetimeEarnings: String
+    
+    // Delta information
+    let todayDelta: String?
+    let todayDeltaPositive: Bool?
+    let yesterdayDelta: String?
+    let yesterdayDeltaPositive: Bool?
+    let last7DaysDelta: String?
+    let last7DaysDeltaPositive: Bool?
+    let thisMonthDelta: String?
+    let thisMonthDeltaPositive: Bool?
+    let lastMonthDelta: String?
+    let lastMonthDeltaPositive: Bool?
+    
+    // Metrics data
+    let todayClicks: String?
+    let todayPageViews: String?
+    let todayImpressions: String?
+    
+    // Metadata
+    let lastUpdated: Date
+    let dataVersion: Int
+}
+
+// MARK: - Legacy Summary Data Model (for backward compatibility)
 struct AdSenseSummaryData: Codable {
     let today: String
     let yesterday: String
@@ -60,6 +91,8 @@ struct WatchSummaryData {
     let last7DaysDeltaPositive: Bool?
     let thisMonthDelta: String?
     let thisMonthDeltaPositive: Bool?
+    let lastMonthDelta: String?
+    let lastMonthDeltaPositive: Bool?
     
     let todayClicks: String?
     let todayPageViews: String?
@@ -67,6 +100,7 @@ struct WatchSummaryData {
     
     let lastUpdated: Date
     
+    // Initialize from WatchConnectivity context (legacy format)
     init(from context: [String: Any]) {
         self.todayEarnings = context["todayEarnings"] as? String ?? "R 0,00"
         self.yesterdayEarnings = context["yesterdayEarnings"] as? String ?? "R 0,00"
@@ -82,6 +116,8 @@ struct WatchSummaryData {
         self.last7DaysDeltaPositive = context["last7DaysDeltaPositive"] as? Bool
         self.thisMonthDelta = context["thisMonthDelta"] as? String
         self.thisMonthDeltaPositive = context["thisMonthDeltaPositive"] as? Bool
+        self.lastMonthDelta = context["lastMonthDelta"] as? String
+        self.lastMonthDeltaPositive = context["lastMonthDeltaPositive"] as? Bool
         
         self.todayClicks = context["todayClicks"] as? String
         self.todayPageViews = context["todayPageViews"] as? String
@@ -92,5 +128,64 @@ struct WatchSummaryData {
         } else {
             self.lastUpdated = Date()
         }
+    }
+    
+    // Initialize from SharedSummaryData (new format)
+    init(from sharedData: SharedSummaryData) {
+        self.todayEarnings = sharedData.todayEarnings
+        self.yesterdayEarnings = sharedData.yesterdayEarnings
+        self.last7DaysEarnings = sharedData.last7DaysEarnings
+        self.thisMonthEarnings = sharedData.thisMonthEarnings
+        self.lastMonthEarnings = sharedData.lastMonthEarnings
+        
+        self.todayDelta = sharedData.todayDelta
+        self.todayDeltaPositive = sharedData.todayDeltaPositive
+        self.yesterdayDelta = sharedData.yesterdayDelta
+        self.yesterdayDeltaPositive = sharedData.yesterdayDeltaPositive
+        self.last7DaysDelta = sharedData.last7DaysDelta
+        self.last7DaysDeltaPositive = sharedData.last7DaysDeltaPositive
+        self.thisMonthDelta = sharedData.thisMonthDelta
+        self.thisMonthDeltaPositive = sharedData.thisMonthDeltaPositive
+        self.lastMonthDelta = sharedData.lastMonthDelta
+        self.lastMonthDeltaPositive = sharedData.lastMonthDeltaPositive
+        
+        self.todayClicks = sharedData.todayClicks
+        self.todayPageViews = sharedData.todayPageViews
+        self.todayImpressions = sharedData.todayImpressions
+        
+        self.lastUpdated = sharedData.lastUpdated
+    }
+}
+
+// MARK: - Watch Data Bridge
+class WatchDataBridge {
+    static let shared = WatchDataBridge()
+    private let appGroupID = "group.com.delteqws.AdRadar"
+    
+    private init() {}
+    
+    /// Load data from shared container (for use when phone is not reachable)
+    func loadSharedData() -> WatchSummaryData? {
+        guard let defaults = UserDefaults(suiteName: appGroupID),
+              let data = defaults.data(forKey: "shared_summary_data") else {
+            print("[WatchDataBridge] No shared data found")
+            return nil
+        }
+        
+        do {
+            let sharedData = try JSONDecoder().decode(SharedSummaryData.self, from: data)
+            return WatchSummaryData(from: sharedData)
+        } catch {
+            print("[WatchDataBridge] Failed to decode shared data: \(error)")
+            return nil
+        }
+    }
+    
+    /// Check if shared data is available and fresh
+    func isSharedDataFresh() -> Bool {
+        guard let watchData = loadSharedData() else { return false }
+        
+        let dataAge = Date().timeIntervalSince(watchData.lastUpdated)
+        return dataAge < 30 * 60 // Consider fresh if less than 30 minutes old
     }
 } 

@@ -171,32 +171,103 @@ struct AdSenseSummaryData: Codable {
     let lastMonthDeltaPositive: Bool?
 }
 
-struct AdRadarWidgetEntry: TimelineEntry {
-    let date: Date
-    let summary: AdSenseSummaryData?
-    let lastUpdate: String
+// MARK: - Shared Data Models (copied from main app for widget use)
+struct SharedSummaryData: Codable, Equatable {
+    let todayEarnings: String
+    let yesterdayEarnings: String
+    let last7DaysEarnings: String
+    let thisMonthEarnings: String
+    let lastMonthEarnings: String
+    let lifetimeEarnings: String
+    
+    // Delta information
+    let todayDelta: String?
+    let todayDeltaPositive: Bool?
+    let yesterdayDelta: String?
+    let yesterdayDeltaPositive: Bool?
+    let last7DaysDelta: String?
+    let last7DaysDeltaPositive: Bool?
+    let thisMonthDelta: String?
+    let thisMonthDeltaPositive: Bool?
+    let lastMonthDelta: String?
+    let lastMonthDeltaPositive: Bool?
+    
+    // Metadata
+    let lastUpdated: Date
+    let dataVersion: Int
+    
+    init(from adSenseData: AdSenseSummaryData) {
+        self.todayEarnings = adSenseData.today
+        self.yesterdayEarnings = adSenseData.yesterday
+        self.last7DaysEarnings = adSenseData.last7Days
+        self.thisMonthEarnings = adSenseData.thisMonth
+        self.lastMonthEarnings = adSenseData.lastMonth
+        self.lifetimeEarnings = adSenseData.lifetime
+        
+        self.todayDelta = adSenseData.todayDelta
+        self.todayDeltaPositive = adSenseData.todayDeltaPositive
+        self.yesterdayDelta = adSenseData.yesterdayDelta
+        self.yesterdayDeltaPositive = adSenseData.yesterdayDeltaPositive
+        self.last7DaysDelta = adSenseData.last7DaysDelta
+        self.last7DaysDeltaPositive = adSenseData.last7DaysDeltaPositive
+        self.thisMonthDelta = adSenseData.thisMonthDelta
+        self.thisMonthDeltaPositive = adSenseData.thisMonthDeltaPositive
+        self.lastMonthDelta = adSenseData.lastMonthDelta
+        self.lastMonthDeltaPositive = adSenseData.lastMonthDeltaPositive
+        
+        self.lastUpdated = Date()
+        self.dataVersion = 1
+    }
 }
 
-// Minimal AdSenseAPI for widget data loading
-struct AdSenseAPI {
+struct AdRadarWidgetEntry: TimelineEntry {
+    let date: Date
+    let summary: SharedSummaryData?
+    let lastUpdate: String
+    let dataFreshness: String
+}
+
+// Enhanced data loading for widget using shared data models
+struct WidgetDataLoader {
     static let appGroupID = "group.com.delteqws.AdRadar" // Must match main app
-    static let summaryKey = "summaryData"
     
     private static var sharedDefaults: UserDefaults? {
         return UserDefaults(suiteName: appGroupID)
     }
     
-    static func loadSummaryFromSharedContainer() -> AdSenseSummaryData? {
+    // Load using new shared data model
+    static func loadSharedSummaryData() -> SharedSummaryData? {
         guard let defaults = sharedDefaults,
-              let data = defaults.data(forKey: summaryKey) else {
-            print("[AdRadarWidget] No summary data found in shared container")
+              let data = defaults.data(forKey: "shared_summary_data") else {
+            print("[AdRadarWidget] No shared summary data found")
+            return loadLegacySummaryData() // Fallback to legacy data
+        }
+        
+        do {
+            let summary = try JSONDecoder().decode(SharedSummaryData.self, from: data)
+            print("[AdRadarWidget] Successfully loaded shared summary data")
+            return summary
+        } catch {
+            print("[AdRadarWidget] Failed to decode shared summary data: \(error)")
+            return loadLegacySummaryData() // Fallback to legacy data
+        }
+    }
+    
+    // Fallback to legacy data format for backward compatibility
+    private static func loadLegacySummaryData() -> SharedSummaryData? {
+        guard let defaults = sharedDefaults,
+              let data = defaults.data(forKey: "summaryData") else {
+            print("[AdRadarWidget] No legacy summary data found")
             return nil
         }
-        if let summary = try? JSONDecoder().decode(AdSenseSummaryData.self, from: data) {
-            print("[AdRadarWidget] Successfully loaded summary data from shared container")
-            return summary
-        } else {
-            print("[AdRadarWidget] Failed to decode summary data")
+        
+        do {
+            let legacySummary = try JSONDecoder().decode(AdSenseSummaryData.self, from: data)
+            let sharedData = SharedSummaryData(from: legacySummary)
+            print("[AdRadarWidget] Successfully converted legacy data to shared format")
+            return sharedData
+        } catch {
+            print("[AdRadarWidget] Failed to decode legacy summary data: \(error)")
             return nil
         }
     }
@@ -219,25 +290,51 @@ struct Provider: TimelineProvider {
     }
     
     func placeholder(in context: Context) -> AdRadarWidgetEntry {
-        AdRadarWidgetEntry(date: Date(), summary: nil, lastUpdate: "--:--")
+        AdRadarWidgetEntry(date: Date(), summary: nil, lastUpdate: "--:--", dataFreshness: "Loading...")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (AdRadarWidgetEntry) -> ()) {
-        let summary = AdSenseAPI.loadSummaryFromSharedContainer()
-        let lastUpdateDate = AdSenseAPI.loadLastUpdateDate() ?? Date()
-        let entry = AdRadarWidgetEntry(date: lastUpdateDate, summary: summary, lastUpdate: formattedTime(lastUpdateDate))
+        let summary = WidgetDataLoader.loadSharedSummaryData()
+        let lastUpdateDate = summary?.lastUpdated ?? Date()
+        let dataFreshness = calculateDataFreshness(lastUpdateDate)
+        let entry = AdRadarWidgetEntry(
+            date: lastUpdateDate,
+            summary: summary,
+            lastUpdate: formattedTime(lastUpdateDate),
+            dataFreshness: dataFreshness
+        )
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<AdRadarWidgetEntry>) -> ()) {
-        let summary = AdSenseAPI.loadSummaryFromSharedContainer()
-        let lastUpdateDate = AdSenseAPI.loadLastUpdateDate() ?? Date()
-        let entry = AdRadarWidgetEntry(date: lastUpdateDate, summary: summary, lastUpdate: formattedTime(lastUpdateDate))
+        let summary = WidgetDataLoader.loadSharedSummaryData()
+        let lastUpdateDate = summary?.lastUpdated ?? Date()
+        let dataFreshness = calculateDataFreshness(lastUpdateDate)
+        let entry = AdRadarWidgetEntry(
+            date: lastUpdateDate,
+            summary: summary,
+            lastUpdate: formattedTime(lastUpdateDate),
+            dataFreshness: dataFreshness
+        )
         
-        // Update every 15 minutes
-        let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date()
+        // Update every 10 minutes to sync with background refresh
+        let nextUpdate = Calendar.current.date(byAdding: .minute, value: 10, to: Date()) ?? Date()
         let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
         completion(timeline)
+    }
+    
+    private func calculateDataFreshness(_ date: Date) -> String {
+        let timeInterval = Date().timeIntervalSince(date)
+        let minutes = Int(timeInterval / 60)
+        
+        if minutes < 1 {
+            return "Just updated"
+        } else if minutes < 60 {
+            return "\(minutes)m ago"
+        } else {
+            let hours = minutes / 60
+            return "\(hours)h ago"
+        }
     }
 }
 
@@ -344,8 +441,8 @@ struct AdRadarWidgetEntryView: View {
                 .foregroundColor(.secondary)
             }
             // Today value (reduce spacing)
-            if let today = entry.summary?.today {
-                Text(today)
+            if let summary = entry.summary {
+                Text(summary.todayEarnings)
                     .soraWidgetValue()
                     .foregroundColor(.primary)
                     .lineLimit(1)
@@ -367,7 +464,7 @@ struct AdRadarWidgetEntryView: View {
                         .soraFont(.semibold, size: 12)
                         .soraWidgetMetric()
                         .foregroundColor(.primary)
-                    Text(entry.summary?.yesterday ?? "--")
+                    Text(entry.summary?.yesterdayEarnings ?? "--")
                         .soraFont(.semibold, size: 10)
                         .soraWidgetMetricValue()
                         .foregroundColor(.secondary)
@@ -378,7 +475,7 @@ struct AdRadarWidgetEntryView: View {
                         .soraFont(.semibold, size: 12)
                         .soraWidgetMetric()
                         .foregroundColor(.primary)
-                    Text(entry.summary?.thisMonth ?? "--")
+                    Text(entry.summary?.thisMonthEarnings ?? "--")
                         .soraFont(.semibold, size: 10)
                         .soraWidgetMetricValue()
                         .foregroundColor(.secondary)
@@ -389,7 +486,7 @@ struct AdRadarWidgetEntryView: View {
                         .soraFont(.semibold, size: 12)
                         .soraWidgetMetric()
                         .foregroundColor(.primary)
-                    Text(entry.summary?.lastMonth ?? "--")
+                    Text(entry.summary?.lastMonthEarnings ?? "--")
                         .soraFont(.semibold, size: 10)
                         .soraWidgetMetricValue()
                         .foregroundColor(.secondary)

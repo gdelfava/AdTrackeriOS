@@ -257,6 +257,19 @@ struct SummaryView: View {
                 }
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .backgroundDataUpdated)) { _ in
+            // Refresh UI when background data is updated
+            print("[SummaryView] Received background data update notification")
+            Task {
+                if let token = authViewModel.accessToken {
+                    await MainActor.run {
+                        viewModel.accessToken = token
+                        viewModel.authViewModel = authViewModel
+                    }
+                    await viewModel.fetchSummary()
+                }
+            }
+        }
         .overlay(
             Group {
                 if viewModel.showOfflineToast {

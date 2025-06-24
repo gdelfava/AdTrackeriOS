@@ -76,6 +76,10 @@ class WatchDataSyncService: NSObject, ObservableObject {
             watchContext["thisMonthDelta"] = thisMonthDelta
             watchContext["thisMonthDeltaPositive"] = summaryData.thisMonthDeltaPositive ?? false
         }
+        if let lastMonthDelta = summaryData.lastMonthDelta {
+            watchContext["lastMonthDelta"] = lastMonthDelta
+            watchContext["lastMonthDeltaPositive"] = summaryData.lastMonthDeltaPositive ?? false
+        }
         
         // Add today's metrics if available
         if let metrics = todayMetrics {
@@ -154,31 +158,76 @@ extension WatchDataSyncService: WCSessionDelegate {
         if let action = message["action"] as? String, action == "requestUpdate" {
             print("📱 [iOS] Watch requested data update - responding via reply handler")
             
-            // For testing, send sample data immediately via reply handler
-            let testContext: [String: Any] = [
-                "todayEarnings": "R 15,75",
-                "yesterdayEarnings": "R 12,30",
-                "last7DaysEarnings": "R 95,40",
-                "thisMonthEarnings": "R 380,25",
-                "lastMonthEarnings": "R 325,90",
-                "todayDelta": "+R 3,45 (+28.0%)",
-                "todayDeltaPositive": true,
-                "yesterdayDelta": "-R 0,50 (-3.9%)",
-                "yesterdayDeltaPositive": false,
-                "last7DaysDelta": "+R 20,15 (+26.8%)",
-                "last7DaysDeltaPositive": true,
-                "thisMonthDelta": "+R 54,35 (+16.7%)",
-                "thisMonthDeltaPositive": true,
-                "todayClicks": "189",
-                "todayPageViews": "2,845",
-                "todayImpressions": "9,320",
-                "lastUpdated": Date().timeIntervalSince1970,
-                "status": "success"
-            ]
-            
-            // Send response via reply handler
-            replyHandler(testContext)
-            print("📱 [iOS] Sent test data to watch via reply handler")
+            Task { @MainActor in
+                // Try to load real data from shared container first
+                if let sharedData = CrossPlatformDataBridge.shared.loadSharedSummaryData() {
+                    print("📱 [iOS] Sending real data from shared container to watch")
+                    
+                    let realContext: [String: Any] = [
+                        "todayEarnings": sharedData.todayEarnings,
+                        "yesterdayEarnings": sharedData.yesterdayEarnings,
+                        "last7DaysEarnings": sharedData.last7DaysEarnings,
+                        "thisMonthEarnings": sharedData.thisMonthEarnings,
+                        "lastMonthEarnings": sharedData.lastMonthEarnings,
+                        "todayDelta": sharedData.todayDelta as Any? ?? NSNull(),
+                        "todayDeltaPositive": sharedData.todayDeltaPositive ?? false,
+                        "yesterdayDelta": sharedData.yesterdayDelta as Any? ?? NSNull(),
+                        "yesterdayDeltaPositive": sharedData.yesterdayDeltaPositive ?? false,
+                        "last7DaysDelta": sharedData.last7DaysDelta as Any? ?? NSNull(),
+                        "last7DaysDeltaPositive": sharedData.last7DaysDeltaPositive ?? false,
+                        "thisMonthDelta": sharedData.thisMonthDelta as Any? ?? NSNull(),
+                        "thisMonthDeltaPositive": sharedData.thisMonthDeltaPositive ?? false,
+                        "lastMonthDelta": sharedData.lastMonthDelta as Any? ?? NSNull(),
+                        "lastMonthDeltaPositive": sharedData.lastMonthDeltaPositive ?? false,
+                        "todayClicks": sharedData.todayClicks as Any? ?? NSNull(),
+                        "todayPageViews": sharedData.todayPageViews as Any? ?? NSNull(),
+                        "todayImpressions": sharedData.todayImpressions as Any? ?? NSNull(),
+                        "lastUpdated": sharedData.lastUpdated.timeIntervalSince1970,
+                        "status": "success"
+                    ]
+                    
+                    replyHandler(realContext)
+                    print("📱 [iOS] ✅ Sent real data to watch via reply handler")
+                    
+                } else if let legacyData = UserDefaultsManager.shared.loadSummaryData() {
+                    print("📱 [iOS] Sending real data from legacy storage to watch")
+                    
+                    let legacyContext: [String: Any] = [
+                        "todayEarnings": legacyData.today,
+                        "yesterdayEarnings": legacyData.yesterday,
+                        "last7DaysEarnings": legacyData.last7Days,
+                        "thisMonthEarnings": legacyData.thisMonth,
+                        "lastMonthEarnings": legacyData.lastMonth,
+                        "todayDelta": legacyData.todayDelta as Any? ?? NSNull(),
+                        "todayDeltaPositive": legacyData.todayDeltaPositive ?? false,
+                        "yesterdayDelta": legacyData.yesterdayDelta as Any? ?? NSNull(),
+                        "yesterdayDeltaPositive": legacyData.yesterdayDeltaPositive ?? false,
+                        "last7DaysDelta": legacyData.last7DaysDelta as Any? ?? NSNull(),
+                        "last7DaysDeltaPositive": legacyData.last7DaysDeltaPositive ?? false,
+                        "thisMonthDelta": legacyData.thisMonthDelta as Any? ?? NSNull(),
+                        "thisMonthDeltaPositive": legacyData.thisMonthDeltaPositive ?? false,
+                        "lastMonthDelta": legacyData.lastMonthDelta as Any? ?? NSNull(),
+                        "lastMonthDeltaPositive": legacyData.lastMonthDeltaPositive ?? false,
+                        "lastUpdated": Date().timeIntervalSince1970,
+                        "status": "success"
+                    ]
+                    
+                    replyHandler(legacyContext)
+                    print("📱 [iOS] ✅ Sent legacy data to watch via reply handler")
+                    
+                } else {
+                    print("📱 [iOS] ⚠️ No data available - sending fallback response")
+                    
+                    // Send a fallback response indicating no data
+                    let fallbackContext: [String: Any] = [
+                        "status": "no_data",
+                        "message": "No data available on iPhone",
+                        "lastUpdated": Date().timeIntervalSince1970
+                    ]
+                    
+                    replyHandler(fallbackContext)
+                }
+            }
         } else {
             // Send a basic acknowledgment if no specific action
             replyHandler(["status": "received", "timestamp": Date().timeIntervalSince1970])

@@ -12,11 +12,14 @@ import Combine
 @main
 struct AdRadar_App: App {
     @StateObject private var authViewModel = AuthViewModel()
+    @StateObject private var backgroundDataManager = BackgroundDataManager.shared
     
     init() {
         setupAppEnvironment()
         // Initialize memory monitoring
         setupMemoryMonitoring()
+        // Initialize background data management
+        setupBackgroundDataManager()
     }
     
     private func setupAppEnvironment() {
@@ -53,6 +56,13 @@ struct AdRadar_App: App {
         }
     }
     
+    private func setupBackgroundDataManager() {
+        // Initialize background data manager on main thread
+        Task { @MainActor in
+            BackgroundDataManager.shared.initialize()
+        }
+    }
+    
     private func logInitializationStatus() {
         #if DEBUG
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -76,16 +86,27 @@ struct AdRadar_App: App {
             SplashScreenWrapper()
                 .environmentObject(authViewModel)
                 .environmentObject(NetworkMonitor.shared)
+                .environmentObject(backgroundDataManager)
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
                     // Check memory when app becomes active
                     let memoryPressureDetected = MemoryManager.shared.checkMemoryPressure()
                     if memoryPressureDetected {
                         print("[App] Memory pressure detected on app activation - cleanup performed")
                     }
+                    
+                    // Handle app becoming active for background data manager
+                    Task { @MainActor in
+                        BackgroundDataManager.shared.handleAppBecomeActive()
+                    }
                 }
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
                     // Clean up when app goes to background
                     MemoryManager.shared.performMaintenanceCleanup()
+                    
+                    // Handle app entering background for background data manager
+                    Task { @MainActor in
+                        BackgroundDataManager.shared.handleAppEnterBackground()
+                    }
                 }
         }
     }
