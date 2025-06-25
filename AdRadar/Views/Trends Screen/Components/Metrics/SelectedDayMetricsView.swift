@@ -57,7 +57,7 @@ struct SelectedDayMetricsView: View {
                 GridItem(.flexible())
             ], spacing: 16) {
                 MetricCard(
-                    title: "Revenue",
+                    title: "Earnings",
                     value: viewModel.formatCurrency(day.earnings),
                     icon: "dollarsign.circle.fill",
                     color: .green,

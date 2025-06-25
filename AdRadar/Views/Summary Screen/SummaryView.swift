@@ -54,7 +54,7 @@ struct SummaryView: View {
 
                         if viewModel.isLoading {
                             Spacer()
-                            ProgressView("Loading summary...")
+                            ProgressView("Loading overview...")
                                 .soraBody()
                                 .padding()
                             Spacer()

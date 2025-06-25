@@ -61,9 +61,9 @@ struct OnboardingView: View {
                             Button(action: nextPage) {
                                 HStack {
                                     Text("Next")
-                                        .font(.body.weight(.semibold))
+                                        .soraButtonTitle()
                                     Image(systemName: "arrow.right")
-                                        .font(.body.weight(.medium))
+                                        .font(.sora(.medium, size: 17))
                                 }
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
@@ -75,16 +75,16 @@ struct OnboardingView: View {
                             
                             Button(action: skipOnboarding) {
                                 Text("Skip")
-                                    .font(.body.weight(.medium))
+                                    .soraFont(.medium, size: 17)
                                     .foregroundColor(.secondary)
                             }
                         } else {
                             Button(action: skipOnboarding) {
                                 HStack {
                                     Text("Get Started")
-                                        .font(.body.weight(.semibold))
+                                        .soraButtonTitle()
                                     Image(systemName: "arrow.right")
-                                        .font(.body.weight(.medium))
+                                        .font(.sora(.medium, size: 17))
                                 }
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
@@ -171,7 +171,7 @@ struct OnboardingPageView: View {
                         .opacity(animateContent ? 1.0 : 0.0)
                     
                     Image(systemName: page.imageName)
-                        .font(.system(size: 60, weight: .medium))
+                        .font(.sora(.medium, size: 60))
                         .foregroundColor(page.backgroundColor)
                         .scaleEffect(animateContent ? 1.0 : 0.4)
                         .opacity(animateContent ? 1.0 : 0.0)
@@ -181,7 +181,7 @@ struct OnboardingPageView: View {
                 // Text content
                 VStack(spacing: 16) {
                     Text(page.title)
-                        .font(.largeTitle.weight(.bold))
+                        .soraLargeTitle()
                         .multilineTextAlignment(.center)
                         .foregroundColor(.primary)
                         .padding(.horizontal, 32)
@@ -190,7 +190,7 @@ struct OnboardingPageView: View {
                         .animation(.easeOut(duration: 0.8).delay(0.6), value: animateContent)
                     
                     Text(page.subtitle)
-                        .font(.title3)
+                        .soraBody()
                         .multilineTextAlignment(.center)
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 40)

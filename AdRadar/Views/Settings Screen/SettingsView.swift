@@ -248,7 +248,7 @@ struct SettingsView: View {
                                     }
                                     
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text("Enable AdMob Apps")
+                                        Text("AdMob Apps")
                                             .soraBody()
                                             .fontWeight(.medium)
                                             .foregroundColor(.primary)

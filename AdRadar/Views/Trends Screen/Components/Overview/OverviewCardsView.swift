@@ -52,7 +52,7 @@ struct OverviewCardsView: View {
                 GridItem(.flexible())
             ], spacing: 16) {
                 OverviewCard(
-                    title: "Total Revenue",
+                    title: "Total Earnings",
                     value: viewModel.formatCurrency(weeklyRevenue),
                     icon: "dollarsign.circle.fill",
                     color: .green,

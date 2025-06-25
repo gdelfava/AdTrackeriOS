@@ -132,9 +132,9 @@ struct StreakView: View {
                 .soraTitle2()
                 .foregroundColor(.primary)
             
-            Text("Activity Calendar")
-                .soraTitle3()
-                .foregroundColor(.primary)
+//            Text("Activity Calendar")
+//                .soraTitle3()
+//                .foregroundColor(.primary)
             
             HorizontalDatePickerView(selectedDay: $selectedDay, streakData: viewModel.streakData)
                 .opacity(calendarAppeared ? 1 : 0)
