@@ -14,6 +14,30 @@ struct StreakDayData: Identifiable, Equatable {
     let delta: Double?
     let deltaPositive: Bool?
     
+    // Trend properties
+    var earningsTrend: Double? {
+        guard let delta = delta else { return nil }
+        return deltaPositive == true ? abs(delta) : -abs(delta)
+    }
+    
+    var clicksTrend: Double? {
+        // Calculate trend as percentage change from previous day
+        guard let delta = delta else { return nil }
+        return clicks > 0 ? (delta / Double(clicks)) * 100 : nil
+    }
+    
+    var impressionsTrend: Double? {
+        // Calculate trend as percentage change from previous day
+        guard let delta = delta else { return nil }
+        return impressions > 0 ? (delta / Double(impressions)) * 100 : nil
+    }
+    
+    var ctrTrend: Double? {
+        // Calculate trend as percentage change from previous day
+        guard let delta = delta else { return nil }
+        return impressionCTR > 0 ? (delta / impressionCTR) * 100 : nil
+    }
+    
     static func == (lhs: StreakDayData, rhs: StreakDayData) -> Bool {
         return lhs.id == rhs.id
     }

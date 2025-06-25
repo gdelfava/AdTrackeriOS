@@ -4,107 +4,251 @@ import Charts
 struct PerformanceInsightsView: View {
     let streakData: [StreakDayData]
     let viewModel: StreakViewModel
+    @State private var selectedMetric = 0
     
     private var weeklyData: [StreakDayData] {
         Array(streakData.prefix(7))
     }
     
+    private let metrics = [
+        ("Revenue Trend", Color.green),
+        ("Impressions Trend", Color.blue),
+        ("CTR Trend", Color.purple)
+    ]
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("Performance Insights")
-                .soraTitle3()
-                .foregroundColor(.primary)
+            // Modern header with large icon and metric selector
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 16) {
+                    Image(systemName: "chart.line.uptrend.xyaxis.circle.fill")
+                        .font(.system(size: 32, weight: .medium))
+                        .foregroundColor(.purple)
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Performance Insights")
+                            .soraTitle2()
+                            .foregroundColor(.primary)
+                        Text("Analyze your revenue and engagement trends")
+                            .soraSubheadline()
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                // Metric selector
+                Picker("Metric", selection: $selectedMetric) {
+                    ForEach(0..<metrics.count, id: \.self) { index in
+                        Text(metrics[index].0.replacingOccurrences(of: " Trend", with: ""))
+                            .tag(index)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
             
-            // Revenue Chart
-            InsightCard(
-                title: "Revenue Trend",
-                data: weeklyData,
-                valueKey: \.earnings,
-                color: .green,
-                formatter: viewModel.formatCurrency
+            // Chart Card
+            VStack(alignment: .leading, spacing: 20) {
+                // Weekly change indicator
+                HStack {
+                    Text(metrics[selectedMetric].0)
+                        .soraTitle3()
+                        .foregroundColor(.primary)
+                    
+                    Spacer()
+                    weeklyChangeIndicator
+                }
+                
+                // Main Chart
+                Chart(weeklyData, id: \.date) { day in
+                    LineMark(
+                        x: .value("Date", day.date),
+                        y: .value("Value", metricValue(for: day))
+                    )
+                    .foregroundStyle(metrics[selectedMetric].1)
+                    .lineStyle(StrokeStyle(lineWidth: 2.5))
+                    .symbol {
+                        Circle()
+                            .fill(metrics[selectedMetric].1)
+                            .frame(width: 8, height: 8)
+                    }
+                    
+                    AreaMark(
+                        x: .value("Date", day.date),
+                        y: .value("Value", metricValue(for: day))
+                    )
+                    .foregroundStyle(
+                        .linearGradient(
+                            colors: [
+                                metrics[selectedMetric].1.opacity(0.2),
+                                metrics[selectedMetric].1.opacity(0.0)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                }
+                .chartXAxis {
+                    AxisMarks(values: .stride(by: .day)) { value in
+                        if let date = value.as(Date.self) {
+                            AxisValueLabel {
+                                Text(formatDate(date))
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(Color(.label))
+                            }
+                        }
+                        AxisTick()
+                            .foregroundStyle(Color(.label))
+                        AxisGridLine()
+                            .foregroundStyle(Color(.separator))
+                    }
+                }
+                .chartYAxis {
+                    AxisMarks(preset: .extended) { value in
+                        if let doubleValue = value.as(Double.self) {
+                            AxisValueLabel {
+                                Text(formatValue(doubleValue))
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(Color(.label))
+                            }
+                            AxisTick()
+                                .foregroundStyle(Color(.label))
+                            AxisGridLine()
+                                .foregroundStyle(Color(.separator))
+                        }
+                    }
+                }
+                .frame(height: 250)
+                .padding(.vertical, 8)
+                
+                // Key metrics summary
+                LazyVGrid(columns: [
+                    GridItem(.flexible()),
+                    GridItem(.flexible()),
+                    GridItem(.flexible())
+                ], spacing: 16) {
+                    MetricSummary(
+                        title: "Highest",
+                        value: formatValue(highestValue),
+                        icon: "arrow.up.circle.fill",
+                        color: metrics[selectedMetric].1
+                    )
+                    
+                    MetricSummary(
+                        title: "Average",
+                        value: formatValue(averageValue),
+                        icon: "equal.circle.fill",
+                        color: metrics[selectedMetric].1
+                    )
+                    
+                    MetricSummary(
+                        title: "Lowest",
+                        value: formatValue(lowestValue),
+                        icon: "arrow.down.circle.fill",
+                        color: metrics[selectedMetric].1
+                    )
+                }
+            }
+            .padding(24)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color(.secondarySystemBackground))
             )
-            
-            // Impressions Chart
-            InsightCard(
-                title: "Impressions Trend",
-                data: weeklyData,
-                valueKey: { Double($0.impressions) },
-                color: .blue,
-                formatter: { viewModel.formatNumber(Int($0)) }
-            )
-            
-            // CTR Chart
-            InsightCard(
-                title: "CTR Trend",
-                data: weeklyData,
-                valueKey: \.impressionCTR,
-                color: .purple,
-                formatter: viewModel.formatPercentage
-            )
+        }
+    }
+    
+    // MARK: - Helper Views
+    
+    private var weeklyChangeIndicator: some View {
+        let change = weeklyChange
+        return HStack(spacing: 4) {
+            Image(systemName: change >= 0 ? "arrow.up.right" : "arrow.down.right")
+                .font(.caption)
+            Text(String(format: "%.1f%%", abs(change)))
+                .soraCaption()
+        }
+        .foregroundColor(change >= 0 ? .green : .red)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color(.systemBackground))
+        )
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func metricValue(for day: StreakDayData) -> Double {
+        switch selectedMetric {
+        case 0: return day.earnings
+        case 1: return Double(day.impressions)
+        case 2: return day.impressionCTR
+        default: return 0
+        }
+    }
+    
+    private var weeklyChange: Double {
+        guard weeklyData.count >= 2 else { return 0 }
+        let current = metricValue(for: weeklyData[0])
+        let previous = metricValue(for: weeklyData[1])
+        return previous != 0 ? ((current - previous) / previous) * 100 : 0
+    }
+    
+    private var highestValue: Double {
+        weeklyData.map { metricValue(for: $0) }.max() ?? 0
+    }
+    
+    private var lowestValue: Double {
+        weeklyData.map { metricValue(for: $0) }.min() ?? 0
+    }
+    
+    private var averageValue: Double {
+        let values = weeklyData.map { metricValue(for: $0) }
+        return values.reduce(0, +) / Double(values.count)
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        return formatter.string(from: date)
+    }
+    
+    private func formatValue(_ value: Double) -> String {
+        switch selectedMetric {
+        case 0: return viewModel.formatCurrency(value)
+        case 1: return viewModel.formatNumber(Int(value))
+        case 2: return viewModel.formatPercentage(value)
+        default: return ""
         }
     }
 }
 
-// MARK: - Insight Card
-private struct InsightCard: View {
+// MARK: - Metric Summary
+private struct MetricSummary: View {
     let title: String
-    let data: [StreakDayData]
-    let valueKey: (StreakDayData) -> Double
+    let value: String
+    let icon: String
     let color: Color
-    let formatter: (Double) -> String
-    
-    private var dateFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        return formatter
-    }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 20, weight: .medium))
+                .foregroundColor(color)
+            
             Text(title)
-                .soraSubheadline()
+                .soraCaption()
                 .foregroundColor(.secondary)
             
-            Chart(data, id: \.date) { day in
-                LineMark(
-                    x: .value("Date", day.date),
-                    y: .value("Value", valueKey(day))
-                )
-                .foregroundStyle(color)
-                .symbol(Circle().strokeBorder(lineWidth: 2))
-                
-                AreaMark(
-                    x: .value("Date", day.date),
-                    y: .value("Value", valueKey(day))
-                )
-                .foregroundStyle(
-                    .linearGradient(
-                        colors: [color.opacity(0.2), color.opacity(0.0)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-            }
-            .chartXAxis {
-                AxisMarks(values: .stride(by: .day)) { value in
-                    if let date = value.as(Date.self) {
-                        AxisValueLabel(dateFormatter.string(from: date))
-                    }
-                }
-            }
-            .chartYAxis {
-                AxisMarks { value in
-                    if let doubleValue = value.as(Double.self) {
-                        AxisValueLabel(formatter(doubleValue))
-                    }
-                }
-            }
-            .frame(height: 200)
+            Text(value)
+                .soraSubheadline()
+                .foregroundColor(.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
-        .padding()
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.secondarySystemBackground))
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(.systemBackground))
         )
     }
 } 

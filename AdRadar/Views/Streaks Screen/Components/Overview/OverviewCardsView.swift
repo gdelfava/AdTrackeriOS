@@ -30,10 +30,22 @@ struct OverviewCardsView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("7-Day Overview")
-                .soraTitle3()
-                .foregroundColor(.primary)
+        VStack(alignment: .leading, spacing: 20) {
+            // Modern header with large icon
+            HStack(spacing: 16) {
+                Image(systemName: "calendar.badge.clock")
+                    .font(.system(size: 32, weight: .medium))
+                    .foregroundColor(.orange)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("7-Day Overview")
+                        .soraTitle2()
+                        .foregroundColor(.primary)
+                    Text("Your weekly performance at a glance")
+                        .soraSubheadline()
+                        .foregroundColor(.secondary)
+                }
+            }
             
             LazyVGrid(columns: [
                 GridItem(.flexible()),
@@ -48,7 +60,7 @@ struct OverviewCardsView: View {
                 )
                 
                 OverviewCard(
-                    title: "Total Impressions",
+                    title: "Total Impress.",
                     value: viewModel.formatNumber(weeklyImpressions),
                     icon: "eye.fill",
                     color: .blue,
@@ -83,19 +95,47 @@ private struct OverviewCard: View {
     let color: Color
     let data: [Double]
     
+    private var trend: Double {
+        guard data.count >= 2 else { return 0 }
+        let current = data[0]
+        let previous = data[1]
+        return previous != 0 ? ((current - previous) / previous) * 100 : 0
+    }
+    
+    private var trendIcon: String {
+        trend > 0 ? "arrow.up.right" : (trend < 0 ? "arrow.down.right" : "minus")
+    }
+    
+    private var trendColor: Color {
+        trend > 0 ? .green : (trend < 0 ? .red : .secondary)
+    }
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
+        VStack(alignment: .leading, spacing: 16) {
+            // Header
+            HStack(spacing: 12) {
                 Image(systemName: icon)
+                    .font(.system(size: 18, weight: .medium))
                     .foregroundColor(color)
                 Text(title)
                     .soraSubheadline()
                     .foregroundColor(.secondary)
             }
             
-            Text(value)
-                .soraTitle3()
-                .foregroundColor(.primary)
+            // Value and Trend
+            VStack(alignment: .leading, spacing: 8) {
+                Text(value)
+                    .soraTitle3()
+                    .foregroundColor(.primary)
+                
+                HStack(spacing: 4) {
+                    Image(systemName: trendIcon)
+                        .font(.caption)
+                    Text(String(format: "%.1f%%", abs(trend)))
+                        .soraCaption()
+                }
+                .foregroundColor(trendColor)
+            }
             
             // Mini Sparkline Chart
             Chart(Array(data.enumerated()), id: \.0) { index, value in
@@ -104,6 +144,7 @@ private struct OverviewCard: View {
                     y: .value("Value", value)
                 )
                 .foregroundStyle(color.opacity(0.8))
+                .lineStyle(StrokeStyle(lineWidth: 2))
                 
                 AreaMark(
                     x: .value("Day", index),
@@ -116,15 +157,24 @@ private struct OverviewCard: View {
                         endPoint: .bottom
                     )
                 )
+                
+                if index == 0 {
+                    PointMark(
+                        x: .value("Day", index),
+                        y: .value("Value", value)
+                    )
+                    .foregroundStyle(color)
+                }
             }
             .chartXAxis(.hidden)
             .chartYAxis(.hidden)
-            .frame(height: 40)
+            .frame(height: 50)
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 16)
                 .fill(Color(.secondarySystemBackground))
+                .shadow(color: color.opacity(0.05), radius: 8, x: 0, y: 4)
         )
     }
 } 

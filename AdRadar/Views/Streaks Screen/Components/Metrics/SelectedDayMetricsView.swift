@@ -11,14 +11,30 @@ struct SelectedDayMetricsView: View {
         return formatter.string(from: day.date)
     }
     
+    private var isToday: Bool {
+        Calendar.current.isDateInToday(day.date)
+    }
+    
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 20) {
             // Header
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(formattedDate)
-                        .soraTitle3()
-                        .foregroundColor(.primary)
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 8) {
+                        Text(formattedDate)
+                            .soraTitle3()
+                            .foregroundColor(.primary)
+                        if isToday {
+                            Text("Today")
+                                .soraCaption()
+                                .bold()
+                                .foregroundColor(Color.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.accentColor)
+                                .cornerRadius(8)
+                        }
+                    }
                     Text("Daily Performance")
                         .soraSubheadline()
                         .foregroundColor(.secondary)
@@ -44,34 +60,33 @@ struct SelectedDayMetricsView: View {
                     title: "Revenue",
                     value: viewModel.formatCurrency(day.earnings),
                     icon: "dollarsign.circle.fill",
-                    color: .green
+                    color: .green,
+                    trend: day.earningsTrend
                 )
                 MetricCard(
                     title: "Impressions",
                     value: viewModel.formatNumber(day.impressions),
                     icon: "eye.fill",
-                    color: .blue
+                    color: .blue,
+                    trend: day.impressionsTrend
                 )
                 MetricCard(
                     title: "Clicks",
                     value: viewModel.formatNumber(day.clicks),
                     icon: "hand.tap.fill",
-                    color: .orange
+                    color: .orange,
+                    trend: day.clicksTrend
                 )
                 MetricCard(
                     title: "CTR",
                     value: viewModel.formatPercentage(day.impressionCTR),
                     icon: "percent",
-                    color: .purple
+                    color: .purple,
+                    trend: day.ctrTrend
                 )
             }
         }
-        .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
-        )
+        .padding(24)
     }
 }
 
@@ -81,24 +96,49 @@ private struct MetricCard: View {
     let value: String
     let icon: String
     let color: Color
+    let trend: Double?
+    
+    private var trendIcon: String {
+        guard let trend = trend else { return "minus" }
+        return trend > 0 ? "arrow.up.right" : "arrow.down.right"
+    }
+    
+    private var trendColor: Color {
+        guard let trend = trend else { return .secondary }
+        return trend > 0 ? .green : .red
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: icon)
                     .foregroundColor(color)
+                    .font(.system(size: 18, weight: .medium))
                 Text(title)
                     .soraSubheadline()
                     .foregroundColor(.secondary)
             }
-            Text(value)
-                .soraTitle3()
-                .foregroundColor(.primary)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text(value)
+                    .soraTitle3()
+                    .foregroundColor(.primary)
+                
+                if let trend = trend {
+                    HStack(spacing: 4) {
+                        Image(systemName: trendIcon)
+                            .font(.caption)
+                        Text(String(format: "%.1f%%", abs(trend)))
+                            .soraCaption()
+                    }
+                    .foregroundColor(trendColor)
+                }
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 16)
                 .fill(Color(.secondarySystemBackground))
         )
     }

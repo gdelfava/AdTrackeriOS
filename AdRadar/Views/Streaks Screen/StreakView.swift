@@ -10,6 +10,7 @@ struct StreakView: View {
     @State private var overviewAppeared = false
     @State private var detailsAppeared = false
     @State private var animateFloatingElements = false
+    @State private var showDatePicker = false
     @Binding var showSlideOverMenu: Bool
     @Binding var selectedTab: Int
     
@@ -19,12 +20,10 @@ struct StreakView: View {
         _selectedTab = selectedTab
     }
     
-    // Auto-select current day if available, otherwise first day
     private var displayDay: StreakDayData? {
         selectedDay ?? currentDay ?? viewModel.streakData.first
     }
     
-    // Find today's date in the data
     private var currentDay: StreakDayData? {
         let today = Date()
         return viewModel.streakData.first { Calendar.current.isDate($0.date, inSameDayAs: today) }
@@ -33,145 +32,263 @@ struct StreakView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                // Modern gradient background - always full screen
+                // Modern gradient background with dynamic colors
                 LinearGradient(
                     gradient: Gradient(colors: [
                         Color(.systemBackground),
-                        Color.accentColor.opacity(0.1),
+                        Color.accentColor.opacity(0.08),
                         Color(.systemBackground)
                     ]),
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
-                .ignoresSafeArea(.all)
+                .ignoresSafeArea()
                 
-                // Floating elements for visual interest
-                StreakFloatingElementsView(animate: $animateFloatingElements)
-                
+                // Main content
                 ScrollView {
                     VStack(spacing: 24) {
-                        // Last Updated Header
-                        if !viewModel.isLoading && !viewModel.streakData.isEmpty {
-                            StreakHeaderView(lastUpdateTime: viewModel.lastUpdateTime)
-                                .padding(.horizontal, 20)
-                        }
-                        
                         if viewModel.isLoading {
-                            Spacer()
-                            ProgressView("Loading...")
-                                .soraBody()
-                                .padding()
-                            Spacer()
+                            loadingView
                         } else if viewModel.showEmptyState {
-                            Spacer()
-                            StreakEmptyStateView(message: viewModel.emptyStateMessage ?? "")
-                            Spacer()
+                            emptyStateView
                         } else {
-                            // Compact Horizontal Date Picker
-                            HorizontalDatePickerView(
-                                selectedDay: $selectedDay,
-                                streakData: viewModel.streakData
-                            )
-                            .opacity(calendarAppeared ? 1 : 0)
-                            .offset(y: calendarAppeared ? 0 : 20)
-                            .padding(.horizontal, 20)
-                            
-                            // Selected Day Detailed Metrics
-                            if let displayDay = displayDay {
-                                SelectedDayMetricsView(
-                                    day: displayDay,
-                                    viewModel: viewModel,
-                                    showCloseButton: false
-                                )
-                                .opacity(detailsAppeared ? 1 : 0)
-                                .offset(y: detailsAppeared ? 0 : 20)
-                                .padding(.horizontal, 20)
-                            }
-                            
-                            // 7-Day Overview Cards
-                            OverviewCardsView(streakData: viewModel.streakData, viewModel: viewModel)
-                                .opacity(overviewAppeared ? 1 : 0)
-                                .offset(y: overviewAppeared ? 0 : 20)
-                                .padding(.horizontal, 20)
-                            
-                            // Performance Insights
-                            PerformanceInsightsView(streakData: viewModel.streakData, viewModel: viewModel)
-                                .opacity(overviewAppeared ? 1 : 0)
-                                .offset(y: overviewAppeared ? 0 : 20)
-                                .padding(.horizontal, 20)
+                            content
                         }
                     }
                     .padding(.vertical)
                 }
-            }
-            .refreshable {
-                if let token = authViewModel.accessToken {
-                    viewModel.accessToken = token
-                    viewModel.authViewModel = authViewModel
-                    // Reset selected day to allow auto-selection of current day after refresh
-                    selectedDay = nil
-                    await viewModel.fetchStreakData()
+                .refreshable {
+                    await refreshData()
                 }
             }
-            .navigationTitle("Streak")
+            .navigationTitle("Analytics")
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            showSlideOverMenu = true
-                        }
-                    }) {
-                        Image(systemName: "line.3.horizontal")
-                            .font(.title2)
-                            .foregroundColor(.primary)
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    ProfileImageView(url: authViewModel.userProfileImageURL)
-                        .contextMenu {
-                            Button(role: .destructive) {
-                                authViewModel.signOut()
-                            } label: {
-                                Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
-                            }
-                            Button("Cancel", role: .cancel) { }
-                        }
-                }
+                leadingToolbarItems
+                trailingToolbarItems
             }
         }
         .onAppear {
-            // Only fetch data on first load, not on every tab switch
-            if let token = authViewModel.accessToken, !viewModel.hasLoaded {
-                viewModel.accessToken = token
-                viewModel.authViewModel = authViewModel
-                Task { await viewModel.fetchStreakData() }
-            }
-            
-            // Staggered animations
-            withAnimation(.easeOut(duration: 0.5)) {
-                calendarAppeared = true
-            }
-            
-            withAnimation(.easeOut(duration: 0.5).delay(0.2)) {
-                overviewAppeared = true
-            }
-            
-            withAnimation(.easeOut(duration: 0.5).delay(0.4)) {
-                detailsAppeared = true
-            }
-            
-            // Animate floating elements
-            withAnimation(.easeOut(duration: 0.8).delay(0.2)) {
-                animateFloatingElements = true
-            }
+            setupInitialData()
+            animateContent()
         }
         .onChange(of: viewModel.streakData) { _, newData in
-            // Auto-select current day when data loads, fallback to first day
-            if selectedDay == nil && !newData.isEmpty {
-                let today = Date()
-                selectedDay = newData.first { Calendar.current.isDate($0.date, inSameDayAs: today) } ?? newData.first
+            handleDataChange(newData)
+        }
+        .sheet(isPresented: $showDatePicker) {
+            datePickerSheet
+        }
+    }
+    
+    // MARK: - Content Views
+    
+    private var content: some View {
+        VStack(spacing: 24) {
+            // Header with last update time and date selection
+            headerSection
+                .padding(.horizontal, 20)
+            
+            // Streak calendar
+            calendarSection
+                .padding(.horizontal, 20)
+            
+            // Selected day metrics card
+            if let displayDay = displayDay {
+                selectedDayCard(displayDay)
+                    .transition(.scale.combined(with: .opacity))
+            }
+            
+            // Performance overview
+            performanceSection
+                .padding(.horizontal, 20)
+            
+            // Insights section
+            insightsSection
+                .padding(.horizontal, 20)
+        }
+    }
+    
+    private var headerSection: some View {
+        Group {
+            if !viewModel.isLoading && !viewModel.streakData.isEmpty {
+                StreakHeaderView(lastUpdateTime: viewModel.lastUpdateTime)
+                    .opacity(calendarAppeared ? 1 : 0)
+                    .offset(y: calendarAppeared ? 0 : 10)
+            } else {
+                EmptyView()
             }
         }
+    }
+    
+    private func selectedDayCard(_ day: StreakDayData) -> some View {
+        SelectedDayMetricsView(day: day, viewModel: viewModel, showCloseButton: false)
+            .opacity(detailsAppeared ? 1 : 0)
+            .offset(y: detailsAppeared ? 0 : 20)
+    }
+    
+    private var calendarSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Month name
+            Text(formatMonth(displayDay?.date ?? Date()))
+                .soraTitle2()
+                .foregroundColor(.primary)
+            
+            Text("Activity Calendar")
+                .soraTitle3()
+                .foregroundColor(.primary)
+            
+            HorizontalDatePickerView(selectedDay: $selectedDay, streakData: viewModel.streakData)
+                .opacity(calendarAppeared ? 1 : 0)
+                .offset(y: calendarAppeared ? 0 : 20)
+        }
+    }
+    
+    private var performanceSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            OverviewCardsView(streakData: viewModel.streakData, viewModel: viewModel)
+                .opacity(overviewAppeared ? 1 : 0)
+                .offset(y: overviewAppeared ? 0 : 20)
+        }
+    }
+    
+    private var insightsSection: some View {
+        PerformanceInsightsView(streakData: viewModel.streakData, viewModel: viewModel)
+            .opacity(overviewAppeared ? 1 : 0)
+            .offset(y: overviewAppeared ? 0 : 20)
+    }
+    
+    private var loadingView: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+                .scaleEffect(1.2)
+            Text("Loading analytics...")
+                .soraBody()
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.vertical, 100)
+    }
+    
+    private var emptyStateView: some View {
+        StreakEmptyStateView(message: viewModel.emptyStateMessage ?? "")
+            .padding(.horizontal, 20)
+            .padding(.vertical, 100)
+    }
+    
+    private var datePickerSheet: some View {
+        NavigationView {
+            VStack {
+                DatePicker(
+                    "Select Date",
+                    selection: Binding(
+                        get: { displayDay?.date ?? Date() },
+                        set: { newDate in
+                            selectedDay = viewModel.streakData.first {
+                                Calendar.current.isDate($0.date, inSameDayAs: newDate)
+                            }
+                        }
+                    ),
+                    in: ...Date(),
+                    displayedComponents: .date
+                )
+                .datePickerStyle(.graphical)
+                .padding()
+            }
+            .navigationTitle("Select Date")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        showDatePicker = false
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Toolbar Items
+    
+    private var leadingToolbarItems: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarLeading) {
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showSlideOverMenu = true
+                }
+            }) {
+                Image(systemName: "line.3.horizontal")
+                    .font(.title2)
+                    .foregroundColor(.primary)
+            }
+        }
+    }
+    
+    private var trailingToolbarItems: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            ProfileImageView(url: authViewModel.userProfileImageURL)
+                .contextMenu {
+                    Button(role: .destructive) {
+                        authViewModel.signOut()
+                    } label: {
+                        Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
+                    }
+                    Button("Cancel", role: .cancel) { }
+                }
+        }
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func setupInitialData() {
+        if let token = authViewModel.accessToken, !viewModel.hasLoaded {
+            viewModel.accessToken = token
+            viewModel.authViewModel = authViewModel
+            Task { await viewModel.fetchStreakData() }
+        }
+    }
+    
+    private func animateContent() {
+        withAnimation(.easeOut(duration: 0.5)) {
+            calendarAppeared = true
+        }
+        
+        withAnimation(.easeOut(duration: 0.5).delay(0.2)) {
+            overviewAppeared = true
+        }
+        
+        withAnimation(.easeOut(duration: 0.5).delay(0.4)) {
+            detailsAppeared = true
+        }
+        
+        withAnimation(.easeOut(duration: 0.8).delay(0.2)) {
+            animateFloatingElements = true
+        }
+    }
+    
+    private func handleDataChange(_ newData: [StreakDayData]) {
+        if selectedDay == nil && !newData.isEmpty {
+            let today = Date()
+            selectedDay = newData.first { Calendar.current.isDate($0.date, inSameDayAs: today) } ?? newData.first
+        }
+    }
+    
+    private func refreshData() async {
+        if let token = authViewModel.accessToken {
+            viewModel.accessToken = token
+            viewModel.authViewModel = authViewModel
+            selectedDay = nil
+            await viewModel.fetchStreakData()
+        }
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM d, yyyy"
+        return formatter.string(from: date)
+    }
+    
+    private func formatMonth(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        return formatter.string(from: date)
     }
     
     private func errorSymbol(for error: String) -> String {
