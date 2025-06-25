@@ -141,6 +141,8 @@ class AuthViewModel: ObservableObject {
         defaults.removeObject(forKey: userNameKey)
         defaults.removeObject(forKey: userEmailKey)
         defaults.removeObject(forKey: userProfileImageURLKey)
+        // Clear AdSense account ID
+        UserDefaultsManager.shared.removeValue(forKey: "adSenseAccountID")
     }
     
     func requestAdditionalScopes() {

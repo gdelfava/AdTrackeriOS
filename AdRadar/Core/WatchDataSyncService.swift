@@ -4,6 +4,9 @@ import WatchConnectivity
 @MainActor
 class WatchDataSyncService: NSObject, ObservableObject {
     static let shared = WatchDataSyncService()
+    private var connectionRetryCount = 0
+    private let maxRetryAttempts = 3
+    private let retryDelay: TimeInterval = 2.0
     
     private override init() {
         super.init()
@@ -18,24 +21,51 @@ class WatchDataSyncService: NSObject, ObservableObject {
         }
     }
     
+    private func checkConnectionState() -> Bool {
+        guard WCSession.isSupported() else {
+            print("📱 [iOS] WatchConnectivity not supported")
+            return false
+        }
+        
+        let session = WCSession.default
+        guard session.activationState == .activated else {
+            print("📱 [iOS] Session not activated, current state: \(session.activationState.rawValue)")
+            retryConnection()
+            return false
+        }
+        
+        return true
+    }
+    
+    private func retryConnection(attempts: Int = 3, delay: TimeInterval = 2.0) {
+        guard attempts > 0 else {
+            print("📱 [iOS] Max retry attempts reached")
+            return
+        }
+        
+        print("📱 [iOS] Retrying connection... Attempts remaining: \(attempts)")
+        
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            if WCSession.default.activationState != .activated {
+                setupWatchConnectivity()
+                retryConnection(attempts: attempts - 1, delay: delay)
+            }
+        }
+    }
+    
     // Send summary data to watch
     func sendSummaryData(_ summaryData: AdSenseSummaryData, todayMetrics: AdSenseDayMetrics? = nil) {
         print("📱 [iOS] Attempting to send data to watch...")
+        
+        guard checkConnectionState() else {
+            print("📱 [iOS] Connection check failed - will retry automatically")
+            return
+        }
+        
         print("📱 [iOS] Session state: \(WCSession.default.activationState.rawValue)")
         print("📱 [iOS] Session reachable: \(WCSession.default.isReachable)")
         print("📱 [iOS] Watch app installed: \(WCSession.default.isWatchAppInstalled)")
-        
-        // Check if WatchConnectivity is supported
-        guard WCSession.isSupported() else {
-            print("📱 [iOS] WatchConnectivity not supported on this device")
-            return
-        }
-        
-        // Check if session is activated
-        guard WCSession.default.activationState == .activated else {
-            print("📱 [iOS] Watch session not activated - state: \(WCSession.default.activationState.rawValue)")
-            return
-        }
         
         // Check if watch app is installed
         guard WCSession.default.isWatchAppInstalled else {
@@ -91,8 +121,21 @@ class WatchDataSyncService: NSObject, ObservableObject {
         do {
             try WCSession.default.updateApplicationContext(watchContext)
             print("📱 [iOS] Successfully sent data to watch via updateApplicationContext")
+            connectionRetryCount = 0 // Reset retry count on success
         } catch {
             print("📱 [iOS] Failed to send data to watch: \(error)")
+            handleSendError()
+        }
+    }
+    
+    private func handleSendError() {
+        connectionRetryCount += 1
+        if connectionRetryCount < maxRetryAttempts {
+            print("📱 [iOS] Retrying connection... Attempt \(connectionRetryCount) of \(maxRetryAttempts)")
+            retryConnection()
+        } else {
+            print("📱 [iOS] Max retry attempts reached. Please check watch connectivity.")
+            connectionRetryCount = 0
         }
     }
     

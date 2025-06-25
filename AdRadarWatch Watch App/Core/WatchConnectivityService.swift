@@ -12,6 +12,11 @@ class WatchConnectivityService: NSObject, ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     
+    private var connectionRetryCount = 0
+    private let maxRetryAttempts = 3
+    private let retryDelay: TimeInterval = 2.0
+    private var retryTask: Task<Void, Never>?
+    
     private override init() {
         super.init()
         setupWatchConnectivity()
@@ -25,20 +30,78 @@ class WatchConnectivityService: NSObject, ObservableObject {
             print("⌚ [Watch] WC Session activation initiated")
         } else {
             print("⌚ [Watch] WC Session not supported")
+            self.errorMessage = "Watch connectivity not supported"
+        }
+    }
+    
+    private func checkConnectionState() -> Bool {
+        guard WCSession.isSupported() else {
+            print("⌚ [Watch] WatchConnectivity not supported")
+            self.errorMessage = "Watch connectivity not supported"
+            return false
+        }
+        
+        let session = WCSession.default
+        guard session.activationState == .activated else {
+            print("⌚ [Watch] Session not activated, current state: \(session.activationState.rawValue)")
+            retryConnection()
+            return false
+        }
+        
+        return true
+    }
+    
+    private func retryConnection(attempts: Int = 3, delay: TimeInterval = 2.0) {
+        // Cancel any existing retry task
+        retryTask?.cancel()
+        
+        retryTask = Task { @MainActor in
+            guard attempts > 0 else {
+                print("⌚ [Watch] Max retry attempts reached")
+                self.errorMessage = "Connection failed after multiple attempts"
+                return
+            }
+            
+            print("⌚ [Watch] Retrying connection... Attempts remaining: \(attempts)")
+            
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            
+            if !Task.isCancelled {
+                if WCSession.default.activationState != .activated {
+                    setupWatchConnectivity()
+                    retryConnection(attempts: attempts - 1, delay: delay)
+                } else {
+                    print("⌚ [Watch] Connection restored")
+                    self.errorMessage = nil
+                    requestDataFromPhone()
+                }
+            }
+        }
+    }
+    
+    private func handleConnectionError(_ error: Error) {
+        connectionRetryCount += 1
+        if connectionRetryCount < maxRetryAttempts {
+            print("⌚ [Watch] Connection error, retrying... Attempt \(connectionRetryCount) of \(maxRetryAttempts)")
+            retryConnection()
+        } else {
+            print("⌚ [Watch] Max retry attempts reached")
+            self.errorMessage = "Unable to connect to iPhone"
+            connectionRetryCount = 0
+            loadDataFromSharedContainer() // Fallback to shared container
         }
     }
     
     func requestDataFromPhone() {
         print("⌚ [Watch] 📱 Requesting data from iPhone...")
-        print("⌚ [Watch] Session state: \(WCSession.default.activationState.rawValue)")
-        print("⌚ [Watch] iPhone reachable: \(WCSession.default.isReachable)")
         
-        guard WCSession.default.activationState == .activated else {
-            print("⌚ [Watch] ❌ Session not activated - trying shared container")
-            loadDataFromSharedContainer()
-            isLoading = false
+        guard checkConnectionState() else {
+            print("⌚ [Watch] Connection check failed - will retry automatically")
             return
         }
+        
+        print("⌚ [Watch] Session state: \(WCSession.default.activationState.rawValue)")
+        print("⌚ [Watch] iPhone reachable: \(WCSession.default.isReachable)")
         
         // Always try shared container first for immediate data
         loadDataFromSharedContainer()
@@ -52,20 +115,17 @@ class WatchConnectivityService: NSObject, ObservableObject {
             
             print("⌚ [Watch] 📤 Sending message to iPhone...")
             WCSession.default.sendMessage(message, replyHandler: { [weak self] reply in
-                DispatchQueue.main.async {
+                Task { @MainActor in
                     print("⌚ [Watch] ✅ Received fresh data from iPhone")
                     self?.handleDataUpdate(reply)
                     self?.isLoading = false
+                    self?.connectionRetryCount = 0 // Reset retry count on success
+                    self?.errorMessage = nil
                 }
             }) { [weak self] error in
-                DispatchQueue.main.async {
+                Task { @MainActor in
                     print("⌚ [Watch] ❌ Failed to get fresh data: \(error.localizedDescription)")
-                    self?.isLoading = false
-                    
-                    // If we don't have any data yet, show error
-                    if self?.summaryData == nil {
-                        self?.errorMessage = "Connection failed"
-                    }
+                    self?.handleConnectionError(error)
                 }
             }
         } else {
@@ -74,6 +134,7 @@ class WatchConnectivityService: NSObject, ObservableObject {
             
             if summaryData == nil {
                 errorMessage = "No data available - check iPhone connection"
+                retryConnection() // Attempt to reconnect
             }
         }
     }
@@ -133,21 +194,23 @@ class WatchConnectivityService: NSObject, ObservableObject {
         print("⌚ [Watch] 🔄 Manual refresh triggered")
         errorMessage = nil
         isLoading = true
+        connectionRetryCount = 0 // Reset retry count on manual refresh
         
         // First, try to request fresh data from iPhone
         requestDataFromPhone()
         
         // Set a timeout fallback to ensure loading state doesn't get stuck
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
-            guard let self = self else { return }
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(10 * 1_000_000_000)) // 10 seconds timeout
             if self.isLoading {
                 print("⌚ [Watch] ⚠️ Refresh timeout - trying shared container fallback")
                 self.isLoading = false
                 self.loadDataFromSharedContainer()
                 
-                // If still no data after fallback, show error
+                // If still no data after fallback, show error and retry
                 if self.summaryData == nil {
                     self.errorMessage = "Unable to refresh data"
+                    self.retryConnection()
                 }
             }
         }

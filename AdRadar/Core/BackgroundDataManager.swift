@@ -5,26 +5,115 @@ import WidgetKit
 
 /// Manages background data fetching and synchronization across iOS app, widget, and watch app
 @MainActor
-class BackgroundDataManager: ObservableObject {
+class BackgroundDataManager: NSObject, ObservableObject {
     static let shared = BackgroundDataManager()
     
     // Background task identifiers - must match Info.plist
     private let refreshTaskIdentifier = "com.delteqws.AdRadar.refresh"
     private let processingTaskIdentifier = "com.delteqws.AdRadar.processing"
     
-    // Refresh intervals
+    // Refresh intervals and timeouts
     private let backgroundRefreshInterval: TimeInterval = 15 * 60 // 15 minutes
     private let appActiveRefreshInterval: TimeInterval = 5 * 60   // 5 minutes
+    private let taskTimeout: TimeInterval = 25 // 25 seconds timeout
     
     @Published var isBackgroundRefreshEnabled = false
     @Published var lastBackgroundUpdate: Date?
     @Published var backgroundTasksScheduled = 0
+    @Published var isPerformingBackgroundTask = false
     
     private var backgroundTaskCompletionHandler: (() -> Void)?
+    private var activeTimeoutWorkItems: [DispatchWorkItem] = []
     
-    private init() {
+    private override init() {
+        super.init()
         setupBackgroundTasks()
         checkBackgroundRefreshStatus()
+        setupNotificationObservers()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        // Use nonisolated cleanup for deinit
+        nonisolatedCleanup()
+    }
+    
+    // MARK: - Setup and Monitoring
+    
+    private func setupNotificationObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleAppWillTerminate(_:)),
+            name: UIApplication.willTerminateNotification,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleMemoryWarning(_:)),
+            name: UIApplication.didReceiveMemoryWarningNotification,
+            object: nil
+        )
+    }
+    
+    @objc private nonisolated func handleAppWillTerminate(_ notification: Notification) {
+        print("[BackgroundDataManager] App will terminate - performing cleanup")
+        nonisolatedCleanup()
+    }
+    
+    @objc private nonisolated func handleMemoryWarning(_ notification: Notification) {
+        print("[BackgroundDataManager] Received memory warning - cleaning up")
+        Task { @MainActor in
+            MemoryManager.shared.performMaintenanceCleanup()
+        }
+    }
+    
+    // MARK: - Cleanup Methods
+    
+    /// Synchronous cleanup that can be called from isolated contexts
+    private func isolatedCleanup() {
+        print("[BackgroundDataManager] Performing isolated cleanup")
+        activeTimeoutWorkItems.forEach { $0.cancel() }
+        activeTimeoutWorkItems.removeAll()
+        MemoryManager.shared.aggressiveCleanup()
+    }
+    
+    /// Synchronous cleanup that can be called from nonisolated contexts
+    private nonisolated func nonisolatedCleanup() {
+        print("[BackgroundDataManager] Performing nonisolated cleanup")
+        // Cancel timeout items synchronously
+        DispatchQueue.main.sync {
+            BackgroundDataManager.shared.activeTimeoutWorkItems.forEach { $0.cancel() }
+            BackgroundDataManager.shared.activeTimeoutWorkItems.removeAll()
+        }
+        // Perform memory cleanup
+        MemoryManager.shared.aggressiveCleanup()
+    }
+    
+    private func cancelAllTimeouts() {
+        activeTimeoutWorkItems.forEach { $0.cancel() }
+        activeTimeoutWorkItems.removeAll()
+    }
+    
+    // MARK: - Task Management
+    
+    private func createTimeoutWorkItem(for task: BGTask, name: String) -> DispatchWorkItem {
+        let timeoutWork = DispatchWorkItem { [weak self] in
+            Task { @MainActor [weak self] in
+                print("[BackgroundDataManager] ⚠️ \(name) timeout - forcing completion")
+                task.setTaskCompleted(success: false)
+                self?.isPerformingBackgroundTask = false
+                self?.isolatedCleanup()
+            }
+        }
+        
+        activeTimeoutWorkItems.append(timeoutWork)
+        return timeoutWork
+    }
+    
+    private func cleanupAfterTask() {
+        isolatedCleanup()
+        isPerformingBackgroundTask = false
     }
     
     // MARK: - Public Interface
@@ -38,6 +127,14 @@ class BackgroundDataManager: ObservableObject {
     /// Perform immediate data refresh and update all targets
     func performDataRefresh() async -> Bool {
         print("[BackgroundDataManager] Starting immediate data refresh...")
+        
+        // Perform memory cleanup before starting
+        MemoryManager.shared.performMaintenanceCleanup()
+        
+        defer {
+            // Ensure cleanup after completion
+            MemoryManager.shared.aggressiveCleanup()
+        }
         
         // Check network connectivity
         let isConnected = await withCheckedContinuation { continuation in
@@ -146,41 +243,97 @@ class BackgroundDataManager: ObservableObject {
     
     private func handleBackgroundRefreshTask(_ task: BGAppRefreshTask) {
         print("[BackgroundDataManager] Executing background refresh task")
+        guard !isPerformingBackgroundTask else {
+            print("[BackgroundDataManager] Another task is in progress - skipping")
+            task.setTaskCompleted(success: false)
+            return
+        }
+        
+        isPerformingBackgroundTask = true
+        
+        // Create timeout handler
+        let timeoutWork = createTimeoutWorkItem(for: task, name: "Background refresh")
+        DispatchQueue.main.asyncAfter(deadline: .now() + taskTimeout, execute: timeoutWork)
         
         // Schedule next refresh
         scheduleBackgroundTasks()
         
-        // Set completion handler
-        task.expirationHandler = {
+        // Set expiration handler
+        task.expirationHandler = { [weak self] in
             print("[BackgroundDataManager] Background refresh task expired")
             task.setTaskCompleted(success: false)
+            self?.cleanupAfterTask()
         }
         
-        // Perform refresh
+        // Perform refresh with error handling
         Task {
-            let success = await performDataRefresh()
-            task.setTaskCompleted(success: success)
-            print("[BackgroundDataManager] Background refresh completed: \(success)")
+            do {
+                try Task.checkCancellation()
+                
+                // Perform memory cleanup before starting
+                MemoryManager.shared.performMaintenanceCleanup()
+                
+                let success = await performDataRefresh()
+                
+                if !timeoutWork.isCancelled {
+                    timeoutWork.cancel()
+                    task.setTaskCompleted(success: success)
+                    print("[BackgroundDataManager] Background refresh completed: \(success)")
+                }
+            } catch {
+                print("[BackgroundDataManager] Background refresh failed: \(error)")
+                task.setTaskCompleted(success: false)
+            }
+            
+            cleanupAfterTask()
         }
     }
     
     private func handleBackgroundProcessingTask(_ task: BGProcessingTask) {
         print("[BackgroundDataManager] Executing background processing task")
+        guard !isPerformingBackgroundTask else {
+            print("[BackgroundDataManager] Another task is in progress - skipping")
+            task.setTaskCompleted(success: false)
+            return
+        }
+        
+        isPerformingBackgroundTask = true
+        
+        // Create timeout handler
+        let timeoutWork = createTimeoutWorkItem(for: task, name: "Background processing")
+        DispatchQueue.main.asyncAfter(deadline: .now() + taskTimeout, execute: timeoutWork)
         
         // Schedule next processing
         scheduleBackgroundTasks()
         
-        // Set completion handler
-        task.expirationHandler = {
+        // Set expiration handler
+        task.expirationHandler = { [weak self] in
             print("[BackgroundDataManager] Background processing task expired")
             task.setTaskCompleted(success: false)
+            self?.cleanupAfterTask()
         }
         
-        // Perform comprehensive data processing
+        // Perform processing with error handling
         Task {
-            let success = await performComprehensiveDataUpdate()
-            task.setTaskCompleted(success: success)
-            print("[BackgroundDataManager] Background processing completed: \(success)")
+            do {
+                try Task.checkCancellation()
+                
+                // Perform memory cleanup before starting
+                MemoryManager.shared.performMaintenanceCleanup()
+                
+                let success = await performComprehensiveDataUpdate()
+                
+                if !timeoutWork.isCancelled {
+                    timeoutWork.cancel()
+                    task.setTaskCompleted(success: success)
+                    print("[BackgroundDataManager] Background processing completed: \(success)")
+                }
+            } catch {
+                print("[BackgroundDataManager] Background processing failed: \(error)")
+                task.setTaskCompleted(success: false)
+            }
+            
+            cleanupAfterTask()
         }
     }
     
@@ -225,7 +378,7 @@ class BackgroundDataManager: ObservableObject {
         
         if basicSuccess {
             // Perform additional tasks like data cleanup, analytics, etc.
-            await performMaintenanceTasks()
+            performMaintenanceTasks()
         }
         
         return basicSuccess
@@ -237,21 +390,21 @@ class BackgroundDataManager: ObservableObject {
         print("[BackgroundDataManager] Updating all targets...")
         
         // Update widget
-        await updateWidget()
+        updateWidget()
         
         // Update watch app
-        await updateWatchApp()
+        updateWatchApp()
         
         // Trigger UI refresh in main app if active
-        await refreshMainAppUI()
+        refreshMainAppUI()
     }
     
-    private func updateWidget() async {
+    private func updateWidget() {
         print("[BackgroundDataManager] Reloading widget timelines...")
         WidgetCenter.shared.reloadAllTimelines()
     }
     
-    private func updateWatchApp() async {
+    private func updateWatchApp() {
         // Load fresh data from shared container
         guard let sharedData = CrossPlatformDataBridge.shared.loadSharedSummaryData() else {
             print("[BackgroundDataManager] No shared data to send to watch")
@@ -283,7 +436,7 @@ class BackgroundDataManager: ObservableObject {
         print("[BackgroundDataManager] Sent updated data to watch app")
     }
     
-    private func refreshMainAppUI() async {
+    private func refreshMainAppUI() {
         // Post notification to refresh UI if app is active
         NotificationCenter.default.post(name: .backgroundDataUpdated, object: nil)
         print("[BackgroundDataManager] Posted UI refresh notification")
@@ -300,13 +453,29 @@ class BackgroundDataManager: ObservableObject {
     }
     
     private func shouldPerformActiveRefresh() async -> Bool {
-        guard let lastUpdate = lastBackgroundUpdate else { return true }
+        // Check if enough time has passed since last refresh
+        if let lastUpdate = lastBackgroundUpdate {
+            let timeSinceLastUpdate = Date().timeIntervalSince(lastUpdate)
+            if timeSinceLastUpdate < appActiveRefreshInterval {
+                print("[BackgroundDataManager] Too soon for active refresh (last update: \(Int(timeSinceLastUpdate))s ago)")
+                return false
+            }
+        }
         
-        let timeSinceUpdate = Date().timeIntervalSince(lastUpdate)
-        return timeSinceUpdate > appActiveRefreshInterval
+        // Check memory status before refresh
+        let memoryStatus = MemoryManager.shared.getCurrentMemoryStatus()
+        print("[BackgroundDataManager] Memory status before refresh: \(memoryStatus)")
+        
+        // If memory usage is high, perform cleanup first
+        if MemoryManager.shared.getCurrentMemoryUsage() > 150 * 1024 * 1024 {
+            print("[BackgroundDataManager] High memory usage - performing cleanup before refresh")
+            MemoryManager.shared.performMaintenanceCleanup()
+        }
+        
+        return true
     }
     
-    private func performMaintenanceTasks() async {
+    private func performMaintenanceTasks() {
         print("[BackgroundDataManager] Performing maintenance tasks...")
         
         // Clean up old cached data

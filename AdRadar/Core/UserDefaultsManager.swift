@@ -190,7 +190,7 @@ class UserDefaultsManager {
     #if DEBUG
     func debugInfo() -> String {
         let containerStatus = getContainerStatus()
-        let memoryUsage = MemoryManager.shared.getMemoryUsageString()
+        let memoryUsage = MemoryManager.shared.getCurrentMemoryStatus()
         return """
         UserDefaults Status: \(containerStatus)
         Memory Usage: \(memoryUsage)

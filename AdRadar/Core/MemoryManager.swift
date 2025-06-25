@@ -1,18 +1,19 @@
 import Foundation
 import UIKit
+import os.log
 
 /// Manages memory usage and provides utilities for memory optimization
 class MemoryManager {
     static let shared = MemoryManager()
     
     private var memoryWarningCount = 0
-    private let memoryThreshold: UInt64 = 150 * 1024 * 1024 // 150MB threshold
+    private let memoryThreshold: UInt64 = 500 * 1024 * 1024  // 500MB
     private let imageCache = NSCache<NSString, UIImage>()
     private var fontCache: [String: UIFont] = [:]
     private var monitoringTimer: Timer?
     
     private init() {
-        setupMemoryWarnings()
+        setupMemoryPressureMonitoring()
         configureImageCache()
         startMemoryMonitoring()
         #if DEBUG
@@ -32,75 +33,58 @@ class MemoryManager {
         imageCache.evictsObjectsWithDiscardedContent = true
     }
     
-    // MARK: - Memory Warning Handling
+    // MARK: - Memory Pressure Monitoring
     
-    private func setupMemoryWarnings() {
+    private func setupMemoryPressureMonitoring() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleMemoryWarning),
             name: UIApplication.didReceiveMemoryWarningNotification,
             object: nil
         )
+    }
+    
+    /// Checks if the app is under memory pressure and performs cleanup if necessary
+    /// - Returns: true if cleanup was performed due to memory pressure, false otherwise
+    func checkMemoryPressure() -> Bool {
+        let usedMemory = getCurrentMemoryUsage()
+        let isUnderPressure = usedMemory > memoryThreshold
         
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleDidEnterBackground),
-            name: UIApplication.didEnterBackgroundNotification,
-            object: nil
-        )
+        if isUnderPressure {
+            print("[MemoryManager] ⚠️ Memory pressure detected (\(ByteCountFormatter().string(fromByteCount: Int64(usedMemory)))) - performing cleanup")
+            performGradualCleanup()
+            return true
+        }
+        
+        return false
     }
     
     @objc private func handleMemoryWarning() {
-        memoryWarningCount += 1
-        print("[MemoryManager] Memory warning #\(memoryWarningCount) received - performing selective cleanup")
-        
-        // Perform graduated cleanup based on warning count
-        if memoryWarningCount == 1 {
-            lightCleanup()
-        } else if memoryWarningCount >= 2 {
-            aggressiveCleanup()
-        }
-    }
-    
-    @objc private func handleDidEnterBackground() {
-        // Perform cleanup when app enters background
-        print("[MemoryManager] App entering background - performing cleanup")
-        lightCleanup()
+        print("[MemoryManager] ⚠️ Received memory warning - performing cleanup")
+        performGradualCleanup()
     }
     
     // MARK: - Graduated Cache Management
     
     private func lightCleanup() {
-        // Clear only URL caches and some image cache
-        URLSession.shared.configuration.urlCache?.removeAllCachedResponses()
-        
-        // Remove half of cached images
-        if imageCache.countLimit > 10 {
-            imageCache.countLimit = max(10, imageCache.countLimit / 2)
-        }
+        print("[MemoryManager] Performing light cleanup")
+        clearImageCache()
+        clearFontCache()
         
         #if DEBUG
-        print("[MemoryManager] Light cleanup completed - URL caches cleared, image cache reduced")
+        let status = getCurrentMemoryStatus()
+        print("[MemoryManager] Light cleanup completed - \(status)")
         #endif
     }
     
-    private func aggressiveCleanup() {
-        // More aggressive cleanup for severe memory pressure
-        lightCleanup()
-        
-        // Clear all image cache
-        imageCache.removeAllObjects()
-        imageCache.countLimit = 10
-        
-        // Clear font cache except essential fonts
-        let essentialFonts = ["Sora-Regular", "Sora-Medium", "Sora-SemiBold"]
-        fontCache = fontCache.filter { essentialFonts.contains($0.key) }
-        
-        // Force UserDefaults synchronization
-        UserDefaults.standard.synchronize()
+    func aggressiveCleanup() {
+        print("[MemoryManager] Performing aggressive cleanup")
+        mediumCleanup()
+        // Add any additional aggressive cleanup steps here
         
         #if DEBUG
-        print("[MemoryManager] Aggressive cleanup completed - all caches cleared")
+        let status = getCurrentMemoryStatus()
+        print("[MemoryManager] Aggressive cleanup completed - \(status)")
         #endif
     }
     
@@ -189,132 +173,134 @@ class MemoryManager {
     
     func clearImageCache() {
         imageCache.removeAllObjects()
-        print("[MemoryManager] Image cache cleared")
     }
     
     func clearFontCache() {
         fontCache.removeAll()
-        print("[MemoryManager] Font cache cleared")
     }
     
     // MARK: - Memory Usage Monitoring
     
-    func getCurrentMemoryUsage() -> UInt64 {
-        var info = mach_task_basic_info()
-        var count = mach_msg_type_number_t(MemoryLayout<mach_task_basic_info>.size)/4
-        
-        let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
-            $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
-                task_info(mach_task_self_,
-                         task_flavor_t(MACH_TASK_BASIC_INFO),
-                         $0,
-                         &count)
-            }
-        }
-        
-        return kerr == KERN_SUCCESS ? info.resident_size : 0
-    }
-    
-    func getMemoryUsageString() -> String {
-        let bytes = getCurrentMemoryUsage()
-        let formatter = ByteCountFormatter()
-        formatter.allowedUnits = [.useMB, .useGB]
-        formatter.countStyle = .memory
-        return formatter.string(fromByteCount: Int64(bytes))
-    }
-    
-    func getMemoryPressureLevel() -> MemoryPressureLevel {
-        let usage = getCurrentMemoryUsage()
-        
-        if usage == 0 {
-            return .unknown
-        } else if usage < memoryThreshold / 2 {
-            return .normal
-        } else if usage < memoryThreshold {
-            return .warning
-        } else {
-            return .critical
-        }
-    }
-    
-    // MARK: - Memory Monitoring
-    
     private func startMemoryMonitoring() {
-        // Check memory every 30 seconds
-        monitoringTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { [weak self] _ in
-            DispatchQueue.global(qos: .utility).async {
-                _ = self?.checkMemoryPressure()
+        monitoringTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
+            self?.checkMemoryUsage()
+        }
+    }
+    
+    private func checkMemoryUsage() {
+        let usedMemory = getCurrentMemoryUsage()
+        print("[MemoryManager] Current memory usage: \(ByteCountFormatter().string(fromByteCount: Int64(usedMemory)))")
+        
+        if usedMemory > memoryThreshold {
+            print("[MemoryManager] ⚠️ Memory usage exceeded threshold - performing cleanup")
+            performGradualCleanup()
+        }
+    }
+    
+    /// Get the current memory usage in bytes
+    /// - Returns: Current memory usage in bytes, or 0 if unable to get memory info
+    func getCurrentMemoryUsage() -> UInt64 {
+        var info = task_vm_info_data_t()
+        var count = mach_msg_type_number_t(MemoryLayout<task_vm_info>.size) / 4
+        let result = withUnsafeMutablePointer(to: &info) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
+                task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), $0, &count)
             }
         }
-    }
-    
-    private func stopMemoryMonitoring() {
-        monitoringTimer?.invalidate()
-        monitoringTimer = nil
-    }
-    
-    // MARK: - Performance Optimization
-    
-    func checkMemoryPressure() -> Bool {
-        let currentUsage = getCurrentMemoryUsage()
-        let currentUsageMB = Double(currentUsage) / (1024 * 1024)
-        let thresholdMB = Double(memoryThreshold) / (1024 * 1024)
-        let criticalThreshold = memoryThreshold + (memoryThreshold / 2) // 1.5x threshold
         
-        // Enhanced logging for tracking patterns
-        let timestamp = DateFormatter()
-        timestamp.dateFormat = "HH:mm:ss"
-        let timeString = timestamp.string(from: Date())
-        
-        print("[MemoryManager] [\(timeString)] Current: \(String(format: "%.1f", currentUsageMB)) MB, Threshold: \(String(format: "%.1f", thresholdMB)) MB")
-        
-        if currentUsage > criticalThreshold {
-            print("🚨 [MemoryManager] CRITICAL: \(String(format: "%.1f", currentUsageMB)) MB - performing aggressive cleanup")
-            aggressiveCleanup()
-            
-            // Check if cleanup was effective
-            let afterCleanup = getCurrentMemoryUsage()
-            let afterCleanupMB = Double(afterCleanup) / (1024 * 1024)
-            let reduction = currentUsageMB - afterCleanupMB
-            print("✅ [MemoryManager] Aggressive cleanup: \(String(format: "%.1f", afterCleanupMB)) MB (reduced by \(String(format: "%.1f", reduction)) MB)")
-            return true
-            
-        } else if currentUsage > memoryThreshold {
-            print("⚠️ [MemoryManager] HIGH: \(String(format: "%.1f", currentUsageMB)) MB - performing light cleanup")
-            lightCleanup()
-            
-            let afterCleanup = getCurrentMemoryUsage()
-            let afterCleanupMB = Double(afterCleanup) / (1024 * 1024)
-            let reduction = currentUsageMB - afterCleanupMB
-            print("✅ [MemoryManager] Light cleanup: \(String(format: "%.1f", afterCleanupMB)) MB (reduced by \(String(format: "%.1f", reduction)) MB)")
-            return true
+        guard result == KERN_SUCCESS else {
+            print("[MemoryManager] Failed to get memory usage info")
+            return 0
         }
         
-        return false
+        return info.phys_footprint
+    }
+    
+    /// Get a human-readable string describing the current memory status
+    /// - Returns: A string describing the current memory usage as a percentage of the threshold
+    func getCurrentMemoryStatus() -> String {
+        let usage = getCurrentMemoryUsage()
+        let percentage = Double(usage) / Double(memoryThreshold) * 100
+        let usageString = ByteCountFormatter().string(fromByteCount: Int64(usage))
+        return String(format: "Memory: %.1f%% of threshold (%@)", percentage, usageString)
+    }
+    
+    private func performGradualCleanup() {
+        if memoryWarningCount == 0 {
+            // First step: Light cleanup
+            lightCleanup()
+        } else if memoryWarningCount == 1 {
+            // Second step: Medium cleanup
+            mediumCleanup()
+        } else {
+            // Final step: Aggressive cleanup
+            aggressiveCleanup()
+        }
+        
+        memoryWarningCount += 1
+    }
+    
+    private func mediumCleanup() {
+        print("[MemoryManager] Performing medium cleanup")
+        lightCleanup()
+        URLCache.shared.removeAllCachedResponses()
+        
+        #if DEBUG
+        let status = getCurrentMemoryStatus()
+        print("[MemoryManager] Medium cleanup completed - \(status)")
+        #endif
+    }
+    
+    private func logInitialMemoryUsage() {
+        let usage = getCurrentMemoryUsage()
+        print("[MemoryManager] Initial memory usage: \(ByteCountFormatter().string(fromByteCount: Int64(usage)))")
+        print("[MemoryManager] Memory threshold: \(ByteCountFormatter().string(fromByteCount: Int64(memoryThreshold)))")
+    }
+    
+    // MARK: - Public Interface Extensions
+    
+    func prepareForIntensiveTask() {
+        print("[MemoryManager] Preparing for intensive task")
+        performMaintenanceCleanup()
+        
+        // Reduce cache limits temporarily
+        let originalImageLimit = imageCache.countLimit
+        let originalCostLimit = imageCache.totalCostLimit
+        
+        imageCache.countLimit = max(5, imageCache.countLimit / 2)
+        imageCache.totalCostLimit = max(25 * 1024 * 1024, imageCache.totalCostLimit / 2)
+        
+        // Restore limits after delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 60) { [weak self] in
+            self?.imageCache.countLimit = originalImageLimit
+            self?.imageCache.totalCostLimit = originalCostLimit
+            print("[MemoryManager] Restored cache limits after intensive task")
+        }
+    }
+    
+    // MARK: - Cleanup Helpers
+    
+    private func cleanupImageCache() {
+        let originalCount = imageCache.countLimit
+        imageCache.countLimit = max(5, originalCount / 2)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) { [weak self] in
+            self?.imageCache.countLimit = originalCount
+        }
     }
     
     // MARK: - Debug and Monitoring
     
     #if DEBUG
-    func logInitialMemoryUsage() {
-        let usage = getCurrentMemoryUsage()
-        let usageMB = Double(usage) / (1024 * 1024)
-        print("[MemoryManager] Initial memory usage: \(String(format: "%.1f", usageMB)) MB")
-        
-        // Warn if initial usage is high
-        if usageMB > 200 {
-            print("⚠️ [MemoryManager] High initial memory usage detected! Consider optimizing assets.")
-        }
-    }
-    
     func getDetailedMemoryInfo() -> String {
-        let usageString = getMemoryUsageString()
-        let pressureLevel = getMemoryPressureLevel()
+        let memoryStatus = getCurrentMemoryStatus()
         let warningCount = memoryWarningCount
         let imageCacheInfo = "Images: \(imageCache.countLimit) max, \(fontCache.count) fonts cached"
+        let usedMemory = getCurrentMemoryUsage()
+        let pressureLevel = usedMemory > memoryThreshold ? "High" : "Normal"
         
         return """
-        Current Usage: \(usageString)
+        Status: \(memoryStatus)
         Pressure Level: \(pressureLevel)
         Warning Count: \(warningCount)
         Cache Info: \(imageCacheInfo)
@@ -323,19 +309,28 @@ class MemoryManager {
     }
     #endif
     
+    // MARK: - Debug Helpers
+    
+    func debugInfo() -> String {
+        let status = getCurrentMemoryStatus()
+        return """
+        Memory Manager Status:
+        \(status)
+        Warning Count: \(memoryWarningCount)
+        """
+    }
+    
     // MARK: - Cleanup
     
     deinit {
-        stopMemoryMonitoring()
+        monitoringTimer?.invalidate()
         NotificationCenter.default.removeObserver(self)
     }
 }
 
 // MARK: - Supporting Types
 
-enum MemoryPressureLevel: String, CaseIterable {
+private enum MemoryPressureLevel: String {
     case normal = "Normal"
-    case warning = "Warning"
-    case critical = "Critical"
-    case unknown = "Unknown"
+    case high = "High"
 } 

@@ -202,7 +202,10 @@ class AdSenseAPI {
                     let decoder = JSONDecoder()
                     let accounts = try decoder.decode(AccountsResponse.self, from: data)
                     if let firstAccount = accounts.accounts.first {
-                        return .success(firstAccount.name)
+                        let accountID = firstAccount.name
+                        // Save the account ID to UserDefaults
+                        UserDefaultsManager.shared.setString(accountID, forKey: "adSenseAccountID")
+                        return .success(accountID)
                     } else {
                         return .failure(.noAccountID)
                     }
@@ -213,27 +216,9 @@ class AdSenseAPI {
             case 401:
                 return .failure(.unauthorized)
             case 403:
-                return .failure(.requestFailed("Access forbidden. Please check your AdSense permissions."))
-            case 429:
-                return .failure(.requestFailed("Rate limit exceeded. Please try again later."))
-            case 500...599:
-                return .failure(.requestFailed("AdSense API server error. Please try again later."))
+                return .failure(.requestFailed("Access forbidden"))
             default:
-                return .failure(.requestFailed("Unexpected error: HTTP \(httpResponse.statusCode)"))
-            }
-        } catch let error as URLError where error.code == .cancelled {
-            print("Request was cancelled")
-            return .failure(.requestFailed("Request was cancelled"))
-        } catch let error as URLError {
-            switch error.code {
-            case .notConnectedToInternet:
-                return .failure(.requestFailed("No internet connection"))
-            case .timedOut:
-                return .failure(.requestFailed("Request timed out"))
-            case .cannotConnectToHost:
-                return .failure(.requestFailed("Cannot connect to server"))
-            default:
-                return .failure(.requestFailed("Network error: \(error.localizedDescription)"))
+                return .failure(.requestFailed("Server returned status code \(httpResponse.statusCode)"))
             }
         } catch {
             print("Network error: \(error)")

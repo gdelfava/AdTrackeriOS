@@ -157,4 +157,148 @@ MemoryManager.shared.checkMemoryPressure()
 **Target After Optimization:** 80-120 MB initial usage
 **Acceptable Range:** 60-150 MB depending on device
 
-The implemented optimizations should reduce your memory usage by **50-70%**, bringing it into the normal range for iOS apps! 
+The implemented optimizations should reduce your memory usage by **50-70%**, bringing it into the normal range for iOS apps!
+
+## Memory Monitoring
+
+The app uses several methods to monitor and manage memory usage:
+
+1. **Memory Status Check**
+```swift
+// Get current memory status
+let memoryStatus = MemoryManager.shared.getCurrentMemoryStatus()
+print("Current memory status: \(memoryStatus)")
+
+// Get raw memory usage
+let usage = MemoryManager.shared.getCurrentMemoryUsage()
+```
+
+2. **Automatic Monitoring**
+- The MemoryManager automatically monitors memory usage every 30 seconds
+- Performs graduated cleanup based on memory pressure
+- Handles memory warnings from the system
+
+3. **Manual Cleanup**
+```swift
+// Perform light cleanup
+MemoryManager.shared.performMaintenanceCleanup()
+
+// Perform aggressive cleanup
+MemoryManager.shared.aggressiveCleanup()
+```
+
+## Memory Thresholds
+
+- Light cleanup: Triggered at 150MB usage
+- Medium cleanup: Triggered after first memory warning
+- Aggressive cleanup: Triggered after multiple memory warnings or critical usage
+
+## Best Practices
+
+1. Check memory status before intensive operations
+2. Use proper cleanup methods based on context
+3. Monitor memory usage trends in debug builds
+4. Handle memory warnings appropriately
+
+## Implementation Example
+
+```swift
+func performIntensiveTask() {
+    // Check memory status before starting
+    let memoryStatus = MemoryManager.shared.getCurrentMemoryStatus()
+    print("Memory status before task: \(memoryStatus)")
+    
+    // Prepare for intensive task
+    MemoryManager.shared.prepareForIntensiveTask()
+    
+    // Perform the task
+    // ...
+    
+    // Cleanup after task
+    MemoryManager.shared.performMaintenanceCleanup()
+} 
+```
+
+## Memory Optimization Guide
+
+## Overview
+
+The AdRadar app uses a comprehensive memory management system to ensure optimal performance and prevent memory-related crashes. This guide explains how memory management works and how to use it effectively.
+
+## Memory Manager
+
+The `MemoryManager` class (`Core/MemoryManager.swift`) provides several key features:
+
+1. Automatic Memory Monitoring
+   - Monitors memory usage every 30 seconds
+   - Responds to system memory warnings
+   - Performs graduated cleanup based on pressure level
+
+2. Manual Memory Checks
+   ```swift
+   // Check memory pressure and perform cleanup if needed
+   let cleanupPerformed = MemoryManager.shared.checkMemoryPressure()
+   
+   // Get current memory status
+   let memoryStatus = MemoryManager.shared.getCurrentMemoryStatus()
+   ```
+
+3. Graduated Cleanup Levels
+   - Light: Clears non-essential caches
+   - Medium: Releases more resources
+   - Aggressive: Maximum cleanup when under severe pressure
+
+## Best Practices
+
+1. Regular Monitoring
+   - Call `checkMemoryPressure()` before intensive operations
+   - Monitor memory status in debug builds
+   - Log memory warnings and cleanup actions
+
+2. Resource Management
+   - Use weak references for delegates
+   - Implement proper cleanup in deinit
+   - Clear caches when entering background
+
+3. Performance Tips
+   - Profile memory usage with Instruments
+   - Test with memory pressure simulation
+   - Monitor memory trends over time
+
+## Debugging
+
+The MemoryManager provides detailed debugging information:
+
+```swift
+// Get detailed memory status
+print(MemoryManager.shared.debugInfo())
+```
+
+## Memory Thresholds
+
+- Warning Threshold: 500MB
+- Cleanup triggered by:
+  - System memory warnings
+  - Exceeding threshold
+  - Manual checks
+
+## Implementation Example
+
+```swift
+class YourFeature {
+    func performIntensiveOperation() {
+        // Check memory before operation
+        if MemoryManager.shared.checkMemoryPressure() {
+            print("Memory cleanup performed - proceeding with caution")
+        }
+        
+        // Log current status
+        print(MemoryManager.shared.getCurrentMemoryStatus())
+        
+        // Perform operation...
+    }
+}
+```
+
+Remember to monitor memory usage regularly and respond to pressure appropriately to maintain app stability.
+</rewritten_file>

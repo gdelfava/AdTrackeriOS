@@ -67,7 +67,7 @@ struct AdRadar_App: App {
         #if DEBUG
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             let userDefaultsStatus = UserDefaultsManager.shared.getContainerStatus()
-            let memoryInfo = MemoryManager.shared.getMemoryUsageString()
+            let memoryInfo = MemoryManager.shared.getCurrentMemoryStatus()
             
             print("""
             [AdRadar] App initialization completed:
@@ -136,6 +136,27 @@ struct AdRadar_App: App {
         }
     }
     #endif
+    
+    func checkMemoryAndPerformCleanup() {
+        // Check current memory usage and perform cleanup if needed
+        let currentUsage = MemoryManager.shared.getCurrentMemoryUsage()
+        let memoryStatus = MemoryManager.shared.getCurrentMemoryStatus()
+        print("[App] Current memory status: \(memoryStatus)")
+        
+        if currentUsage > 150 * 1024 * 1024 { // 150MB threshold
+            print("[App] High memory usage detected - performing cleanup")
+            MemoryManager.shared.performMaintenanceCleanup()
+        }
+    }
+    
+    func performBackgroundCleanup() {
+        print("[App] Performing background cleanup")
+        MemoryManager.shared.performMaintenanceCleanup()
+        
+        // Check if cleanup was effective
+        let memoryStatus = MemoryManager.shared.getCurrentMemoryStatus()
+        print("[App] Memory status after cleanup: \(memoryStatus)")
+    }
 }
 
 // MARK: - Splash Screen Wrapper
