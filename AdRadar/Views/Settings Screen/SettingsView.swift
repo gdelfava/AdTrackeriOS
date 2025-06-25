@@ -232,6 +232,93 @@ struct SettingsView: View {
                         .opacity(profileAppeared ? 1 : 0)
                         .offset(y: profileAppeared ? 0 : 30)
                         
+                        // Enhanced Account Actions Section
+                        ModernSectionView(title: "Account Actions") {
+                            VStack(spacing: 1) {
+                                // AdMob Apps Toggle
+                                HStack(spacing: 16) {
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .fill(Color.cyan.opacity(0.1))
+                                            .frame(width: 40, height: 40)
+                                        
+                                        Image(systemName: "apps.iphone")
+                                            .font(.system(size: 18, weight: .medium))
+                                            .foregroundColor(.cyan)
+                                    }
+                                    
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("Enable AdMob Apps")
+                                            .soraBody()
+                                            .fontWeight(.medium)
+                                            .foregroundColor(.primary)
+                                        
+                                        Text("Display AdMob Apps Metrics")
+                                            .soraCaption()
+                                            .foregroundColor(.secondary)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    Toggle("", isOn: .init(
+                                        get: { settingsViewModel.showAdMobApps },
+                                        set: { newValue in
+                                            let generator = UIImpactFeedbackGenerator(style: .light)
+                                            generator.impactOccurred()
+                                            settingsViewModel.updateAdMobAppsVisibility(newValue)
+                                        }
+                                    ))
+                                    .labelsHidden()
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 16)
+                                .background(Color(.secondarySystemGroupedBackground))
+                                
+                                Divider()
+                                    .padding(.leading, 56)
+                                
+                                // Sign Out Button
+                                Button(action: {
+                                    let generator = UIImpactFeedbackGenerator(style: .medium)
+                                    generator.impactOccurred()
+                                    settingsViewModel.signOut(authViewModel: authViewModel)
+                                }) {
+                                    HStack(spacing: 16) {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                .fill(Color.red.opacity(0.1))
+                                                .frame(width: 40, height: 40)
+                                            
+                                            Image(systemName: "rectangle.portrait.and.arrow.right.fill")
+                                                .font(.system(size: 18, weight: .medium))
+                                                .foregroundColor(.red)
+                                        }
+                                        
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text("Sign Out")
+                                                .soraBody()
+                                                .fontWeight(.medium)
+                                                .foregroundColor(.red)
+                                            
+                                            Text("Sign out of your account")
+                                                .soraCaption()
+                                                .foregroundColor(.secondary)
+                                        }
+                                        
+                                        Spacer()
+                                    }
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 16)
+                                    .contentShape(Rectangle())
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        }
+                        .opacity(generalAppeared ? 1 : 0)
+                        .offset(y: generalAppeared ? 0 : 30)
+                        
                         // Enhanced Account Information Section
                         ModernSectionView(title: "Account Information") {
                             VStack(spacing: 1) {
@@ -365,93 +452,6 @@ struct SettingsView: View {
                         }
                         .opacity(supportAppeared ? 1 : 0)
                         .offset(y: supportAppeared ? 0 : 30)
-                        
-                        // Enhanced General Section
-                        ModernSectionView(title: "Account Actions") {
-                            VStack(spacing: 1) {
-                                // AdMob Apps Toggle
-                                HStack(spacing: 16) {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                            .fill(Color.cyan.opacity(0.1))
-                                            .frame(width: 40, height: 40)
-                                        
-                                        Image(systemName: "apps.iphone")
-                                            .font(.system(size: 18, weight: .medium))
-                                            .foregroundColor(.cyan)
-                                    }
-                                    
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text("Enable AdMob Apps")
-                                            .soraBody()
-                                            .fontWeight(.medium)
-                                            .foregroundColor(.primary)
-                                        
-                                        Text("Display AdMob Apps Metrics")
-                                            .soraCaption()
-                                            .foregroundColor(.secondary)
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    Toggle("", isOn: .init(
-                                        get: { settingsViewModel.showAdMobApps },
-                                        set: { newValue in
-                                            let generator = UIImpactFeedbackGenerator(style: .light)
-                                            generator.impactOccurred()
-                                            settingsViewModel.updateAdMobAppsVisibility(newValue)
-                                        }
-                                    ))
-                                    .labelsHidden()
-                                }
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 16)
-                                .background(Color(.secondarySystemGroupedBackground))
-                                
-                                Divider()
-                                    .padding(.leading, 56)
-                                
-                                // Sign Out Button
-                                Button(action: {
-                                    let generator = UIImpactFeedbackGenerator(style: .medium)
-                                    generator.impactOccurred()
-                                    settingsViewModel.signOut(authViewModel: authViewModel)
-                                }) {
-                                    HStack(spacing: 16) {
-                                        ZStack {
-                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                                .fill(Color.red.opacity(0.1))
-                                                .frame(width: 40, height: 40)
-                                            
-                                            Image(systemName: "rectangle.portrait.and.arrow.right.fill")
-                                                .font(.system(size: 18, weight: .medium))
-                                                .foregroundColor(.red)
-                                        }
-                                        
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text("Sign Out")
-                                                .soraBody()
-                                                .fontWeight(.medium)
-                                                .foregroundColor(.red)
-                                            
-                                            Text("Sign out of your account")
-                                                .soraCaption()
-                                                .foregroundColor(.secondary)
-                                        }
-                                        
-                                        Spacer()
-                                    }
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, 16)
-                                    .contentShape(Rectangle())
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                            }
-                            .background(Color(.secondarySystemGroupedBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                        }
-                        .opacity(generalAppeared ? 1 : 0)
-                        .offset(y: generalAppeared ? 0 : 30)
                     }
                     .padding(.horizontal, 20)
                     .padding(.bottom, 40)
