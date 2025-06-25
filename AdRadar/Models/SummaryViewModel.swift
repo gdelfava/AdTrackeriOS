@@ -2,6 +2,7 @@ import Foundation
 import Combine
 import Network
 import GoogleSignIn
+import SwiftUI
 
 enum MetricsCardType {
     case today, yesterday, last7Days, thisMonth, lastMonth, lastThreeYears

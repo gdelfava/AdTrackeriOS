@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 struct AdSenseDayMetrics: Codable {
     let estimatedEarnings: String

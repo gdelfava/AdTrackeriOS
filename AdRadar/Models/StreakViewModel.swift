@@ -239,6 +239,13 @@ class StreakViewModel: ObservableObject {
         return formatter.string(from: NSNumber(value: value)) ?? "0%"
     }
     
+    func formatNumber(_ value: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = " "
+        return formatter.string(from: NSNumber(value: value)) ?? "0"
+    }
+    
     // MARK: - Performance Insights Helpers
     
     var bestPerformingDay: StreakDayData? {

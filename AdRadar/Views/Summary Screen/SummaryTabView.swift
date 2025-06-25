@@ -1,4 +1,7 @@
 import SwiftUI
+import UIKit
+import Combine
+import GoogleSignIn
 
 struct SummaryTabView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
