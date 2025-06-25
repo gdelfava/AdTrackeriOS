@@ -7,6 +7,7 @@ class WatchDataSyncService: NSObject, ObservableObject {
     private var connectionRetryCount = 0
     private let maxRetryAttempts = 3
     private let retryDelay: TimeInterval = 2.0
+    @Published private(set) var connectionState: WCSessionActivationState = .notActivated
     
     private override init() {
         super.init()
@@ -34,6 +35,12 @@ class WatchDataSyncService: NSObject, ObservableObject {
             return false
         }
         
+        // Also check network connectivity
+        guard NetworkMonitor.shared.shouldProceedWithRequest() else {
+            print("📱 [iOS] Network connection unavailable")
+            return false
+        }
+        
         return true
     }
     
@@ -47,6 +54,16 @@ class WatchDataSyncService: NSObject, ObservableObject {
         
         Task { @MainActor in
             try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            
+            // Check network state before retrying
+            guard NetworkMonitor.shared.shouldProceedWithRequest() else {
+                print("📱 [iOS] Network unavailable, waiting before retry")
+                try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                // Retry with same attempt count since this was a network issue
+                retryConnection(attempts: attempts, delay: delay)
+                return
+            }
+            
             if WCSession.default.activationState != .activated {
                 setupWatchConnectivity()
                 retryConnection(attempts: attempts - 1, delay: delay)
@@ -141,8 +158,13 @@ class WatchDataSyncService: NSObject, ObservableObject {
     
     // Send a simple status update
     func sendQuickUpdate(earnings: String, lastUpdated: Date) {
-        guard WCSession.default.isReachable || WCSession.default.activationState == .activated else {
+        guard checkConnectionState() else {
             print("Watch session not available")
+            return
+        }
+        
+        guard WCSession.default.isReachable else {
+            print("Watch is not reachable")
             return
         }
         
@@ -155,8 +177,10 @@ class WatchDataSyncService: NSObject, ObservableObject {
         do {
             try WCSession.default.updateApplicationContext(quickData)
             print("Successfully sent quick update to watch")
+            connectionRetryCount = 0 // Reset retry count on success
         } catch {
             print("Failed to send quick update to watch: \(error)")
+            handleSendError()
         }
     }
 }

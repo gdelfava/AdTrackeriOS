@@ -479,7 +479,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AdRadar/AdRadar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250625.1;
+				CURRENT_PROJECT_VERSION = 20250625.2;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -490,7 +490,6 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -512,7 +511,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AdRadar/AdRadar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250625.1;
+				CURRENT_PROJECT_VERSION = 20250625.2;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -523,7 +522,6 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -544,12 +542,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250625.1;
+				CURRENT_PROJECT_VERSION = 20250625.2;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AdRadarWatch-Watch-App-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = AdRadarWatch;
+				INFOPLIST_KEY_CFBundleDisplayName = AdRadar;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.delteqws.AdRadar;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -574,12 +572,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250625.1;
+				CURRENT_PROJECT_VERSION = 20250625.2;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AdRadarWatch-Watch-App-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = AdRadarWatch;
+				INFOPLIST_KEY_CFBundleDisplayName = AdRadar;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.delteqws.AdRadar;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -605,7 +603,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AdRadarWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250625.1;
+				CURRENT_PROJECT_VERSION = 20250625.2;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AdRadarWidget/Info.plist;
@@ -634,7 +632,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AdRadarWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250625.1;
+				CURRENT_PROJECT_VERSION = 20250625.2;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AdRadarWidget/Info.plist;

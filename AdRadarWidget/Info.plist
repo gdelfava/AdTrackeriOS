@@ -17,5 +17,11 @@
 		<string>Sora-SemiBold.ttf</string>
 		<string>Sora-Bold.ttf</string>
 	</array>
+	<key>WKWatchKitApp</key>
+	<true/>
+	<key>WKApplication</key>
+	<true/>
+	<key>MinimumOSVersion</key>
+	<string>18.0</string>
 </dict>
 </plist>

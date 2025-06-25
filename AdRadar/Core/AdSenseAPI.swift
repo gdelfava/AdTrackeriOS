@@ -159,14 +159,15 @@ class AdSenseAPI {
     
     // Fetch the user's AdSense account ID
     static func fetchAccountID(accessToken: String) async -> Result<String, AdSenseError> {
-        // Check network connection asynchronously
-        let isConnected = await Task.detached {
-            NetworkMonitor.shared.isConnected
-        }.value
+        // Check network connection and endpoint accessibility
+        guard NetworkMonitor.shared.canAccessEndpoints() else {
+            return .failure(.requestFailed("Network endpoints are not accessible"))
+        }
         
-        guard isConnected else {
+        guard NetworkMonitor.shared.shouldProceedWithRequest() else {
             return .failure(.requestFailed("No internet connection"))
         }
+        
         guard let url = URL(string: "https://adsense.googleapis.com/v2/accounts") else {
             return .failure(.invalidURL)
         }
@@ -181,6 +182,12 @@ class AdSenseAPI {
             try Task.checkCancellation()
             
             let urlSession = NetworkMonitor.createURLSession()
+            
+            // Verify connection state again before making the request
+            guard NetworkMonitor.shared.shouldProceedWithRequest() else {
+                return .failure(.requestFailed("Lost internet connection"))
+            }
+            
             let (data, response) = try await urlSession.data(for: request)
             
             // Check for cancellation after receiving the response

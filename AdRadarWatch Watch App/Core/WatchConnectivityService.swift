@@ -201,7 +201,7 @@ class WatchConnectivityService: NSObject, ObservableObject {
         
         // Set a timeout fallback to ensure loading state doesn't get stuck
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: UInt64(10 * 1_000_000_000)) // 10 seconds timeout
+            try? await Task.sleep(nanoseconds: 10_000_000_000) // 10 seconds timeout
             if self.isLoading {
                 print("⌚ [Watch] ⚠️ Refresh timeout - trying shared container fallback")
                 self.isLoading = false
