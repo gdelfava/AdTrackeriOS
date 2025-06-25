@@ -61,7 +61,7 @@ struct StreakView: View {
                     await refreshData()
                 }
             }
-            .navigationTitle("Analytics")
+            .navigationTitle("Trends")
             .toolbar {
                 leadingToolbarItems
                 trailingToolbarItems
@@ -160,7 +160,7 @@ struct StreakView: View {
         VStack(spacing: 16) {
             ProgressView()
                 .scaleEffect(1.2)
-            Text("Loading analytics...")
+            Text("Loading trends...")
                 .soraBody()
                 .foregroundColor(.secondary)
         }
