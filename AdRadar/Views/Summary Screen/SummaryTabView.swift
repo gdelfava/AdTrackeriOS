@@ -153,8 +153,8 @@ struct ModernTabBar: View {
     @State private var animationAmount: CGFloat = 1.0
     
     private let tabItems: [(icon: String, activeIcon: String, title: String, color: Color)] = [
-        ("rectangle.3.group", "rectangle.3.group.fill", "Summary", .blue),
-        ("7.square", "7.square.fill", "Streak", .orange),
+        ("rectangle.3.group", "rectangle.3.group.fill", "Overview", .blue),
+        ("chart.line.uptrend.xyaxis", "chart.line.uptrend.xyaxis", "Trends", .orange),
         ("creditcard", "creditcard.fill", "Payments", .green),
         ("gearshape", "gearshape.fill", "Settings", .purple)
     ]

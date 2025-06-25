@@ -49,7 +49,7 @@ struct PaymentsView: View {
                     VStack(spacing: 16) {
                         if viewModel.isLoading {
                             Spacer()
-                            ProgressView("Loading...")
+                            ProgressView("Loading payments...")
                                 .soraBody()
                                 .padding()
                             Spacer()

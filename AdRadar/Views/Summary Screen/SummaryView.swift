@@ -54,7 +54,7 @@ struct SummaryView: View {
 
                         if viewModel.isLoading {
                             Spacer()
-                            ProgressView("Loading...")
+                            ProgressView("Loading summary...")
                                 .soraBody()
                                 .padding()
                             Spacer()
@@ -208,7 +208,7 @@ struct SummaryView: View {
                     await viewModel.fetchSummary()
                 }
             }
-            .navigationTitle("Summary")
+            .navigationTitle("Overview")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
