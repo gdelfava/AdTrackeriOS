@@ -14,7 +14,6 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>879262946985-3ift7vrnevq4n81phges74q1hufg2r4l.apps.googleusercontent.com</string>
 				<string>com.googleusercontent.apps.879262946985-3ift7vrnevq4n81phges74q1hufg2r4l</string>
 			</array>
 		</dict>
@@ -24,7 +23,6 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>google</string>
-		<string>879262946985-3ift7vrnevq4n81phges74q1hufg2r4l.apps.googleusercontent.com</string>
 	</array>
 	<key>UIAppFonts</key>
 	<array>
@@ -36,8 +34,6 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>background-app-refresh</string>
-		<string>background-processing</string>
 		<string>fetch</string>
 		<string>processing</string>
 	</array>
