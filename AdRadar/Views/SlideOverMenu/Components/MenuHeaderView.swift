@@ -29,7 +29,7 @@ struct MenuHeaderView: View {
                                 .lineLimit(1)
                         }
                         
-                        Text("AdSense Analytics")
+                        Text("AdSense & Admob Analytics")
                             .soraCaption()
                             .foregroundColor(.white.opacity(0.7))
                     }

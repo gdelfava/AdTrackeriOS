@@ -8,6 +8,8 @@ struct TargetingData: Identifiable, Codable, Equatable {
     let clicks: String
     let ctr: String
     let rpm: String
+    let requests: String
+    let pageViews: String
     
     // Computed properties for formatted display
     var formattedEarnings: String {
@@ -92,5 +94,7 @@ struct TargetingData: Identifiable, Codable, Equatable {
         case clicks = "CLICKS"
         case ctr = "IMPRESSIONS_CTR"
         case rpm = "IMPRESSIONS_RPM"
+        case requests = "AD_REQUESTS"
+        case pageViews = "PAGE_VIEWS"
     }
 } 

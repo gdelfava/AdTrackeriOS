@@ -126,53 +126,117 @@ struct AnalyticsMenuSection: View {
                 }
             }
             
-            ModernMenuRow(
-                icon: "iphone", 
-                title: "Platforms", 
-                subtitle: "Device breakdown",
-                iconColor: .green,
-                action: {
-                    hapticFeedback()
-                    showPlatformsView = true
-                    onDismiss()
+            VStack {
+                if premiumStatusManager.hasFeature(.advancedAnalytics) {
+                    ModernMenuRow(
+                        icon: "iphone", 
+                        title: "Platforms", 
+                        subtitle: "Device breakdown",
+                        iconColor: .green,
+                        action: {
+                            hapticFeedback()
+                            showPlatformsView = true
+                            onDismiss()
+                        }
+                    )
+                } else {
+                    ModernMenuRowWithPremium(
+                        icon: "iphone", 
+                        title: "Platforms", 
+                        subtitle: "Device breakdown",
+                        iconColor: .green,
+                        isPremium: true,
+                        action: {
+                            hapticFeedback()
+                            premiumStatusManager.trackFeatureUsage(.advancedAnalytics)
+                        }
+                    )
                 }
-            )
+            }
             
-            ModernMenuRow(
-                icon: "flag.fill", 
-                title: "Countries", 
-                subtitle: "Geographic data",
-                iconColor: .orange,
-                action: {
-                    hapticFeedback()
-                    showCountriesView = true
-                    onDismiss()
+            VStack {
+                if premiumStatusManager.hasFeature(.advancedAnalytics) {
+                    ModernMenuRow(
+                        icon: "flag.fill", 
+                        title: "Countries", 
+                        subtitle: "Geographic data",
+                        iconColor: .orange,
+                        action: {
+                            hapticFeedback()
+                            showCountriesView = true
+                            onDismiss()
+                        }
+                    )
+                } else {
+                    ModernMenuRowWithPremium(
+                        icon: "flag.fill", 
+                        title: "Countries", 
+                        subtitle: "Geographic data",
+                        iconColor: .orange,
+                        isPremium: true,
+                        action: {
+                            hapticFeedback()
+                            premiumStatusManager.trackFeatureUsage(.advancedAnalytics)
+                        }
+                    )
                 }
-            )
+            }
             
-            ModernMenuRow(
-                icon: "network", 
-                title: "Ad Networks", 
-                subtitle: "Network performance",
-                iconColor: .indigo,
-                action: {
-                    hapticFeedback()
-                    showAdNetworkView = true
-                    onDismiss()
+            VStack {
+                if premiumStatusManager.hasFeature(.advancedAnalytics) {
+                    ModernMenuRow(
+                        icon: "network", 
+                        title: "Ad Networks", 
+                        subtitle: "Network performance",
+                        iconColor: .indigo,
+                        action: {
+                            hapticFeedback()
+                            showAdNetworkView = true
+                            onDismiss()
+                        }
+                    )
+                } else {
+                    ModernMenuRowWithPremium(
+                        icon: "network", 
+                        title: "Ad Networks", 
+                        subtitle: "Network performance",
+                        iconColor: .indigo,
+                        isPremium: true,
+                        action: {
+                            hapticFeedback()
+                            premiumStatusManager.trackFeatureUsage(.advancedAnalytics)
+                        }
+                    )
                 }
-            )
+            }
             
-            ModernMenuRow(
-                icon: "target", 
-                title: "Targeting", 
-                subtitle: "Type performance",
-                iconColor: .pink,
-                action: {
-                    hapticFeedback()
-                    showTargetingView = true
-                    onDismiss()
+            VStack {
+                if premiumStatusManager.hasFeature(.advancedAnalytics) {
+                    ModernMenuRow(
+                        icon: "target", 
+                        title: "Targeting", 
+                        subtitle: "Type performance",
+                        iconColor: .pink,
+                        action: {
+                            hapticFeedback()
+                            showTargetingView = true
+                            onDismiss()
+                        }
+                    )
+                } else {
+                    ModernMenuRowWithPremium(
+                        icon: "target", 
+                        title: "Targeting", 
+                        subtitle: "Type performance",
+                        iconColor: .pink,
+                        isPremium: true,
+                        action: {
+                            hapticFeedback()
+                            premiumStatusManager.trackFeatureUsage(.advancedAnalytics)
+                        }
+                    )
                 }
-            )
+            }
             
             if settingsViewModel.showAdMobApps {
                 ModernMenuRow(

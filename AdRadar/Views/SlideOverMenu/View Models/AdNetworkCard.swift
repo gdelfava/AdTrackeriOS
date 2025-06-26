@@ -166,12 +166,12 @@ struct AdNetworkCard: View {
                     color: .pink
                 )
                 
-                AdNetworkDetailedMetricRow(
-                    icon: "dollarsign.circle.fill",
-                    title: "Total Revenue",
-                    value: formattedCurrency(adNetwork.earnings),
-                    color: .green
-                )
+//                AdNetworkDetailedMetricRow(
+//                    icon: "dollarsign.circle.fill",
+//                    title: "Total Revenue",
+//                    value: formattedCurrency(adNetwork.earnings),
+//                    color: .green
+//                )
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)

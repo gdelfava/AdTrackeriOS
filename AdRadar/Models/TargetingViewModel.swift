@@ -95,7 +95,9 @@ class TargetingViewModel: ObservableObject {
             "IMPRESSIONS",
             "CLICKS",
             "IMPRESSIONS_CTR",
-            "IMPRESSIONS_RPM"
+            "IMPRESSIONS_RPM",
+            "AD_REQUESTS",
+            "PAGE_VIEWS"
         ]
         
         let metricsQuery = metrics.map { "metrics=\($0)" }.joined(separator: "&")
@@ -160,9 +162,11 @@ class TargetingViewModel: ObservableObject {
                     var clicks = "0"
                     var ctr = "0"
                     var rpm = "0"
+                    var requests = "0"
+                    var pageViews = "0"
                     
                     // Map the remaining cells to metrics
-                    // The order should be: targeting_type, earnings, impressions, clicks, ctr, rpm
+                    // The order should be: targeting_type, earnings, impressions, clicks, ctr, rpm, requests, pageViews
                     if cells.count >= 2 {
                         earnings = cells[1]["value"] as? String ?? "0"
                     }
@@ -178,6 +182,12 @@ class TargetingViewModel: ObservableObject {
                     if cells.count >= 6 {
                         rpm = cells[5]["value"] as? String ?? "0"
                     }
+                    if cells.count >= 7 {
+                        requests = cells[6]["value"] as? String ?? "0"
+                    }
+                    if cells.count >= 8 {
+                        pageViews = cells[7]["value"] as? String ?? "0"
+                    }
                     
                     return TargetingData(
                         targetingType: targetingType,
@@ -185,7 +195,9 @@ class TargetingViewModel: ObservableObject {
                         impressions: impressions,
                         clicks: clicks,
                         ctr: ctr,
-                        rpm: rpm
+                        rpm: rpm,
+                        requests: requests,
+                        pageViews: pageViews
                     )
                 }
                 

@@ -226,9 +226,18 @@ struct AppsView: View {
     private var appCardsList: some View {
         LazyVStack(spacing: 16) {
             ForEach(Array(viewModel.apps.enumerated()), id: \.element.id) { index, app in
-                AppCard(app: app)
+                AppCard(
+                    app: app,
+                    accountID: getAccountID(),
+                    dateRange: viewModel.selectedFilter.dateRange
+                )
             }
         }
+    }
+    
+    private func getAccountID() -> String {
+        // Get the account ID from the view model
+        return viewModel.admobAccountID ?? ""
     }
     
     private var leadingToolbarItem: some ToolbarContent {
@@ -297,6 +306,8 @@ struct AppsView: View {
 struct AppCard: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     let app: AppData
+    let accountID: String
+    let dateRange: (start: Date, end: Date)
     @State private var isPressed = false
     @State private var showDetailedMetrics = false
     
@@ -317,6 +328,12 @@ struct AppCard: View {
             // Detailed Metrics Section (expandable)
             if showDetailedMetrics {
                 detailedMetricsSection
+                
+                // Ad Units Section
+                adUnitsSection
+                
+                // Countries Section
+                countriesSection
             }
             
             // Expand/Collapse Button
@@ -460,12 +477,12 @@ struct AppCard: View {
                     color: .teal
                 )
                 
-                DetailedMetricRow(
-                    icon: "dollarsign.circle.fill",
-                    title: "Revenue",
-                    value: formattedCurrency(app.earnings),
-                    color: .green
-                )
+//                DetailedMetricRow(
+//                    icon: "dollarsign.circle.fill",
+//                    title: "Revenue",
+//                    value: formattedCurrency(app.earnings),
+//                    color: .green
+//                )
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
@@ -500,6 +517,40 @@ struct AppCard: View {
             Spacer()
         }
         .padding(.bottom, 16)
+    }
+    
+    private var adUnitsSection: some View {
+        VStack(spacing: 0) {
+            Rectangle()
+                .fill(Color(.systemGray5))
+                .frame(height: 1)
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+            
+            AdUnitsSection(
+                appData: app,
+                accountID: accountID,
+                dateRange: dateRange
+            )
+            .padding(.top, 16)
+        }
+    }
+    
+    private var countriesSection: some View {
+        VStack(spacing: 0) {
+            Rectangle()
+                .fill(Color(.systemGray5))
+                .frame(height: 1)
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+            
+            CountriesAdSection(
+                appData: app,
+                accountID: accountID,
+                dateRange: dateRange
+            )
+            .padding(.top, 16)
+        }
     }
     
     private func formattedCurrency(_ valueString: String) -> String {

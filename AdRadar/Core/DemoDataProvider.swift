@@ -107,7 +107,9 @@ class DemoDataProvider {
                 impressions: scaleValue("32400", multiplier: multiplier),
                 impressionsRPM: "14.10",
                 activeViewViewable: "92.5",
-                clicks: scaleValue("967", multiplier: multiplier)
+                clicks: scaleValue("967", multiplier: multiplier),
+                requests: scaleValue("35000", multiplier: multiplier),
+                ctr: "2.98"
             ),
             PlatformData(
                 platform: "Desktop",
@@ -117,7 +119,9 @@ class DemoDataProvider {
                 impressions: scaleValue("18900", multiplier: multiplier),
                 impressionsRPM: "13.80",
                 activeViewViewable: "91.8",
-                clicks: scaleValue("523", multiplier: multiplier)
+                clicks: scaleValue("523", multiplier: multiplier),
+                requests: scaleValue("20000", multiplier: multiplier),
+                ctr: "2.77"
             ),
             PlatformData(
                 platform: "Tablet",
@@ -127,7 +131,9 @@ class DemoDataProvider {
                 impressions: scaleValue("5800", multiplier: multiplier),
                 impressionsRPM: "13.50",
                 activeViewViewable: "90.5",
-                clicks: scaleValue("151", multiplier: multiplier)
+                clicks: scaleValue("151", multiplier: multiplier),
+                requests: scaleValue("6500", multiplier: multiplier),
+                ctr: "2.60"
             )
         ]
         
@@ -200,7 +206,9 @@ class DemoDataProvider {
                 impressions: scaleValue("28900", multiplier: multiplier),
                 clicks: scaleValue("967", multiplier: multiplier),
                 ctr: "3.35",
-                rpm: "14.70"
+                rpm: "14.70",
+                requests: scaleValue("35000", multiplier: multiplier),
+                pageViews: scaleValue("30000", multiplier: multiplier)
             ),
             TargetingData(
                 targetingType: "Search",
@@ -208,7 +216,9 @@ class DemoDataProvider {
                 impressions: scaleValue("19200", multiplier: multiplier),
                 clicks: scaleValue("643", multiplier: multiplier),
                 ctr: "3.35",
-                rpm: "14.70"
+                rpm: "14.70",
+                requests: scaleValue("25000", multiplier: multiplier),
+                pageViews: scaleValue("22000", multiplier: multiplier)
             )
         ]
         

@@ -28,19 +28,42 @@ struct AdSenseDayMetrics: Codable {
         guard let value = Double(pageViewsCTR) else { return pageViewsCTR }
         return String(format: "%.2f%%", value * 100)
     }
-    var formattedCostPerClick: String {
+    func formattedCostPerClick(isDemoMode: Bool = false) -> String {
         guard let value = Double(costPerClick) else { return costPerClick }
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencySymbol = "$"
+        
+        if isDemoMode {
+            formatter.currencySymbol = "$"
+            formatter.locale = Locale(identifier: "en_US")
+        } else {
+            formatter.locale = Locale.current
+        }
+        
         return formatter.string(from: NSNumber(value: value)) ?? costPerClick
     }
-    var formattedEstimatedEarnings: String {
+    func formattedEstimatedEarnings(isDemoMode: Bool = false) -> String {
         guard let value = Double(estimatedEarnings) else { return estimatedEarnings }
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencySymbol = "$"
+        
+        if isDemoMode {
+            formatter.currencySymbol = "$"
+            formatter.locale = Locale(identifier: "en_US")
+        } else {
+            formatter.locale = Locale.current
+        }
+        
         return formatter.string(from: NSNumber(value: value)) ?? estimatedEarnings
+    }
+    
+    // Legacy computed properties for backward compatibility
+    var formattedCostPerClick: String {
+        return formattedCostPerClick(isDemoMode: false)
+    }
+    
+    var formattedEstimatedEarnings: String {
+        return formattedEstimatedEarnings(isDemoMode: false)
     }
     
     enum CodingKeys: String, CodingKey {

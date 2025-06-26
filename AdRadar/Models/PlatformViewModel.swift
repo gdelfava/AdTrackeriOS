@@ -96,8 +96,10 @@ class PlatformViewModel: ObservableObject {
             "PAGE_VIEWS_RPM",
             "IMPRESSIONS",
             "IMPRESSIONS_RPM",
-            "ACTIVE_VIEW_VIEWABILITY",
-            "CLICKS"
+            "ACTIVE_VIEW_VIEWABILITY", 
+            "CLICKS",
+            "AD_REQUESTS",
+            "IMPRESSIONS_CTR"
         ]
         
         let metricsQuery = metrics.map { "metrics=\($0)" }.joined(separator: "&")
@@ -153,6 +155,8 @@ class PlatformViewModel: ObservableObject {
                     var impressionsRPM = "0"
                     var activeViewViewable = "0"
                     var clicks = "0"
+                    var requests = "0"
+                    var ctr = "0"
                     
                     // Map the remaining cells to metrics in order
                     if cells.count >= 2 {
@@ -176,6 +180,12 @@ class PlatformViewModel: ObservableObject {
                     if cells.count >= 8 {
                         clicks = cells[7]["value"] as? String ?? "0"
                     }
+                    if cells.count >= 9 {
+                        requests = cells[8]["value"] as? String ?? "0"
+                    }
+                    if cells.count >= 10 {
+                        ctr = cells[9]["value"] as? String ?? "0"
+                    }
                     
                     return PlatformData(
                         platform: platform,
@@ -185,7 +195,9 @@ class PlatformViewModel: ObservableObject {
                         impressions: impressions,
                         impressionsRPM: impressionsRPM,
                         activeViewViewable: activeViewViewable,
-                        clicks: clicks
+                        clicks: clicks,
+                        requests: requests,
+                        ctr: ctr
                     )
                 }
                 

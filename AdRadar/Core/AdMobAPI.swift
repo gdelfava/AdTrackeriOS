@@ -388,4 +388,350 @@ class AdMobAPI {
             return .failure(.requestFailed("Network error: \(error.localizedDescription)"))
         }
     }
+    
+    /// Fetches ad units data for a specific app from AdMob API
+    func fetchAdUnitsReport(accountID: String, appId: String, accessToken: String, startDate: Date, endDate: Date) async -> Result<AdMobReportResponse, AdMobError> {
+        guard NetworkMonitor.shared.shouldProceedWithRequest() else {
+            return .failure(.requestFailed("No internet connection"))
+        }
+        
+        let requestBody = [
+            "reportSpec": [
+                "dateRange": [
+                    "startDate": [
+                        "year": Calendar.current.component(.year, from: startDate),
+                        "month": Calendar.current.component(.month, from: startDate),
+                        "day": Calendar.current.component(.day, from: startDate)
+                    ],
+                    "endDate": [
+                        "year": Calendar.current.component(.year, from: endDate),
+                        "month": Calendar.current.component(.month, from: endDate),
+                        "day": Calendar.current.component(.day, from: endDate)
+                    ]
+                ],
+                "dimensions": ["AD_UNIT", "FORMAT"],
+                "metrics": ["ESTIMATED_EARNINGS", "IMPRESSIONS", "CLICKS", "IMPRESSION_CTR", "AD_REQUESTS"],
+                "dimensionFilters": [
+                    [
+                        "dimension": "APP",
+                        "matchesAny": [
+                            "values": [appId]
+                        ]
+                    ]
+                ]
+            ]
+        ] as [String: Any]
+        
+        guard let url = URL(string: "https://admob.googleapis.com/v1/accounts/\(accountID)/mediationReport:generate") else {
+            return .failure(.invalidURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 30
+        
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: requestBody, options: [])
+            request.httpBody = jsonData
+            
+            try Task.checkCancellation()
+            
+            let (data, response) = try await urlSession.data(for: request)
+            
+            try Task.checkCancellation()
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                return .failure(.invalidResponse)
+            }
+            
+            print("AdMob Ad Units Report HTTP Status Code: \(httpResponse.statusCode)")
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("AdMob Ad Units Report Response: \(responseString)")
+            }
+            
+            switch httpResponse.statusCode {
+            case 200:
+                // First, let's see what the raw JSON structure looks like
+                do {
+                    let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+                    print("Raw AdMob Ad Units JSON structure: \(type(of: jsonObject))")
+                    
+                    if let jsonDict = jsonObject as? [String: Any] {
+                        print("Response is a dictionary with keys: \(Array(jsonDict.keys))")
+                        print("Full dictionary: \(jsonDict)")
+                        
+                        // Try to decode as our expected structure
+                        let decoder = JSONDecoder()
+                        let reportResponse = try decoder.decode(AdMobReportResponse.self, from: data)
+                        return .success(reportResponse)
+                        
+                    } else if let jsonArray = jsonObject as? [[String: Any]] {
+                        print("Response is an array with \(jsonArray.count) elements")
+                        print("First element structure: \(jsonArray.first ?? [:])")
+                        
+                        // Create a simplified response - we'll parse the raw data manually
+                        var adUnitDataList: [AdMobReportRow] = []
+                        
+                        for item in jsonArray {
+                            // Extract basic info for now - we'll refine this based on the actual structure
+                            if let dimensionValues = item["dimensionValues"] as? [String: [String: Any]],
+                               let metricValues = item["metricValues"] as? [String: [String: Any]] {
+                                
+                                // Convert to our expected format
+                                var convertedDimensions: [String: AdMobDimensionValue] = [:]
+                                for (key, value) in dimensionValues {
+                                    if let valueStr = value["value"] as? String,
+                                       let displayLabel = value["displayLabel"] as? String {
+                                        convertedDimensions[key] = AdMobDimensionValue(value: valueStr, displayLabel: displayLabel)
+                                    }
+                                }
+                                
+                                var convertedMetrics: [String: AdMobMetricValue] = [:]
+                                for (key, value) in metricValues {
+                                    let metricValue = AdMobMetricValue(
+                                        integerValue: value["integerValue"] as? String,
+                                        doubleValue: value["doubleValue"] as? Double,
+                                        microsValue: value["microsValue"] as? String
+                                    )
+                                    convertedMetrics[key] = metricValue
+                                }
+                                
+                                let row = AdMobReportRow(
+                                    dimensionValues: convertedDimensions,
+                                    metricValues: convertedMetrics
+                                )
+                                adUnitDataList.append(row)
+                            }
+                        }
+                        
+                        let reportResponse = AdMobReportResponse(header: nil, row: adUnitDataList)
+                        return .success(reportResponse)
+                        
+                    } else {
+                        print("Unexpected JSON structure: \(jsonObject)")
+                        return .failure(.invalidResponse)
+                    }
+                    
+                } catch {
+                    print("AdMob Ad Units JSON parsing error: \(error)")
+                    if let responseString = String(data: data, encoding: .utf8) {
+                        print("Raw AdMob Ad Units response: \(responseString)")
+                    }
+                    return .failure(.decodingError(error.localizedDescription))
+                }
+            case 401:
+                // Check for specific UNAUTHENTICATED status
+                if let errorMessage = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let error = errorMessage["error"] as? [String: Any] {
+                    let message = error["message"] as? String ?? "Authentication required"
+                    let status = error["status"] as? String
+                    if status == "UNAUTHENTICATED" {
+                        return .failure(.requestFailed("UNAUTHENTICATED|\(message)"))
+                    }
+                    return .failure(.requestFailed("Authentication Error: \(message)"))
+                }
+                return .failure(.unauthorized)
+            case 403:
+                return .failure(.requestFailed("Access forbidden. Please check your AdMob permissions."))
+            case 429:
+                return .failure(.requestFailed("Rate limit exceeded. Please try again later."))
+            case 500...599:
+                return .failure(.requestFailed("AdMob API server error. Please try again later."))
+            default:
+                return .failure(.requestFailed("Unexpected error: HTTP \(httpResponse.statusCode)"))
+            }
+        } catch let error as URLError where error.code == .cancelled {
+            print("AdMob Ad Units request was cancelled")
+            return .failure(.requestFailed("Request was cancelled"))
+        } catch let error as URLError {
+            switch error.code {
+            case .notConnectedToInternet:
+                return .failure(.requestFailed("No internet connection"))
+            case .timedOut:
+                return .failure(.requestFailed("Request timed out"))
+            case .cannotConnectToHost:
+                return .failure(.requestFailed("Cannot connect to server"))
+            default:
+                return .failure(.requestFailed("Network error: \(error.localizedDescription)"))
+            }
+        } catch {
+            print("AdMob Ad Units Network error: \(error)")
+            return .failure(.requestFailed("Network error: \(error.localizedDescription)"))
+        }
+    }
+    
+    /// Fetches countries data for a specific app from AdMob API
+    func fetchCountriesReport(accountID: String, appId: String, accessToken: String, startDate: Date, endDate: Date) async -> Result<AdMobReportResponse, AdMobError> {
+        guard NetworkMonitor.shared.shouldProceedWithRequest() else {
+            return .failure(.requestFailed("No internet connection"))
+        }
+        
+        let requestBody = [
+            "reportSpec": [
+                "dateRange": [
+                    "startDate": [
+                        "year": Calendar.current.component(.year, from: startDate),
+                        "month": Calendar.current.component(.month, from: startDate),
+                        "day": Calendar.current.component(.day, from: startDate)
+                    ],
+                    "endDate": [
+                        "year": Calendar.current.component(.year, from: endDate),
+                        "month": Calendar.current.component(.month, from: endDate),
+                        "day": Calendar.current.component(.day, from: endDate)
+                    ]
+                ],
+                "dimensions": ["COUNTRY"],
+                "metrics": ["ESTIMATED_EARNINGS", "IMPRESSIONS", "CLICKS", "IMPRESSION_CTR", "AD_REQUESTS"],
+                "dimensionFilters": [
+                    [
+                        "dimension": "APP",
+                        "matchesAny": [
+                            "values": [appId]
+                        ]
+                    ]
+                ]
+            ]
+        ] as [String: Any]
+        
+        guard let url = URL(string: "https://admob.googleapis.com/v1/accounts/\(accountID)/mediationReport:generate") else {
+            return .failure(.invalidURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 30
+        
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: requestBody, options: [])
+            request.httpBody = jsonData
+            
+            try Task.checkCancellation()
+            
+            let (data, response) = try await urlSession.data(for: request)
+            
+            try Task.checkCancellation()
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                return .failure(.invalidResponse)
+            }
+            
+            print("AdMob Countries Report HTTP Status Code: \(httpResponse.statusCode)")
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("AdMob Countries Report Response: \(responseString)")
+            }
+            
+            switch httpResponse.statusCode {
+            case 200:
+                // First, let's see what the raw JSON structure looks like
+                do {
+                    let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+                    print("Raw AdMob Countries JSON structure: \(type(of: jsonObject))")
+                    
+                    if let jsonDict = jsonObject as? [String: Any] {
+                        print("Response is a dictionary with keys: \(Array(jsonDict.keys))")
+                        print("Full dictionary: \(jsonDict)")
+                        
+                        // Try to decode as our expected structure
+                        let decoder = JSONDecoder()
+                        let reportResponse = try decoder.decode(AdMobReportResponse.self, from: data)
+                        return .success(reportResponse)
+                        
+                    } else if let jsonArray = jsonObject as? [[String: Any]] {
+                        print("Response is an array with \(jsonArray.count) elements")
+                        print("First element structure: \(jsonArray.first ?? [:])")
+                        
+                        // Create a simplified response - we'll parse the raw data manually
+                        var countryDataList: [AdMobReportRow] = []
+                        
+                        for item in jsonArray {
+                            // Extract basic info for now - we'll refine this based on the actual structure
+                            if let dimensionValues = item["dimensionValues"] as? [String: [String: Any]],
+                               let metricValues = item["metricValues"] as? [String: [String: Any]] {
+                                
+                                // Convert to our expected format
+                                var convertedDimensions: [String: AdMobDimensionValue] = [:]
+                                for (key, value) in dimensionValues {
+                                    if let valueStr = value["value"] as? String,
+                                       let displayLabel = value["displayLabel"] as? String {
+                                        convertedDimensions[key] = AdMobDimensionValue(value: valueStr, displayLabel: displayLabel)
+                                    }
+                                }
+                                
+                                var convertedMetrics: [String: AdMobMetricValue] = [:]
+                                for (key, value) in metricValues {
+                                    let metricValue = AdMobMetricValue(
+                                        integerValue: value["integerValue"] as? String,
+                                        doubleValue: value["doubleValue"] as? Double,
+                                        microsValue: value["microsValue"] as? String
+                                    )
+                                    convertedMetrics[key] = metricValue
+                                }
+                                
+                                let row = AdMobReportRow(
+                                    dimensionValues: convertedDimensions,
+                                    metricValues: convertedMetrics
+                                )
+                                countryDataList.append(row)
+                            }
+                        }
+                        
+                        let reportResponse = AdMobReportResponse(header: nil, row: countryDataList)
+                        return .success(reportResponse)
+                        
+                    } else {
+                        print("Unexpected JSON structure: \(jsonObject)")
+                        return .failure(.invalidResponse)
+                    }
+                    
+                } catch {
+                    print("AdMob Countries JSON parsing error: \(error)")
+                    if let responseString = String(data: data, encoding: .utf8) {
+                        print("Raw AdMob Countries response: \(responseString)")
+                    }
+                    return .failure(.decodingError(error.localizedDescription))
+                }
+            case 401:
+                // Check for specific UNAUTHENTICATED status
+                if let errorMessage = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let error = errorMessage["error"] as? [String: Any] {
+                    let message = error["message"] as? String ?? "Authentication required"
+                    let status = error["status"] as? String
+                    if status == "UNAUTHENTICATED" {
+                        return .failure(.requestFailed("UNAUTHENTICATED|\(message)"))
+                    }
+                    return .failure(.requestFailed("Authentication Error: \(message)"))
+                }
+                return .failure(.unauthorized)
+            case 403:
+                return .failure(.requestFailed("Access forbidden. Please check your AdMob permissions."))
+            case 429:
+                return .failure(.requestFailed("Rate limit exceeded. Please try again later."))
+            case 500...599:
+                return .failure(.requestFailed("AdMob API server error. Please try again later."))
+            default:
+                return .failure(.requestFailed("Unexpected error: HTTP \(httpResponse.statusCode)"))
+            }
+        } catch let error as URLError where error.code == .cancelled {
+            print("AdMob Countries request was cancelled")
+            return .failure(.requestFailed("Request was cancelled"))
+        } catch let error as URLError {
+            switch error.code {
+            case .notConnectedToInternet:
+                return .failure(.requestFailed("No internet connection"))
+            case .timedOut:
+                return .failure(.requestFailed("Request timed out"))
+            case .cannotConnectToHost:
+                return .failure(.requestFailed("Cannot connect to server"))
+            default:
+                return .failure(.requestFailed("Network error: \(error.localizedDescription)"))
+            }
+        } catch {
+            print("AdMob Countries Network error: \(error)")
+            return .failure(.requestFailed("Network error: \(error.localizedDescription)"))
+        }
+    }
 } 

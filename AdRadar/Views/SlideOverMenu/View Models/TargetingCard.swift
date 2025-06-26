@@ -104,9 +104,9 @@ struct TargetingCard: View {
     private var mainMetricsSection: some View {
         HStack(spacing: 0) {
             TargetingMetricPill(
-                icon: "eye.fill",
-                title: "Impressions",
-                value: targeting.impressions,
+                icon: "doc.text.fill",
+                title: "Requests",
+                value: targeting.requests,
                 color: .blue
             )
             
@@ -124,9 +124,9 @@ struct TargetingCard: View {
                 .frame(height: 40)
             
             TargetingMetricPill(
-                icon: "percent",
-                title: "CTR",
-                value: targeting.formattedCTR,
+                icon: "newspaper.fill",
+                title: "Page Views",
+                value: targeting.pageViews,
                 color: .purple
             )
         }
@@ -146,31 +146,24 @@ struct TargetingCard: View {
                 GridItem(.flexible())
             ], spacing: 16) {
                 TargetingDetailedMetricRow(
+                    icon: "percent",
+                    title: "CTR",
+                    value: targeting.formattedCTR,
+                    color: .indigo
+                )
+                
+                TargetingDetailedMetricRow(
+                    icon: "eye.fill",
+                    title: "Impressions",
+                    value: targeting.impressions,
+                    color: .teal
+                )
+                
+                TargetingDetailedMetricRow(
                     icon: "chart.line.uptrend.xyaxis",
                     title: "RPM",
                     value: formattedCurrency(targeting.rpm),
                     color: .pink
-                )
-                
-                TargetingDetailedMetricRow(
-                    icon: "dollarsign.circle.fill",
-                    title: "Total Revenue",
-                    value: formattedCurrency(targeting.earnings),
-                    color: .green
-                )
-                
-                TargetingDetailedMetricRow(
-                    icon: "target",
-                    title: "Type",
-                    value: targeting.displayTargetingType,
-                    color: colorForTargeting
-                )
-                
-                TargetingDetailedMetricRow(
-                    icon: "info.circle.fill",
-                    title: "Performance",
-                    value: performanceDescription,
-                    color: .secondary
                 )
             }
             .padding(.horizontal, 20)
@@ -317,7 +310,9 @@ struct TargetingDetailedMetricRow: View {
         impressions: "1234",
         clicks: "56",
         ctr: "0.045",
-        rpm: "0.98"
+        rpm: "0.98",
+        requests: "1500",
+        pageViews: "1300"
     ))
     .padding()
 } 

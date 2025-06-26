@@ -103,9 +103,9 @@ struct CountryCard: View {
     private var mainMetricsSection: some View {
         HStack(spacing: 0) {
             CountryMetricPill(
-                icon: "eye.fill",
-                title: "Impressions",
-                value: country.impressions,
+                icon: "doc.text.fill",
+                title: "Requests",
+                value: country.requests,
                 color: .blue
             )
             
@@ -123,9 +123,9 @@ struct CountryCard: View {
                 .frame(height: 40)
             
             CountryMetricPill(
-                icon: "percent",
-                title: "CTR",
-                value: country.formattedCTR,
+                icon: "newspaper.fill",
+                title: "Page Views",
+                value: country.pageViews,
                 color: .purple
             )
         }
@@ -145,16 +145,16 @@ struct CountryCard: View {
                 GridItem(.flexible())
             ], spacing: 16) {
                 CountryDetailedMetricRow(
-                    icon: "doc.text.fill",
-                    title: "Requests",
-                    value: country.requests,
+                    icon: "percent",
+                    title: "CTR",
+                    value: country.formattedCTR,
                     color: .indigo
                 )
                 
                 CountryDetailedMetricRow(
-                    icon: "newspaper.fill",
-                    title: "Page Views",
-                    value: country.pageViews,
+                    icon: "eye.fill",
+                    title: "Impressions",
+                    value: country.impressions,
                     color: .teal
                 )
                 
@@ -163,13 +163,6 @@ struct CountryCard: View {
                     title: "RPM",
                     value: formattedCurrency(country.rpm),
                     color: .pink
-                )
-                
-                CountryDetailedMetricRow(
-                    icon: "dollarsign.circle.fill",
-                    title: "Total Revenue",
-                    value: formattedCurrency(country.earnings),
-                    color: .green
                 )
             }
             .padding(.horizontal, 20)

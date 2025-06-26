@@ -9,6 +9,7 @@ struct DayMetricsSheet: View {
     let title: String
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var authViewModel: AuthViewModel
     @State private var cardAppearances: [Bool] = Array(repeating: false, count: 4)
     
     var body: some View {
@@ -34,7 +35,7 @@ struct DayMetricsSheet: View {
                                     MetricData(
                                         icon: "banknote.fill",
                                         title: "Total Earnings",
-                                        value: metrics.formattedEstimatedEarnings,
+                                        value: metrics.formattedEstimatedEarnings(isDemoMode: authViewModel.isDemoMode),
                                         subtitle: "Revenue Generated",
                                         color: .green
                                     )
@@ -109,7 +110,7 @@ struct DayMetricsSheet: View {
                                     MetricData(
                                         icon: "creditcard.fill",
                                         title: "Cost Per Click",
-                                        value: metrics.formattedCostPerClick,
+                                        value: metrics.formattedCostPerClick(isDemoMode: authViewModel.isDemoMode),
                                         subtitle: "Average CPC",
                                         color: .purple
                                     )
@@ -216,4 +217,5 @@ struct MetricData {
         ),
         title: "Today's Performance"
     )
+    .environmentObject(AuthViewModel())
 } 

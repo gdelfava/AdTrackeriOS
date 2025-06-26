@@ -6,12 +6,12 @@ struct HorizontalDatePickerView: View {
     let streakData: [StreakDayData]
     
     private var sortedData: [StreakDayData] {
-        streakData.sorted { $0.date > $1.date }  // Sort newest to oldest
+        streakData.sorted { $0.date < $1.date }  // Sort oldest to newest
     }
     
     private var mostRecentDayId: UUID? {
-        // Get the most recent date (the first one in the sorted array)
-        sortedData.first?.id
+        // Get the most recent date (the last one in the sorted array)
+        sortedData.last?.id
     }
     
     var body: some View {
@@ -33,11 +33,11 @@ struct HorizontalDatePickerView: View {
                 .onAppear {
                     // Scroll to the most recent date immediately and again after a delay
                     if let recentId = mostRecentDayId {
-                        proxy.scrollTo(recentId, anchor: .leading)
+                        proxy.scrollTo(recentId, anchor: .trailing)
                         // Also do it after a delay to ensure it works even if layout isn't ready
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             withAnimation(.easeOut(duration: 0.3)) {
-                                proxy.scrollTo(recentId, anchor: .leading)
+                                proxy.scrollTo(recentId, anchor: .trailing)
                             }
                         }
                     }

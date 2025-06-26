@@ -10,6 +10,8 @@ struct PlatformData: Identifiable, Codable, Equatable {
     let impressionsRPM: String
     let activeViewViewable: String
     let clicks: String
+    let requests: String
+    let ctr: String
     
     // Computed properties for formatted display
     var formattedEarnings: String {
@@ -41,6 +43,11 @@ struct PlatformData: Identifiable, Codable, Equatable {
         return String(format: "%.2f%%", value * 100)
     }
     
+    var formattedCTR: String {
+        guard let value = Double(ctr) else { return ctr }
+        return String(format: "%.2f%%", value * 100)
+    }
+    
     enum CodingKeys: String, CodingKey {
         case platform = "PLATFORM_TYPE"
         case earnings = "ESTIMATED_EARNINGS"
@@ -50,6 +57,8 @@ struct PlatformData: Identifiable, Codable, Equatable {
         case impressionsRPM = "IMPRESSIONS_RPM"
         case activeViewViewable = "ACTIVE_VIEW_VIEWABLE"
         case clicks = "CLICKS"
+        case requests = "AD_REQUESTS"
+        case ctr = "IMPRESSIONS_CTR"
     }
 }
 

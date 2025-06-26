@@ -13,8 +13,7 @@ class AppViewModel: ObservableObject {
     
     var accessToken: String?
     var authViewModel: AuthViewModel?
-    
-    private var admobAccountID: String?
+    var admobAccountID: String?
     
     init(accessToken: String?) {
         self.accessToken = accessToken

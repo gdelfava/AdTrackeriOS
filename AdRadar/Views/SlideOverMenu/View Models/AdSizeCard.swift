@@ -165,12 +165,12 @@ struct AdSizeCard: View {
                     color: .pink
                 )
                 
-                AdSizeDetailedMetricRow(
-                    icon: "dollarsign.circle.fill",
-                    title: "Revenue",
-                    value: adSize.formattedEarnings,
-                    color: .green
-                )
+//                AdSizeDetailedMetricRow(
+//                    icon: "dollarsign.circle.fill",
+//                    title: "Revenue",
+//                    value: adSize.formattedEarnings,
+//                    color: .green
+//                )
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)

@@ -1,8 +1,8 @@
 import SwiftUI
 
-struct PlatformCard: View {
+struct DomainCard: View {
     @EnvironmentObject var authViewModel: AuthViewModel
-    let platform: PlatformData
+    let domain: DomainData
     @State private var isPressed = false
     @State private var showDetailedMetrics = false
     
@@ -57,9 +57,9 @@ struct PlatformCard: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                // Platform icon and name
+                // Domain icon and name
                 HStack(spacing: 12) {
-                    Image(systemName: platformIcon)
+                    Image(systemName: "globe.americas.fill")
                         .font(.system(size: 20, weight: .medium))
                         .foregroundColor(.accentColor)
                         .frame(width: 32, height: 32)
@@ -67,12 +67,12 @@ struct PlatformCard: View {
                         .clipShape(Circle())
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(platform.platform)
+                        Text(domain.domainName)
                             .soraHeadline()
                             .foregroundColor(.primary)
                             .lineLimit(1)
                         
-                        Text("Platform Analytics")
+                        Text("Domain Performance")
                             .soraCaption()
                             .foregroundColor(.secondary)
                     }
@@ -82,11 +82,11 @@ struct PlatformCard: View {
                 
                 // Earnings badge
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text(formattedCurrency(platform.earnings))
+                    Text(formattedCurrency(domain.earnings))
                         .soraTitle2()
                         .foregroundColor(.green)
                     
-                    Text("Revenue")
+                    Text("Earnings")
                         .soraCaption2()
                         .foregroundColor(.secondary)
                         .textCase(.uppercase)
@@ -103,30 +103,30 @@ struct PlatformCard: View {
     
     private var mainMetricsSection: some View {
         HStack(spacing: 0) {
-            PlatformMetricPill(
-                icon: "doc.text.fill",
-                title: "Requests",
-                value: platform.requests,
+            MetricPill(
+                icon: "eye.fill",
+                title: "Impressions",
+                value: domain.impressions,
                 color: .blue
             )
             
             Divider()
                 .frame(height: 40)
             
-            PlatformMetricPill(
+            MetricPill(
                 icon: "cursorarrow.click.2",
                 title: "Clicks",
-                value: platform.clicks,
+                value: domain.clicks,
                 color: .orange
             )
             
             Divider()
                 .frame(height: 40)
             
-            PlatformMetricPill(
+            MetricPill(
                 icon: "percent",
                 title: "CTR",
-                value: platform.formattedCTR,
+                value: domain.formattedCTR,
                 color: .purple
             )
         }
@@ -145,33 +145,33 @@ struct PlatformCard: View {
                 GridItem(.flexible()),
                 GridItem(.flexible())
             ], spacing: 16) {
-                PlatformDetailedMetricRow(
-                    icon: "newspaper.fill",
-                    title: "Page Views",
-                    value: platform.pageViews,
+                DetailedMetricRow(
+                    icon: "doc.text.fill",
+                    title: "Requests",
+                    value: domain.requests,
                     color: .indigo
                 )
                 
-                PlatformDetailedMetricRow(
-                    icon: "eye.fill",
-                    title: "Impressions",
-                    value: platform.impressions,
+                DetailedMetricRow(
+                    icon: "newspaper.fill",
+                    title: "Page Views",
+                    value: domain.pageViews,
                     color: .teal
                 )
                 
-                PlatformDetailedMetricRow(
+                DetailedMetricRow(
                     icon: "chart.line.uptrend.xyaxis",
-                    title: "Page RPM",
-                    value: formattedCurrency(platform.pageRPM),
+                    title: "RPM",
+                    value: formattedCurrency(domain.rpm),
                     color: .pink
                 )
                 
-                PlatformDetailedMetricRow(
-                    icon: "chart.bar.fill",
-                    title: "Impress. RPM",
-                    value: formattedCurrency(platform.impressionsRPM),
-                    color: .green
-                )
+//                DetailedMetricRow(
+//                    icon: "dollarsign.circle.fill",
+//                    title: "Revenue",
+//                    value: formattedCurrency(domain.earnings),
+//                    color: .green
+//                )
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
@@ -208,21 +208,6 @@ struct PlatformCard: View {
         .padding(.bottom, 16)
     }
     
-    private var platformIcon: String {
-        switch platform.platform.lowercased() {
-        case "desktop":
-            return "desktopcomputer"
-        case "mobile":
-            return "iphone"
-        case "tablet":
-            return "ipad"
-        case "highend_mobile":
-            return "iphone"
-        default:
-            return "iphone"
-        }
-    }
-    
     private func formattedCurrency(_ valueString: String) -> String {
         guard let value = Double(valueString) else { return valueString }
         
@@ -239,7 +224,7 @@ struct PlatformCard: View {
     }
 }
 
-struct PlatformMetricPill: View {
+struct MetricPill: View {
     let icon: String
     let title: String
     let value: String
@@ -271,7 +256,7 @@ struct PlatformMetricPill: View {
     }
 }
 
-struct PlatformDetailedMetricRow: View {
+struct DetailedMetricRow: View {
     let icon: String
     let title: String
     let value: String
@@ -307,17 +292,16 @@ struct PlatformDetailedMetricRow: View {
 }
 
 #Preview {
-    PlatformCard(platform: PlatformData(
-        platform: "Desktop",
-        earnings: "123.45",
-        pageViews: "5000",
-        pageRPM: "24.69",
-        impressions: "800",
-        impressionsRPM: "154.31",
-        activeViewViewable: "0.95",
-        clicks: "25",
-        requests: "965",
-        ctr: "0.03"
+    DomainCard(domain: DomainData(
+        domainName: "example.com",
+        earnings: "1234.56",
+        requests: "50,000",
+        pageViews: "25,000",
+        impressions: "100,000",
+        clicks: "1,500",
+        ctr: "0.015",
+        rpm: "24.69"
     ))
+    .environmentObject(AuthViewModel())
     .padding()
 } 
