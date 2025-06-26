@@ -127,6 +127,7 @@ struct WebView: UIViewRepresentable {
 struct SettingsView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @EnvironmentObject var settingsViewModel: SettingsViewModel
+    @EnvironmentObject var premiumStatusManager: PremiumStatusManager
     @State private var isShareSheetPresented = false
     @State private var isWidgetSupportSheetPresented = false
     @State private var isMailSheetPresented = false
@@ -134,9 +135,11 @@ struct SettingsView: View {
     @State private var showToast = false
     @State private var profileAppeared = false
     @State private var accountInfoAppeared = false
-    @State private var supportAppeared = false
-    @State private var generalAppeared = false
-    @State private var animateFloatingElements = false
+            @State private var supportAppeared = false
+        @State private var generalAppeared = false
+        @State private var premiumAppeared = false
+        @State private var animateFloatingElements = false
+        @State private var showPremiumUpgrade = false
     @Binding var showSlideOverMenu: Bool
     @Binding var selectedTab: Int
     
@@ -319,6 +322,179 @@ struct SettingsView: View {
                         .opacity(generalAppeared ? 1 : 0)
                         .offset(y: generalAppeared ? 0 : 30)
                         
+                        // Premium Section
+                        ModernSectionView(title: "Premium Features") {
+                            VStack(spacing: 1) {
+                                if premiumStatusManager.isPremiumUser {
+                                    // Premium Active Status
+                                    HStack(spacing: 16) {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                .fill(Color.accentColor.opacity(0.1))
+                                                .frame(width: 40, height: 40)
+                                            
+                                            Image(systemName: "crown.fill")
+                                                .font(.system(size: 18, weight: .medium))
+                                                .foregroundColor(.accentColor)
+                                        }
+                                        
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text("Premium Active")
+                                                .soraBody()
+                                                .fontWeight(.medium)
+                                                .foregroundColor(.primary)
+                                            
+                                            Text(premiumStatusManager.formattedSubscriptionStatus())
+                                                .soraCaption()
+                                                .foregroundColor(.secondary)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundColor(.green)
+                                            .font(.title2)
+                                    }
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 16)
+                                    .background(Color(.secondarySystemGroupedBackground))
+                                    
+                                    Divider()
+                                        .padding(.leading, 56)
+                                    
+                                    // Manage Subscription
+                                    Button(action: {
+                                        premiumStatusManager.openSubscriptionManagement()
+                                    }) {
+                                        HStack(spacing: 16) {
+                                            ZStack {
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                    .fill(Color.blue.opacity(0.1))
+                                                    .frame(width: 40, height: 40)
+                                                
+                                                Image(systemName: "gear")
+                                                    .font(.system(size: 18, weight: .medium))
+                                                    .foregroundColor(.blue)
+                                            }
+                                            
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                Text("Manage Subscription")
+                                                    .soraBody()
+                                                    .fontWeight(.medium)
+                                                    .foregroundColor(.primary)
+                                                
+                                                Text("Update billing and preferences")
+                                                    .soraCaption()
+                                                    .foregroundColor(.secondary)
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            Image(systemName: "chevron.right")
+                                                .font(.caption)
+                                                .fontWeight(.medium)
+                                                .foregroundColor(.secondary)
+                                        }
+                                        .padding(.horizontal, 20)
+                                        .padding(.vertical, 16)
+                                        .contentShape(Rectangle())
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                } else {
+                                    // Upgrade to Premium
+                                    Button(action: {
+                                        showPremiumUpgrade = true
+                                    }) {
+                                        HStack(spacing: 16) {
+                                            ZStack {
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                    .fill(Color.accentColor.opacity(0.1))
+                                                    .frame(width: 40, height: 40)
+                                                
+                                                Image(systemName: "crown.fill")
+                                                    .font(.system(size: 18, weight: .medium))
+                                                    .foregroundColor(.accentColor)
+                                            }
+                                            
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                Text("Upgrade to Premium")
+                                                    .soraBody()
+                                                    .fontWeight(.medium)
+                                                    .foregroundColor(.primary)
+                                                
+                                                Text("Unlock advanced features")
+                                                    .soraCaption()
+                                                    .foregroundColor(.secondary)
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            Text("NEW")
+                                                .soraCaption()
+                                                .fontWeight(.bold)
+                                                .foregroundColor(.white)
+                                                .padding(.horizontal, 8)
+                                                .padding(.vertical, 4)
+                                                .background(Color.accentColor)
+                                                .clipShape(Capsule())
+                                        }
+                                        .padding(.horizontal, 20)
+                                        .padding(.vertical, 16)
+                                        .contentShape(Rectangle())
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                    
+                                    Divider()
+                                        .padding(.leading, 56)
+                                    
+                                    // Restore Purchases
+                                    Button(action: {
+                                        Task {
+                                            await premiumStatusManager.restorePurchases()
+                                        }
+                                    }) {
+                                        HStack(spacing: 16) {
+                                            ZStack {
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                    .fill(Color.orange.opacity(0.1))
+                                                    .frame(width: 40, height: 40)
+                                                
+                                                Image(systemName: "arrow.clockwise")
+                                                    .font(.system(size: 18, weight: .medium))
+                                                    .foregroundColor(.orange)
+                                            }
+                                            
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                Text("Restore Purchases")
+                                                    .soraBody()
+                                                    .fontWeight(.medium)
+                                                    .foregroundColor(.primary)
+                                                
+                                                Text("Restore previous purchases")
+                                                    .soraCaption()
+                                                    .foregroundColor(.secondary)
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            Image(systemName: "chevron.right")
+                                                .font(.caption)
+                                                .fontWeight(.medium)
+                                                .foregroundColor(.secondary)
+                                        }
+                                        .padding(.horizontal, 20)
+                                        .padding(.vertical, 16)
+                                        .contentShape(Rectangle())
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                }
+                            }
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        }
+                        .opacity(premiumAppeared ? 1 : 0)
+                        .offset(y: premiumAppeared ? 0 : 30)
+                        
                         // Enhanced Account Information Section
                         ModernSectionView(title: "Account Information") {
                             VStack(spacing: 1) {
@@ -498,15 +674,19 @@ struct SettingsView: View {
             }
             
             withAnimation(.easeOut(duration: 0.6).delay(0.3)) {
-                accountInfoAppeared = true
+                generalAppeared = true
             }
             
             withAnimation(.easeOut(duration: 0.6).delay(0.5)) {
-                supportAppeared = true
+                premiumAppeared = true
             }
             
             withAnimation(.easeOut(duration: 0.6).delay(0.7)) {
-                generalAppeared = true
+                accountInfoAppeared = true
+            }
+            
+            withAnimation(.easeOut(duration: 0.6).delay(0.9)) {
+                supportAppeared = true
             }
             
             // Animate floating elements
@@ -520,6 +700,7 @@ struct SettingsView: View {
             accountInfoAppeared = false
             supportAppeared = false
             generalAppeared = false
+            premiumAppeared = false
         }
         .sheet(isPresented: $isShareSheetPresented) {
             ShareSheet(activityItems: ["Check out AdRadar for AdSense! https://apps.apple.com/app/add own id here"])
@@ -559,6 +740,9 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $isTermsSheetPresented) {
             TermsAndPrivacySheet()
+        }
+        .sheet(isPresented: $showPremiumUpgrade) {
+            PremiumUpgradeView()
         }
     }
 }

@@ -13,6 +13,8 @@ import Combine
 struct AdRadar_App: App {
     @StateObject private var authViewModel = AuthViewModel()
     @StateObject private var backgroundDataManager = BackgroundDataManager.shared
+    @StateObject private var storeKitManager = StoreKitManager.shared
+    @StateObject private var premiumStatusManager = PremiumStatusManager.shared
     
     init() {
         setupAppEnvironment()
@@ -20,6 +22,8 @@ struct AdRadar_App: App {
         setupMemoryMonitoring()
         // Initialize background data management
         setupBackgroundDataManager()
+        // Initialize StoreKit
+        setupStoreKit()
     }
     
     private func setupAppEnvironment() {
@@ -63,6 +67,14 @@ struct AdRadar_App: App {
         }
     }
     
+    private func setupStoreKit() {
+        // Initialize StoreKit managers on main thread
+        Task { @MainActor in
+            _ = StoreKitManager.shared
+            _ = PremiumStatusManager.shared
+        }
+    }
+    
     private func logInitializationStatus() {
         #if DEBUG
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -87,6 +99,8 @@ struct AdRadar_App: App {
                 .environmentObject(authViewModel)
                 .environmentObject(NetworkMonitor.shared)
                 .environmentObject(backgroundDataManager)
+                .environmentObject(storeKitManager)
+                .environmentObject(premiumStatusManager)
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
                     // Check memory when app becomes active
                     let memoryPressureDetected = MemoryManager.shared.checkMemoryPressure()
