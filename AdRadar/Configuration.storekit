@@ -15,9 +15,8 @@
   ],
   "products" : [
     {
-      "displayPrice" : "4.99",
+      "displayPrice" : "2.99",
       "familyShareable" : false,
-      "identifier" : "com.delteqws.adradar.premium_monthly",
       "internalID" : "6736166445",
       "localizations" : [
         {
@@ -26,14 +25,13 @@
           "locale" : "en_US"
         }
       ],
-      "productID" : "com.delteqws.adradar.premium_monthly",
-      "referenceName" : "Premium Monthly Subscription",
+      "productID" : "com.delteqws.adradar.pro_monthly",
+      "referenceName" : "Pro Monthly Subscription",
       "type" : "Consumable"
     },
     {
-      "displayPrice" : "49.99",
+      "displayPrice" : "19.99",
       "familyShareable" : false,
-      "identifier" : "com.delteqws.adradar.premium_yearly",
       "internalID" : "6736166446",
       "localizations" : [
         {
@@ -42,25 +40,9 @@
           "locale" : "en_US"
         }
       ],
-      "productID" : "com.delteqws.adradar.premium_yearly",
-      "referenceName" : "Premium Yearly Subscription",
+      "productID" : "com.delteqws.adradar.pro_yearly",
+      "referenceName" : "Pro Yearly Subscription",
       "type" : "Consumable"
-    },
-    {
-      "displayPrice" : "2.99",
-      "familyShareable" : false,
-      "identifier" : "com.delteqws.adradar.remove_ads",
-      "internalID" : "6736166447",
-      "localizations" : [
-        {
-          "description" : "Remove all advertisements from the app permanently.",
-          "displayName" : "Remove Ads",
-          "locale" : "en_US"
-        }
-      ],
-      "productID" : "com.delteqws.adradar.remove_ads",
-      "referenceName" : "Remove Ads",
-      "type" : "NonConsumable"
     }
   ],
   "settings" : {
@@ -144,7 +126,7 @@
           ],
           "productID" : "com.delteqws.adradar.premium_monthly_sub",
           "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "Premium Monthly Subscription",
+          "referenceName" : "Pro Monthly Subscription Full Access",
           "subscriptionGroupID" : "21521172",
           "type" : "RecurringSubscription",
           "winbackOffers" : [
@@ -158,7 +140,7 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "49.99",
+          "displayPrice" : "19.99",
           "familyShareable" : false,
           "groupNumber" : 2,
           "internalID" : "6736166449",
@@ -172,7 +154,7 @@
           ],
           "productID" : "com.delteqws.adradar.premium_yearly_sub",
           "recurringSubscriptionPeriod" : "P1Y",
-          "referenceName" : "Premium Yearly Subscription",
+          "referenceName" : "Pro Yearly Subscription Full Access",
           "subscriptionGroupID" : "21521172",
           "type" : "RecurringSubscription",
           "winbackOffers" : [
