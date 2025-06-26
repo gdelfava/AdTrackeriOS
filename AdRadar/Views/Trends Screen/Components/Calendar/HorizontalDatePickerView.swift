@@ -60,12 +60,28 @@ private struct DateCell: View {
         return formatter.string(from: day.date)
     }
     
+    private var formattedEarnings: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = "ZAR"
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        
+        // For very small amounts, show more decimal places
+        if day.earnings < 1.0 && day.earnings > 0 {
+            formatter.minimumFractionDigits = 3
+            formatter.maximumFractionDigits = 3
+        }
+        
+        return formatter.string(from: NSNumber(value: day.earnings)) ?? "R0.00"
+    }
+    
     private var isToday: Bool {
         Calendar.current.isDateInToday(day.date)
     }
     
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 6) {
             Text(dayName)
                 .soraCaption()
                 .foregroundColor(isSelected ? .white : .secondary)
@@ -74,11 +90,17 @@ private struct DateCell: View {
                 .soraTitle3()
                 .foregroundColor(isSelected ? .white : .primary)
             
+            Text(formattedEarnings)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(isSelected ? .white.opacity(0.9) : .secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+            
             Circle()
                 .fill(isToday ? Color.accentColor : Color.clear)
                 .frame(width: 4, height: 4)
         }
-        .frame(width: 44, height: 80)
+        .frame(width: 52, height: 95)
         .padding(.horizontal, 12)
         .background(
             RoundedRectangle(cornerRadius: 10)
