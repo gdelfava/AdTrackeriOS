@@ -5,13 +5,14 @@ struct PerformanceInsightsView: View {
     let streakData: [StreakDayData]
     let viewModel: StreakViewModel
     @State private var selectedMetric = 0
+    @State private var selectedPoint: StreakDayData?
     
     private var weeklyData: [StreakDayData] {
         Array(streakData.prefix(7))
     }
     
     private let metrics = [
-        ("Revenue Trend", Color.green),
+        ("Earnings Trend", Color.green),
         ("Impressions Trend", Color.blue),
         ("CTR Trend", Color.purple)
     ]
@@ -85,6 +86,31 @@ struct PerformanceInsightsView: View {
                             endPoint: .bottom
                         )
                     )
+                    
+                    if let selectedPoint = selectedPoint, selectedPoint.id == day.id {
+                        RuleMark(
+                            x: .value("Selected Date", selectedPoint.date)
+                        )
+                        .foregroundStyle(metrics[selectedMetric].1.opacity(0.3))
+                        
+                        PointMark(
+                            x: .value("Selected Date", selectedPoint.date),
+                            y: .value("Selected Value", metricValue(for: selectedPoint))
+                        )
+                        .foregroundStyle(metrics[selectedMetric].1)
+                        .annotation(position: .top) {
+                            Text(formatValue(metricValue(for: selectedPoint)))
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.primary)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(Color(.systemBackground))
+                                        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+                                )
+                        }
+                    }
                 }
                 .chartXAxis {
                     AxisMarks(values: .stride(by: .day)) { value in
@@ -118,6 +144,30 @@ struct PerformanceInsightsView: View {
                 }
                 .frame(height: 250)
                 .padding(.vertical, 8)
+                .chartOverlay { proxy in
+                    GeometryReader { geometry in
+                        Rectangle()
+                            .fill(.clear)
+                            .contentShape(Rectangle())
+                            .gesture(
+                                DragGesture(minimumDistance: 0)
+                                    .onChanged { value in
+                                        let xPosition = value.location.x
+                                        guard let date = proxy.value(atX: xPosition, as: Date.self) else { return }
+                                        
+                                        if let nearestPoint = weeklyData.min(by: { abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date)) }) {
+                                            selectedPoint = nearestPoint
+                                        }
+                                    }
+                                    .onEnded { _ in
+                                        // Optional: Keep the selection or clear it after a delay
+                                        // DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                        //     selectedPoint = nil
+                                        // }
+                                    }
+                            )
+                    }
+                }
                 
                 // Key metrics summary
                 LazyVGrid(columns: [
