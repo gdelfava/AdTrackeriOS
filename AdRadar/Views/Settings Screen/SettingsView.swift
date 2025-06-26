@@ -322,6 +322,11 @@ struct SettingsView: View {
                         // Enhanced Account Information Section
                         ModernSectionView(title: "Account Information") {
                             VStack(spacing: 1) {
+                                PaymentThresholdRow(settingsViewModel: settingsViewModel)
+                                
+                                Divider()
+                                    .padding(.leading, 56)
+                                
                                 EnhancedAccountInfoRow(
                                     icon: "person.text.rectangle.fill",
                                     iconColor: .blue,
@@ -374,11 +379,6 @@ struct SettingsView: View {
                                     title: "Currency",
                                     value: settingsViewModel.currency
                                 )
-                                
-                                Divider()
-                                    .padding(.leading, 56)
-                                
-                                PaymentThresholdRow(settingsViewModel: settingsViewModel)
                             }
                         }
                         .opacity(accountInfoAppeared ? 1 : 0)

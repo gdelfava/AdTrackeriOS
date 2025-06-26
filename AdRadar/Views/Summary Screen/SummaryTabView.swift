@@ -5,7 +5,7 @@ import GoogleSignIn
 
 struct SummaryTabView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
-    @StateObject private var settingsViewModel: SettingsViewModel
+    @EnvironmentObject var settingsViewModel: SettingsViewModel
     @State private var showSlideOverMenu = false
     @State private var selectedTab: Int = 0
     @State private var showDomainsView = false
@@ -16,11 +16,6 @@ struct SummaryTabView: View {
     @State private var showTargetingView = false
     @State private var showAppsView = false
     @State private var isInitialized = false
-    
-    init() {
-        // Initialize with a placeholder to prevent blocking
-        _settingsViewModel = StateObject(wrappedValue: SettingsViewModel(authViewModel: AuthViewModel()))
-    }
     
     var body: some View {
         ZStack {
@@ -136,7 +131,7 @@ struct SummaryTabView: View {
         try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 seconds
         
         await MainActor.run {
-            // Update settingsViewModel with the correct authViewModel
+            // Ensure settingsViewModel has the correct authViewModel reference
             settingsViewModel.authViewModel = authViewModel
             
             // Mark as initialized

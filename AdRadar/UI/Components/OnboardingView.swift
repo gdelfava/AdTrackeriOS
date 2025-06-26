@@ -3,26 +3,39 @@ import SwiftUI
 struct OnboardingView: View {
     @State private var currentPage = 0
     @State private var animateContent = false
+    @State private var paymentThreshold: String = ""
+    @State private var showThresholdAlert = false
     @Binding var showOnboarding: Bool
+    @EnvironmentObject var settingsViewModel: SettingsViewModel
     
     private let onboardingData = [
         OnboardingPage(
-            title: "Track Your AdSense Earnings with Ease",
+            title: "Track Your AdSense & AdMob Earnings with Ease",
             subtitle: "See daily, monthly & lifetime reports in one clean dashboard.",
             imageName: "chart.bar.fill",
-            backgroundColor: Color.blue
+            backgroundColor: Color.blue,
+            pageType: .info
         ),
         OnboardingPage(
             title: "Detailed Analytics & Insights",
             subtitle: "Dive deep into your performance with breakdowns by country, platform, and ad sizes.",
             imageName: "chart.pie.fill",
-            backgroundColor: Color.green
+            backgroundColor: Color.green,
+            pageType: .info
+        ),
+        OnboardingPage(
+            title: "Set Your Payment Threshold",
+            subtitle: "Configure your Adsense account payment threshold. This helps you track progress toward your next payment in real time.",
+            imageName: "target",
+            backgroundColor: Color.orange,
+            pageType: .paymentThreshold
         ),
         OnboardingPage(
             title: "Get Started in Seconds",
             subtitle: "Simply sign in with Google to connect your AdSense account and start tracking.",
             imageName: "person.circle.fill",
-            backgroundColor: Color.purple
+            backgroundColor: Color.purple,
+            pageType: .info
         )
     ]
     
@@ -34,7 +47,10 @@ struct OnboardingView: View {
                     ForEach(0..<onboardingData.count, id: \.self) { index in
                         OnboardingPageView(
                             page: onboardingData[index],
-                            animateContent: animateContent
+                            animateContent: animateContent,
+                            paymentThreshold: $paymentThreshold,
+                            showThresholdAlert: $showThresholdAlert,
+                            settingsViewModel: settingsViewModel
                         )
                         .tag(index)
                     }
@@ -58,7 +74,13 @@ struct OnboardingView: View {
                     // Action buttons
                     VStack(spacing: 12) {
                         if currentPage < onboardingData.count - 1 {
-                            Button(action: nextPage) {
+                            Button(action: {
+                                if currentPage == 2 { // Payment threshold page
+                                    handlePaymentThresholdNext()
+                                } else {
+                                    nextPage()
+                                }
+                            }) {
                                 HStack {
                                     Text("Next")
                                         .soraButtonTitle()
@@ -105,17 +127,46 @@ struct OnboardingView: View {
             withAnimation(.easeOut(duration: 0.8).delay(0.2)) {
                 animateContent = true
             }
+            // Initialize payment threshold with default value
+            paymentThreshold = String(settingsViewModel.paymentThreshold)
         }
         .gesture(
             DragGesture()
                 .onEnded { value in
                     if value.translation.width < -50 && currentPage < onboardingData.count - 1 {
-                        nextPage()
+                        if currentPage == 2 { // Payment threshold page
+                            handlePaymentThresholdNext()
+                        } else {
+                            nextPage()
+                        }
                     } else if value.translation.width > 50 && currentPage > 0 {
                         previousPage()
                     }
                 }
         )
+        .alert("Invalid Amount", isPresented: $showThresholdAlert) {
+            Button("OK") { }
+        } message: {
+            Text("Please enter a valid amount greater than 0.")
+                .soraBody()
+        }
+    }
+    
+    private func handlePaymentThresholdNext() {
+        if validateAndSavePaymentThreshold() {
+            nextPage()
+        } else {
+            showThresholdAlert = true
+        }
+    }
+    
+    private func validateAndSavePaymentThreshold() -> Bool {
+        guard let threshold = Double(paymentThreshold), threshold > 0 else {
+            return false
+        }
+        
+        settingsViewModel.updatePaymentThreshold(threshold)
+        return true
     }
     
     private func nextPage() {
@@ -140,6 +191,11 @@ struct OnboardingView: View {
         let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
         impactFeedback.impactOccurred()
         
+        // Save payment threshold if user is on that page
+        if currentPage == 2 && !paymentThreshold.isEmpty {
+            _ = validateAndSavePaymentThreshold()
+        }
+        
         withAnimation(.easeInOut(duration: 0.4)) {
             showOnboarding = false
         }
@@ -149,6 +205,9 @@ struct OnboardingView: View {
 struct OnboardingPageView: View {
     let page: OnboardingPage
     let animateContent: Bool
+    @Binding var paymentThreshold: String
+    @Binding var showThresholdAlert: Bool
+    let settingsViewModel: SettingsViewModel
     
     var body: some View {
         VStack(spacing: 0) {
@@ -197,6 +256,47 @@ struct OnboardingPageView: View {
                         .opacity(animateContent ? 1.0 : 0.0)
                         .offset(y: animateContent ? 0 : 30)
                         .animation(.easeOut(duration: 0.8).delay(0.8), value: animateContent)
+                    
+                    // Payment threshold input field
+                    if page.pageType == .paymentThreshold {
+                        VStack(spacing: 16) {
+                            HStack(spacing: 16) {
+                                Text("Threshold Amount:")
+                                    .soraSubheadline()
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.primary)
+                                
+                                TextField("Enter amount", text: $paymentThreshold)
+                                    .keyboardType(.decimalPad)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .frame(maxWidth: 120)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .opacity(animateContent ? 1.0 : 0.0)
+                            .offset(y: animateContent ? 0 : 30)
+                            .animation(.easeOut(duration: 0.8).delay(1.0), value: animateContent)
+                            
+                            VStack(spacing: 8) {
+                                Text("Common thresholds:")
+                                    .soraCaption()
+                                    .foregroundColor(.secondary)
+                                
+                                LazyVGrid(columns: [
+                                    GridItem(.flexible()),
+                                    GridItem(.flexible()),
+                                    GridItem(.flexible())
+                                ], spacing: 8) {
+                                    PaymentThresholdButton(amount: 100, currency: "USD", paymentThreshold: $paymentThreshold)
+                                    PaymentThresholdButton(amount: 1000, currency: "ZAR", paymentThreshold: $paymentThreshold)
+                                    PaymentThresholdButton(amount: 8000, currency: "INR", paymentThreshold: $paymentThreshold)
+                                }
+                            }
+                            .opacity(animateContent ? 1.0 : 0.0)
+                            .offset(y: animateContent ? 0 : 30)
+                            .animation(.easeOut(duration: 0.8).delay(1.2), value: animateContent)
+                        }
+                        .padding(.top, 20)
+                    }
                 }
             }
             
@@ -207,11 +307,62 @@ struct OnboardingPageView: View {
     }
 }
 
+struct PaymentThresholdButton: View {
+    let amount: Double
+    let currency: String
+    @Binding var paymentThreshold: String
+    
+    var body: some View {
+        Button(action: {
+            paymentThreshold = String(amount)
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+        }) {
+            VStack(spacing: 4) {
+                Text(formatCurrency(amount))
+                    .soraCaption()
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Text(currency)
+                    .soraCaption2()
+                    .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(Color(.tertiarySystemBackground))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .stroke(paymentThreshold == String(amount) ? Color.orange : Color.clear, lineWidth: 2)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    private func formatCurrency(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale.current
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
+}
+
+enum OnboardingPageType {
+    case info
+    case paymentThreshold
+}
+
 struct OnboardingPage {
     let title: String
     let subtitle: String
     let imageName: String
     let backgroundColor: Color
+    let pageType: OnboardingPageType
 }
 
 struct OnboardingButtonStyle: ButtonStyle {
@@ -225,4 +376,5 @@ struct OnboardingButtonStyle: ButtonStyle {
 
 #Preview {
     OnboardingView(showOnboarding: .constant(true))
+        .environmentObject(SettingsViewModel(authViewModel: AuthViewModel()))
 } 
