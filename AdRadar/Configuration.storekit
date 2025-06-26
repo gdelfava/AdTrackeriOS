@@ -1,4 +1,14 @@
 {
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
   "identifier" : "AdRadarStoreKitConfig",
   "nonRenewingSubscriptions" : [
 
@@ -123,7 +133,6 @@
           "displayPrice" : "4.99",
           "familyShareable" : false,
           "groupNumber" : 1,
-          "identifier" : "com.delteqws.adradar.premium_monthly_sub",
           "internalID" : "6736166448",
           "introductoryOffer" : null,
           "localizations" : [
@@ -137,7 +146,10 @@
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "Premium Monthly Subscription",
           "subscriptionGroupID" : "21521172",
-          "type" : "RecurringSubscription"
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
         },
         {
           "adHocOffers" : [
@@ -149,7 +161,6 @@
           "displayPrice" : "49.99",
           "familyShareable" : false,
           "groupNumber" : 2,
-          "identifier" : "com.delteqws.adradar.premium_yearly_sub",
           "internalID" : "6736166449",
           "introductoryOffer" : null,
           "localizations" : [
@@ -163,13 +174,16 @@
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Premium Yearly Subscription",
           "subscriptionGroupID" : "21521172",
-          "type" : "RecurringSubscription"
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
         }
       ]
     }
   ],
   "version" : {
-    "major" : 3,
+    "major" : 4,
     "minor" : 0
   }
-} 
+}

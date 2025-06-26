@@ -1,8 +1,79 @@
 import SwiftUI
 
+/// Modern menu row with premium indicator
+struct ModernMenuRowWithPremium: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    let iconColor: Color
+    let isPremium: Bool
+    let action: () -> Void
+    
+    @State private var showUpgradeSheet = false
+    @EnvironmentObject private var premiumStatusManager: PremiumStatusManager
+    
+    var body: some View {
+        Button(action: {
+            if isPremium && !premiumStatusManager.hasFeature(.advancedAnalytics) {
+                showUpgradeSheet = true
+            } else {
+                action()
+            }
+        }) {
+            HStack(spacing: 16) {
+                // Icon container
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(iconColor.opacity(isPremium ? 0.1 : 0.15))
+                        .frame(width: 40, height: 40)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(isPremium ? iconColor.opacity(0.6) : iconColor)
+                }
+                
+                // Text content
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack {
+                        Text(title)
+                            .soraSubheadline()
+                            .fontWeight(.medium)
+                            .foregroundColor(isPremium ? .secondary : .primary)
+                        
+                        if isPremium {
+                            PremiumBadge()
+                        }
+                    }
+                    
+                    Text(isPremium ? "Upgrade to Premium to unlock" : subtitle)
+                        .soraCaption()
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                // Arrow or lock icon
+                Image(systemName: isPremium ? "lock.fill" : "chevron.right")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color(.secondarySystemGroupedBackground))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PlainButtonStyle())
+        .sheet(isPresented: $showUpgradeSheet) {
+            PremiumUpgradeView()
+        }
+    }
+}
+
 /// Analytics section of the slide over menu
 struct AnalyticsMenuSection: View {
     @EnvironmentObject var settingsViewModel: SettingsViewModel
+    @EnvironmentObject var premiumStatusManager: PremiumStatusManager
     let onDismiss: () -> Void
     @Binding var showDomainsView: Bool
     @Binding var showAdSizeView: Bool
@@ -26,17 +97,34 @@ struct AnalyticsMenuSection: View {
                 }
             )
             
-            ModernMenuRow(
-                icon: "rectangle.3.group.fill", 
-                title: "Ad Sizes", 
-                subtitle: "Format metrics",
-                iconColor: .purple,
-                action: {
-                    hapticFeedback()
-                    showAdSizeView = true
-                    onDismiss()
+            VStack {
+                if premiumStatusManager.hasFeature(.advancedAnalytics) {
+                    ModernMenuRow(
+                        icon: "rectangle.3.group.fill", 
+                        title: "Ad Sizes", 
+                        subtitle: "Format metrics",
+                        iconColor: .purple,
+                        action: {
+                            hapticFeedback()
+                            showAdSizeView = true
+                            onDismiss()
+                        }
+                    )
+                } else {
+                    ModernMenuRowWithPremium(
+                        icon: "rectangle.3.group.fill", 
+                        title: "Ad Sizes", 
+                        subtitle: "Format metrics",
+                        iconColor: .purple,
+                        isPremium: true,
+                        action: {
+                            hapticFeedback()
+                            premiumStatusManager.trackFeatureUsage(.advancedAnalytics)
+                            // Don't dismiss the menu, let the premium gate handle it
+                        }
+                    )
                 }
-            )
+            }
             
             ModernMenuRow(
                 icon: "iphone", 
