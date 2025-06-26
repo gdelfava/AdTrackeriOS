@@ -23,9 +23,17 @@ class SettingsViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     var authViewModel: AuthViewModel
     
-    // Computed property to get the appropriate threshold value
+    // Computed properties to get the appropriate values based on demo mode
     var currentPaymentThreshold: Double {
         authViewModel.isDemoMode ? demoPaymentThreshold : paymentThreshold
+    }
+    
+    var currentPublisherId: String {
+        authViewModel.isDemoMode ? "pub-1234567890345678" : publisherId
+    }
+    
+    var currentPublisherName: String {
+        authViewModel.isDemoMode ? "Demo User" : publisherName
     }
     
     init(authViewModel: AuthViewModel) {
@@ -37,8 +45,8 @@ class SettingsViewModel: ObservableObject {
         
         // Initialize account information from UserDefaults or use demo values
         if authViewModel.isDemoMode {
-            self.publisherId = "pub-1234567890"
-            self.publisherName = "Demo Publisher"
+            self.publisherId = "pub-1234567890345678"
+            self.publisherName = "Demo User"
             self.timeZone = "America/New_York"
             self.currency = "USD"
             self.paymentThreshold = 100.0

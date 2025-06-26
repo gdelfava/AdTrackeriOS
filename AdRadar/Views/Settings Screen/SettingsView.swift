@@ -532,10 +532,10 @@ struct SettingsView: View {
                                     icon: "person.text.rectangle.fill",
                                     iconColor: .blue,
                                     title: "Publisher ID",
-                                    value: settingsViewModel.publisherId,
+                                    value: settingsViewModel.currentPublisherId,
                                     isCopyable: true,
                                     onCopy: {
-                                        UIPasteboard.general.string = settingsViewModel.publisherId
+                                        UIPasteboard.general.string = settingsViewModel.currentPublisherId
                                         let generator = UIImpactFeedbackGenerator(style: .medium)
                                         generator.impactOccurred()
                                         
@@ -558,7 +558,7 @@ struct SettingsView: View {
                                     icon: "building.2.fill",
                                     iconColor: .purple,
                                     title: "Publisher Name",
-                                    value: settingsViewModel.publisherName
+                                    value: settingsViewModel.currentPublisherName
                                 )
                                 
                                 Divider()

@@ -13,7 +13,7 @@ struct MenuHeaderView: View {
             VStack(spacing: 16) {
                 HStack(spacing: 16) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(settingsViewModel.publisherName.isEmpty ? "Publisher Name" : settingsViewModel.publisherName)
+                        Text(settingsViewModel.currentPublisherName.isEmpty ? "Publisher Name" : settingsViewModel.currentPublisherName)
                             .soraTitle2()
                             .foregroundColor(.white)
                             .lineLimit(1)
@@ -23,7 +23,7 @@ struct MenuHeaderView: View {
                                 .font(.body)
                                 .foregroundColor(.white.opacity(0.8))
                             
-                            Text(settingsViewModel.publisherId.isEmpty ? "1234567890" : settingsViewModel.publisherId)
+                            Text(settingsViewModel.currentPublisherId.isEmpty ? "1234567890" : settingsViewModel.currentPublisherId)
                                 .soraBody()
                                 .foregroundColor(.white.opacity(0.9))
                                 .lineLimit(1)
