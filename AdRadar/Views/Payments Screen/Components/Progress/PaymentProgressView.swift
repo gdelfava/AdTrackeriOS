@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct PaymentProgressView: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
     let currentMonthEarnings: Double
     let paymentThreshold: Double
     
@@ -122,8 +123,15 @@ struct PaymentProgressView: View {
     private func formatCurrency(_ value: Double) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencySymbol = "R"
+        
+        if authViewModel.isDemoMode {
+            formatter.currencySymbol = "$"
+            formatter.locale = Locale(identifier: "en_US")
+        } else {
+            formatter.locale = Locale.current // Use user's locale for currency
+        }
+        
         formatter.maximumFractionDigits = 2
-        return formatter.string(from: NSNumber(value: value)) ?? "R0.00"
+        return formatter.string(from: NSNumber(value: value)) ?? "0.00"
     }
 } 

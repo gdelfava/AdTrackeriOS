@@ -1,0 +1,4 @@
+module AppCheckCore {
+umbrella header "/Users/guiliodelfava/Library/Developer/Xcode/DerivedData/AdRadar-eqfwsqncqsfpopanrhwdshyrcgrl/SourcePackages/checkouts/app-check/AppCheckCore/Sources/Public/AppCheckCore/AppCheckCore.h"
+export *
+}

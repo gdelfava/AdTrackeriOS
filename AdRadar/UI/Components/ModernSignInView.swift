@@ -143,6 +143,31 @@ struct ModernSignInView: View {
                                 .opacity(showSignInButton ? 1.0 : 0.0)
                                 .animation(.easeOut(duration: 0.6).delay(1.4), value: showSignInButton)
                                 
+                                // Demo Mode Button
+                                Button(action: {
+                                    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                                    impactFeedback.impactOccurred()
+                                    authViewModel.enterDemoMode()
+                                }) {
+                                    HStack(spacing: 16) {
+                                        Image(systemName: "sparkles")
+                                            .font(.system(size: 20, weight: .medium))
+                                            .foregroundColor(.accentColor)
+                                        
+                                        Text("Try Demo Mode")
+                                            .font(.sora(.semibold, size: 17))
+                                            .foregroundColor(.accentColor)
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 56)
+                                    .background(Color.accentColor.opacity(0.1))
+                                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                }
+                                .buttonStyle(ModernButtonStyle())
+                                .scaleEffect(showSignInButton ? 1.0 : 0.8)
+                                .opacity(showSignInButton ? 1.0 : 0.0)
+                                .animation(.easeOut(duration: 0.6).delay(1.5), value: showSignInButton)
+                                
                                 // Info text
                                 Button(action: { 
                                     let impactFeedback = UIImpactFeedbackGenerator(style: .light)

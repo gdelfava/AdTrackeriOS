@@ -1,15 +1,17 @@
 import SwiftUI
 
 struct HorizontalDatePickerView: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
     @Binding var selectedDay: StreakDayData?
     let streakData: [StreakDayData]
     
     private var sortedData: [StreakDayData] {
-        streakData.sorted { $0.date < $1.date }
+        streakData.sorted { $0.date > $1.date }  // Sort newest to oldest
     }
     
-    private var lastDayId: UUID? {
-        sortedData.last?.id
+    private var mostRecentDayId: UUID? {
+        // Get the most recent date (the first one in the sorted array)
+        sortedData.first?.id
     }
     
     var body: some View {
@@ -18,6 +20,7 @@ struct HorizontalDatePickerView: View {
                 HStack(spacing: 8) {
                     ForEach(sortedData) { day in
                         DateCell(day: day, isSelected: day.id == selectedDay?.id)
+                            .environmentObject(authViewModel)
                             .id(day.id)
                             .onTapGesture {
                                 withAnimation(.easeInOut(duration: 0.2)) {
@@ -28,8 +31,15 @@ struct HorizontalDatePickerView: View {
                 }
                 .padding(.horizontal, 4)
                 .onAppear {
-                    if let lastId = lastDayId {
-                        proxy.scrollTo(lastId, anchor: .trailing)
+                    // Scroll to the most recent date immediately and again after a delay
+                    if let recentId = mostRecentDayId {
+                        proxy.scrollTo(recentId, anchor: .leading)
+                        // Also do it after a delay to ensure it works even if layout isn't ready
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            withAnimation(.easeOut(duration: 0.3)) {
+                                proxy.scrollTo(recentId, anchor: .leading)
+                            }
+                        }
                     }
                 }
             }
@@ -45,6 +55,7 @@ struct HorizontalDatePickerView: View {
 
 // MARK: - Date Cell
 private struct DateCell: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
     let day: StreakDayData
     let isSelected: Bool
     
@@ -63,7 +74,13 @@ private struct DateCell: View {
     private var formattedEarnings: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencyCode = "ZAR"
+        
+        if authViewModel.isDemoMode {
+            formatter.currencySymbol = "$"
+        } else {
+            formatter.locale = Locale.current // Use user's locale for currency
+        }
+        
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
         
@@ -73,7 +90,7 @@ private struct DateCell: View {
             formatter.maximumFractionDigits = 3
         }
         
-        return formatter.string(from: NSNumber(value: day.earnings)) ?? "R0.00"
+        return formatter.string(from: NSNumber(value: day.earnings)) ?? "0.00"
     }
     
     private var isToday: Bool {

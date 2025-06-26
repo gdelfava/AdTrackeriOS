@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct PlatformCard: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
     let platform: PlatformData
     @State private var isPressed = false
     @State private var showDetailedMetrics = false
@@ -81,7 +82,7 @@ struct PlatformCard: View {
                 
                 // Earnings badge
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text(platform.formattedEarnings)
+                    Text(formattedCurrency(platform.earnings))
                         .soraTitle2()
                         .foregroundColor(.green)
                     
@@ -147,14 +148,14 @@ struct PlatformCard: View {
                 PlatformDetailedMetricRow(
                     icon: "chart.line.uptrend.xyaxis",
                     title: "Page RPM",
-                    value: platform.formattedPageRPM,
+                    value: formattedCurrency(platform.pageRPM),
                     color: .indigo
                 )
                 
                 PlatformDetailedMetricRow(
                     icon: "chart.bar.fill",
                     title: "Impress. RPM",
-                    value: platform.formattedImpressionsRPM,
+                    value: formattedCurrency(platform.impressionsRPM),
                     color: .teal
                 )
                 
@@ -168,7 +169,7 @@ struct PlatformCard: View {
                 PlatformDetailedMetricRow(
                     icon: "dollarsign.circle.fill",
                     title: "Total Revenue",
-                    value: platform.formattedEarnings,
+                    value: formattedCurrency(platform.earnings),
                     color: .green
                 )
             }
@@ -220,6 +221,21 @@ struct PlatformCard: View {
         default:
             return "iphone"
         }
+    }
+    
+    private func formattedCurrency(_ valueString: String) -> String {
+        guard let value = Double(valueString) else { return valueString }
+        
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        
+        if authViewModel.isDemoMode {
+            formatter.currencySymbol = "$"
+        } else {
+            formatter.locale = Locale.current
+        }
+        
+        return formatter.string(from: NSNumber(value: value)) ?? valueString
     }
 }
 

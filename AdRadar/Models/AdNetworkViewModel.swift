@@ -8,6 +8,8 @@ class AdNetworkViewModel: ObservableObject {
     @Published var error: String?
     @Published var selectedFilter: DateFilter = .last7Days
     @Published var hasLoaded = false
+    @Published var showEmptyState = false
+    @Published var emptyStateMessage = ""
     
     var accessToken: String?
     var authViewModel: AuthViewModel?
@@ -19,8 +21,25 @@ class AdNetworkViewModel: ObservableObject {
     
     func fetchAdNetworkData() async {
         guard let currentToken = accessToken else {
-            self.error = "No access token available. Please sign in again."
+            showEmptyState = true
+            emptyStateMessage = "Please sign in to view your ad network data"
+            error = nil
             self.isLoading = false
+            return
+        }
+        
+        // If in demo mode, use demo data
+        if let authVM = authViewModel, authVM.isDemoMode {
+            let dateRange = selectedFilter.dateRange
+            let mockData = DemoDataProvider.shared.generateMockDataForRange(
+                startDate: dateRange.start,
+                endDate: dateRange.end
+            )
+            self.adNetworks = mockData.adNetworks
+            self.isLoading = false
+            self.error = nil
+            self.hasLoaded = true
+            self.showEmptyState = false
             return
         }
         
@@ -33,17 +52,21 @@ class AdNetworkViewModel: ObservableObject {
             case .failure(let error):
                 switch error {
                 case .unauthorized:
-                    self.error = "Session expired. Please sign in again."
+                    showEmptyState = true
+                    emptyStateMessage = "Please sign in to view your ad network data"
+                    self.error = nil
                 case .noAccountID:
-                    self.error = "No AdSense account found. Please make sure you have an active AdSense account."
-                case .requestFailed(let message):
-                    self.error = "Failed to get account ID: \(message)"
-                case .invalidURL:
-                    self.error = "Invalid API configuration. Please try again later."
-                case .invalidResponse:
-                    self.error = "Invalid response from AdSense. Please try again later."
-                case .decodingError(let message):
-                    self.error = "Data parsing error: \(message)"
+                    showEmptyState = true
+                    emptyStateMessage = "No AdSense account found. Please make sure you have an active AdSense account."
+                    self.error = nil
+                case .requestFailed(_):
+                    showEmptyState = true
+                    emptyStateMessage = "Unable to load ad network data. Please try again later."
+                    self.error = nil
+                case .invalidURL, .invalidResponse, .decodingError:
+                    showEmptyState = true
+                    emptyStateMessage = "Unable to load ad network data. Please try again later."
+                    self.error = nil
                 }
                 self.isLoading = false
                 return

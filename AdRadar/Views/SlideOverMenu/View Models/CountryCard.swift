@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CountryCard: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
     let country: CountryData
     @State private var isPressed = false
     @State private var showDetailedMetrics = false
@@ -80,7 +81,7 @@ struct CountryCard: View {
                 
                 // Earnings badge
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text(country.formattedEarnings)
+                    Text(formattedCurrency(country.earnings))
                         .soraTitle2()
                         .foregroundColor(.green)
                     
@@ -160,14 +161,14 @@ struct CountryCard: View {
                 CountryDetailedMetricRow(
                     icon: "chart.line.uptrend.xyaxis",
                     title: "RPM",
-                    value: country.formattedRPM,
+                    value: formattedCurrency(country.rpm),
                     color: .pink
                 )
                 
                 CountryDetailedMetricRow(
                     icon: "dollarsign.circle.fill",
                     title: "Total Revenue",
-                    value: country.formattedEarnings,
+                    value: formattedCurrency(country.earnings),
                     color: .green
                 )
             }
@@ -204,6 +205,21 @@ struct CountryCard: View {
             Spacer()
         }
         .padding(.bottom, 16)
+    }
+    
+    private func formattedCurrency(_ valueString: String) -> String {
+        guard let value = Double(valueString) else { return valueString }
+        
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        
+        if authViewModel.isDemoMode {
+            formatter.currencySymbol = "$"
+        } else {
+            formatter.locale = Locale.current
+        }
+        
+        return formatter.string(from: NSNumber(value: value)) ?? valueString
     }
 }
 

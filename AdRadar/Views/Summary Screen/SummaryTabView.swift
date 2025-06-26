@@ -22,6 +22,40 @@ struct SummaryTabView: View {
             VStack(spacing: 0) {
                 // Main content area - Use ZStack with opacity to prevent view recreation
                 ZStack {
+                    // Demo mode indicator
+                    if authViewModel.isDemoMode {
+                        VStack {
+                            HStack(spacing: 8) {
+                                Image(systemName: "sparkles")
+                                    .foregroundColor(.accentColor)
+                                Text("Demo Mode")
+                                    .font(.sora(.medium, size: 14))
+                                    .foregroundColor(.accentColor)
+                                Button(action: {
+                                    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                                    impactFeedback.impactOccurred()
+                                    authViewModel.exitDemoMode()
+                                }) {
+                                    Text("Exit")
+                                        .font(.sora(.semibold, size: 14))
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(Color.accentColor)
+                                        .clipShape(Capsule())
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(Color.accentColor.opacity(0.1))
+                            .clipShape(Capsule())
+                            .padding(.top, 8)
+                            
+                            Spacer()
+                        }
+                        .zIndex(1)
+                    }
+                    
                     if isInitialized {
                         SummaryView(showSlideOverMenu: $showSlideOverMenu, selectedTab: $selectedTab)
                             .environmentObject(settingsViewModel)

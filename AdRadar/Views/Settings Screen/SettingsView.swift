@@ -171,7 +171,32 @@ struct SettingsView: View {
                         // Enhanced User Profile Section
                         VStack(spacing: 20) {
                             // Profile image with enhanced styling
-                            if let url = settingsViewModel.imageURL {
+                            if authViewModel.isDemoMode {
+                                // Demo mode profile with SF Symbol
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.accentColor.opacity(0.1))
+                                        .frame(width: 120, height: 120)
+                                        .overlay(
+                                            Circle()
+                                                .stroke(
+                                                    LinearGradient(
+                                                        gradient: Gradient(colors: [Color.accentColor.opacity(0.3), Color.accentColor.opacity(0.1)]),
+                                                        startPoint: .topLeading,
+                                                        endPoint: .bottomTrailing
+                                                    ),
+                                                    lineWidth: 3
+                                                )
+                                        )
+                                        .shadow(color: Color.accentColor.opacity(0.2), radius: 15, x: 0, y: 8)
+                                    
+                                    Image(systemName: "person.crop.circle.fill")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 80, height: 80)
+                                        .foregroundColor(Color.accentColor.opacity(0.8))
+                                }
+                            } else if let url = settingsViewModel.imageURL {
                                 AsyncImage(url: url) { image in
                                     image
                                         .resizable()
@@ -920,8 +945,6 @@ struct ShareSheet: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
-
-
 struct WidgetSupportSheet: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var animateContent = false
@@ -1220,6 +1243,12 @@ struct PaymentThresholdRow: View {
     @State private var tempThreshold = ""
     @State private var showAlert = false
     @State private var showInfoSheet = false
+    @EnvironmentObject var authViewModel: AuthViewModel
+    
+    // Computed property to get the appropriate threshold value
+    private var currentThreshold: Double {
+        settingsViewModel.currentPaymentThreshold
+    }
     
     var body: some View {
         HStack(spacing: 16) {
@@ -1240,6 +1269,18 @@ struct PaymentThresholdRow: View {
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
                     
+                    // Demo mode indicator
+                    if authViewModel.isDemoMode {
+                        Text("DEMO")
+                            .soraCaption2()
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.orange)
+                            .clipShape(Capsule())
+                    }
+                    
                     Button(action: {
                         showInfoSheet = true
                     }) {
@@ -1250,7 +1291,7 @@ struct PaymentThresholdRow: View {
                     .buttonStyle(PlainButtonStyle())
                 }
                 
-                if isEditing {
+                if isEditing && !authViewModel.isDemoMode {
                     HStack {
                         TextField("Enter amount", text: $tempThreshold)
                             .keyboardType(.decimalPad)
@@ -1278,8 +1319,36 @@ struct PaymentThresholdRow: View {
                         .buttonStyle(.bordered)
                         .controlSize(.mini)
                     }
+                } else if isEditing && authViewModel.isDemoMode {
+                    HStack {
+                        TextField("Enter amount", text: $tempThreshold)
+                            .keyboardType(.decimalPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(maxWidth: 120)
+                        
+                        Button("Save") {
+                            if let threshold = Double(tempThreshold), threshold > 0 {
+                                settingsViewModel.updatePaymentThreshold(threshold) // Will update demo state
+                                isEditing = false
+                                
+                                let generator = UIImpactFeedbackGenerator(style: .light)
+                                generator.impactOccurred()
+                            } else {
+                                showAlert = true
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.mini)
+                        
+                        Button("Cancel") {
+                            tempThreshold = ""
+                            isEditing = false
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.mini)
+                    }
                 } else {
-                    Text(formatCurrency(settingsViewModel.paymentThreshold))
+                    Text(formatCurrency(currentThreshold))
                         .soraCaption()
                         .foregroundColor(.secondary)
                 }
@@ -1289,7 +1358,7 @@ struct PaymentThresholdRow: View {
             
             if !isEditing {
                 Button(action: {
-                    tempThreshold = String(settingsViewModel.paymentThreshold)
+                    tempThreshold = String(currentThreshold)
                     isEditing = true
                 }) {
                     Image(systemName: "pencil")
@@ -1314,7 +1383,12 @@ struct PaymentThresholdRow: View {
     private func formatCurrency(_ value: Double) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.locale = Locale.current
+        if settingsViewModel.authViewModel.isDemoMode {
+            formatter.currencySymbol = "$"
+            formatter.locale = Locale(identifier: "en_US")  // Use US locale for proper formatting
+        } else {
+            formatter.locale = Locale.current
+        }
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 2
         return formatter.string(from: NSNumber(value: value)) ?? "\(value)"

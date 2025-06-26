@@ -9,6 +9,7 @@ class AuthViewModel: ObservableObject {
     @Published var userName: String = ""
     @Published var userEmail: String = ""
     @Published var userProfileImageURL: URL? = nil
+    @Published var isDemoMode: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
     private let keychainService = "com.delteqws.AdRadar"
@@ -16,8 +17,18 @@ class AuthViewModel: ObservableObject {
     private let userNameKey = "userName"
     private let userEmailKey = "userEmail"
     private let userProfileImageURLKey = "userProfileImageURL"
+    private let isDemoModeKey = "isDemoMode"
     
     init() {
+        // Load demo mode state
+        self.isDemoMode = UserDefaults.standard.bool(forKey: isDemoModeKey)
+        
+        // If in demo mode, set up demo user
+        if isDemoMode {
+            setupDemoUser()
+            return
+        }
+        
         // Load cached values synchronously (these are fast local operations)
         if let token = loadTokenFromKeychain() {
             self.accessToken = token
@@ -36,6 +47,27 @@ class AuthViewModel: ObservableObject {
         Task {
             await restoreGoogleSignInSession()
         }
+    }
+    
+    func enterDemoMode() {
+        isDemoMode = true
+        UserDefaults.standard.set(true, forKey: isDemoModeKey)
+        setupDemoUser()
+    }
+    
+    func exitDemoMode() {
+        isDemoMode = false
+        UserDefaults.standard.set(false, forKey: isDemoModeKey)
+        signOut()
+    }
+    
+    private func setupDemoUser() {
+        let demoUser = DemoDataProvider.shared.demoUser
+        self.isSignedIn = true
+        self.accessToken = "demo_token"
+        self.userName = demoUser.name
+        self.userEmail = demoUser.email
+        self.userProfileImageURL = nil  // Don't set URL in demo mode, using local asset instead
     }
     
     /// Restores Google Sign-In session asynchronously to avoid blocking main thread during init
@@ -130,19 +162,24 @@ class AuthViewModel: ObservableObject {
     
     func signOut() {
         GIDSignIn.sharedInstance.signOut()
-        accessToken = nil
-        isSignedIn = false
-        deleteTokenFromKeychain()
-        userName = ""
-        userEmail = ""
-        userProfileImageURL = nil
-        // Remove from UserDefaults
+        
+        // Clear all user data
+        self.accessToken = nil
+        self.isSignedIn = false
+        self.userName = ""
+        self.userEmail = ""
+        self.userProfileImageURL = nil
+        self.isDemoMode = false
+        
+        // Clear from UserDefaults
         let defaults = UserDefaults.standard
         defaults.removeObject(forKey: userNameKey)
         defaults.removeObject(forKey: userEmailKey)
         defaults.removeObject(forKey: userProfileImageURLKey)
-        // Clear AdSense account ID
-        UserDefaultsManager.shared.removeValue(forKey: "adSenseAccountID")
+        defaults.removeObject(forKey: isDemoModeKey)
+        
+        // Clear from Keychain
+        deleteTokenFromKeychain()
     }
     
     func requestAdditionalScopes() {
@@ -216,6 +253,11 @@ class AuthViewModel: ObservableObject {
     }
     
     func refreshTokenIfNeeded() async -> Bool {
+        // If in demo mode, always return true to prevent session expired messages
+        if isDemoMode {
+            return true
+        }
+        
         guard let currentUser = GIDSignIn.sharedInstance.currentUser else {
             return false
         }

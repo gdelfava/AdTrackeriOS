@@ -1,0 +1,98 @@
+{
+  "" : {
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/AdRadarWatch Watch App-master.dia",
+    "emit-module-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/AdRadarWatch Watch App-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/AdRadarWatch Watch App-master-emit-module.dia",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/AdRadarWatch Watch App-master.swiftdeps"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadarWatch Watch App/AdRadarWatchApp.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/AdRadarWatchApp.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/AdRadarWatchApp.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/AdRadarWatchApp.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/AdRadarWatchApp.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/AdRadarWatchApp.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/AdRadarWatchApp.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/AdRadarWatchApp.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/AdRadarWatchApp~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadarWatch Watch App/ContentView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/ContentView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/ContentView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadarWatch Watch App/Core/SoraFont.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/SoraFont.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/SoraFont.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/SoraFont.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/SoraFont.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/SoraFont.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/SoraFont.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/SoraFont.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/SoraFont~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadarWatch Watch App/Core/WatchConnectivityService.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchConnectivityService.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchConnectivityService.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchConnectivityService.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchConnectivityService.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchConnectivityService.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchConnectivityService.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchConnectivityService.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchConnectivityService~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadarWatch Watch App/Core/WatchDataModels.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchDataModels.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchDataModels.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchDataModels.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchDataModels.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchDataModels.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchDataModels.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchDataModels.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchDataModels~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadarWatch Watch App/Views/WatchComplicationView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchComplicationView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchComplicationView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchComplicationView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchComplicationView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchComplicationView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchComplicationView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchComplicationView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchComplicationView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadarWatch Watch App/Views/WatchLoadingView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchLoadingView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchLoadingView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchLoadingView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchLoadingView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchLoadingView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchLoadingView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchLoadingView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchLoadingView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadarWatch Watch App/Views/WatchSummaryCard.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchSummaryCard.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchSummaryCard.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchSummaryCard.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchSummaryCard.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchSummaryCard.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchSummaryCard.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchSummaryCard.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/WatchSummaryCard~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadarWatch Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

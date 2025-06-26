@@ -242,7 +242,11 @@ struct AdNetworkView: View {
         
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.locale = Locale.current // Use user's locale for currency
+        if authViewModel.isDemoMode {
+            formatter.currencySymbol = "$"
+        } else {
+            formatter.locale = Locale.current // Use user's locale for currency
+        }
         
         return formatter.string(from: NSNumber(value: totalEarnings)) ?? formatter.string(from: NSNumber(value: 0.0)) ?? "0.00"
     }

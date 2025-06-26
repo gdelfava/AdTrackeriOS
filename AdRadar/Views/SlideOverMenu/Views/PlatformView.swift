@@ -224,7 +224,11 @@ struct PlatformView: View {
         
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.locale = Locale.current
+        if authViewModel.isDemoMode {
+            formatter.currencySymbol = "$"
+        } else {
+            formatter.locale = Locale.current
+        }
         return formatter.string(from: NSNumber(value: total)) ?? "0.00"
     }
     

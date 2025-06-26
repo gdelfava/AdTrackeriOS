@@ -23,6 +23,8 @@ class SummaryViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var lastUpdateTime: Date? = nil
     @Published var selectedCardTitle: String = ""
+    @Published var showEmptyState: Bool = false
+    @Published var emptyStateMessage: String = ""
     
     var accessToken: String?
     @MainActor private var accountID: String?
@@ -126,12 +128,22 @@ class SummaryViewModel: ObservableObject {
                     try? await Task.sleep(nanoseconds: 2_000_000_000)
                     self.showOfflineToast = false
                 }
-                self.error = "No internet connection."
+                self.showEmptyState = true
+                self.emptyStateMessage = "Unable to load data. Please check your connection."
+                self.error = nil
                 self.isLoading = false
                 return
             } else {
                 self.isOffline = false
                 self.showNetworkErrorModal = false
+            }
+
+            // If in demo mode, use demo data
+            if let authVM = authViewModel, authVM.isDemoMode {
+                self.summaryData = DemoDataProvider.shared.summaryData
+                self.isLoading = false
+                self.error = nil
+                return
             }
 
             let maxRetries = 3
@@ -158,27 +170,27 @@ class SummaryViewModel: ObservableObject {
                                 continue
                             }
                         }
-                        self.error = "Session expired. Please sign in again."
+                        self.showEmptyState = true
+                        self.emptyStateMessage = "Please sign in to view your earnings data"
+                        self.error = nil
                         self.isLoading = false
                         return
-                    case .requestFailed(let message):
-                        self.error = "Failed to get AdSense account: \(message)"
+                    case .requestFailed(_):
+                        self.showEmptyState = true
+                        self.emptyStateMessage = "Unable to load earnings data. Please try again later."
+                        self.error = nil
                         self.isLoading = false
                         return
                     case .noAccountID:
-                        self.error = "No AdSense account found."
+                        self.showEmptyState = true
+                        self.emptyStateMessage = "No AdSense account found"
+                        self.error = nil
                         self.isLoading = false
                         return
-                    case .invalidURL:
-                        self.error = "Invalid API URL configuration."
-                        self.isLoading = false
-                        return
-                    case .invalidResponse:
-                        self.error = "Invalid response from AdSense API."
-                        self.isLoading = false
-                        return
-                    case .decodingError(let message):
-                        self.error = "Failed to decode response: \(message)"
+                    case .invalidURL, .invalidResponse, .decodingError:
+                        self.showEmptyState = true
+                        self.emptyStateMessage = "Unable to load earnings data. Please try again later."
+                        self.error = nil
                         self.isLoading = false
                         return
                     }
@@ -276,11 +288,28 @@ class SummaryViewModel: ObservableObject {
     }
     
     /// Fetches and stores detailed metrics for a given card type (date range)
-    func fetchMetrics(forCard card: MetricsCardType) async {
-        // Cancel any existing metrics task
+    func fetchMetrics(forCard cardType: MetricsCardType) async {
+        // If in demo mode, use demo data
+        if let authVM = authViewModel, authVM.isDemoMode {
+            self.selectedDayMetrics = DemoDataProvider.shared.dayMetrics
+            self.selectedCardTitle = cardType.title
+            self.showDayMetricsSheet = true
+            return
+        }
+        
+        // Cancel any existing task
         metricsTask?.cancel()
         
-        print("[SummaryViewModel] Starting fetchMetrics for card: \(card)")
+        // Create new task
+        metricsTask = Task {
+            await performFetchMetrics(forCard: cardType)
+        }
+        
+        await metricsTask?.value
+    }
+    
+    private func performFetchMetrics(forCard cardType: MetricsCardType) async {
+        print("[SummaryViewModel] Starting fetchMetrics for card: \(cardType)")
         errorMessage = nil
         guard let user = GIDSignIn.sharedInstance.currentUser else {
             print("[SummaryViewModel] No current user found")
@@ -292,7 +321,7 @@ class SummaryViewModel: ObservableObject {
         let localAccountID = accountID ?? ""
         
         // Set the card title based on the card type
-        switch card {
+        switch cardType {
         case .today:
             selectedCardTitle = "Today so far"
         case .yesterday:
@@ -338,7 +367,7 @@ class SummaryViewModel: ObservableObject {
                 let today = calendar.startOfDay(for: Date())
                 let startDate: Date
                 let endDate: Date
-                switch card {
+                switch cardType {
                 case .today:
                     startDate = today
                     endDate = today
@@ -411,5 +440,25 @@ class SummaryViewModel: ObservableObject {
 extension MetricsCardType: CaseIterable {
     static var allCases: [MetricsCardType] {
         [.today, .yesterday, .last7Days, .thisMonth, .lastMonth, .lastThreeYears]
+    }
+}
+
+// MARK: - MetricsCardType Extension
+extension MetricsCardType {
+    var title: String {
+        switch self {
+        case .today:
+            return "Today so far"
+        case .yesterday:
+            return "Yesterday"
+        case .last7Days:
+            return "Last 7 Days"
+        case .thisMonth:
+            return "This Month"
+        case .lastMonth:
+            return "Last Month"
+        case .lastThreeYears:
+            return "Last Three Years"
+        }
     }
 } 

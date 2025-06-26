@@ -31,6 +31,49 @@ class AppViewModel: ObservableObject {
         showEmptyState = false
         emptyStateMessage = nil
         
+        // If in demo mode, use demo data
+        if let authVM = authViewModel, authVM.isDemoMode {
+            // Create demo app data
+            let dateRange = selectedFilter.dateRange
+            let daysBetween = Calendar.current.dateComponents([.day], from: dateRange.start, to: dateRange.end).day ?? 1
+            let multiplier = Double(daysBetween) / 7.0  // Scale data based on date range
+            
+            // Helper function to scale numeric values
+            func scaleValue(_ value: Double) -> String {
+                return String(format: "%.2f", value * multiplier)
+            }
+            
+            let demoApps = [
+                AppData(
+                    appName: "Demo Game",
+                    appId: "com.example.demogame",
+                    earnings: scaleValue(245.67),
+                    impressions: scaleValue(25000),
+                    clicks: scaleValue(856),
+                    ctr: "3.35",
+                    rpm: "14.60",
+                    requests: scaleValue(28000)
+                ),
+                AppData(
+                    appName: "Demo Utility",
+                    appId: "com.example.demoutility",
+                    earnings: scaleValue(156.45),
+                    impressions: scaleValue(15000),
+                    clicks: scaleValue(634),
+                    ctr: "3.34",
+                    rpm: "14.50",
+                    requests: scaleValue(16800)
+                )
+            ]
+            
+            self.apps = demoApps
+            self.isLoading = false
+            self.errorMessage = nil
+            self.hasLoaded = true
+            self.showEmptyState = false
+            return
+        }
+        
         // First, get the AdMob account ID if we don't have it
         if admobAccountID == nil {
             let accountResult = await AdMobAPI.fetchAccountID(accessToken: accessToken)

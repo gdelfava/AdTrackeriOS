@@ -24,6 +24,20 @@ class CountryViewModel: ObservableObject {
             return
         }
         
+        // If in demo mode, use demo data
+        if let authVM = authViewModel, authVM.isDemoMode {
+            let dateRange = selectedFilter.dateRange
+            let mockData = DemoDataProvider.shared.generateMockDataForRange(
+                startDate: dateRange.start,
+                endDate: dateRange.end
+            )
+            self.countries = mockData.countries
+            self.isLoading = false
+            self.error = nil
+            self.hasLoaded = true
+            return
+        }
+        
         // Get account ID if not already available
         if accountID == nil {
             let accountResult = await AdSenseAPI.fetchAccountID(accessToken: currentToken)

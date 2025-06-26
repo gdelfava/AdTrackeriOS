@@ -55,7 +55,7 @@ struct PaymentsView: View {
                             Spacer()
                         } else if viewModel.showEmptyState {
                             Spacer()
-                            PaymentsEmptyStateView(message: viewModel.emptyStateMessage ?? "")
+                            PaymentsEmptyStateView(message: viewModel.emptyStateMessage)
                             Spacer()
                         } else if let error = viewModel.error {
                             Spacer()
@@ -69,7 +69,7 @@ struct PaymentsView: View {
                                 // Payment threshold progress
                                 PaymentProgressView(
                                     currentMonthEarnings: data.currentMonthEarningsValue,
-                                    paymentThreshold: settingsViewModel.paymentThreshold
+                                    paymentThreshold: settingsViewModel.currentPaymentThreshold
                                 )
                                 .opacity(unpaidCardAppeared ? 1 : 0)
                                 .offset(y: unpaidCardAppeared ? 0 : 20)
@@ -77,7 +77,7 @@ struct PaymentsView: View {
                                 UnpaidEarningsCardView(
                                     amount: data.unpaidEarnings,
                                     unpaidValue: data.unpaidEarningsValue,
-                                    paymentThreshold: settingsViewModel.paymentThreshold,
+                                    paymentThreshold: settingsViewModel.currentPaymentThreshold,
                                     date: data.previousPaymentDate,
                                     isPaid: false
                                 )

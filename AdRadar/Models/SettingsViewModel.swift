@@ -15,12 +15,18 @@ class SettingsViewModel: ObservableObject {
     
     // Payment Threshold
     @Published var paymentThreshold: Double = 100.0
+    @Published var demoPaymentThreshold: Double = 100.0 // Demo mode threshold
     
     // AdMob Apps Visibility
     @Published var showAdMobApps: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
     var authViewModel: AuthViewModel
+    
+    // Computed property to get the appropriate threshold value
+    var currentPaymentThreshold: Double {
+        authViewModel.isDemoMode ? demoPaymentThreshold : paymentThreshold
+    }
     
     init(authViewModel: AuthViewModel) {
         self.authViewModel = authViewModel
@@ -29,58 +35,86 @@ class SettingsViewModel: ObservableObject {
         authViewModel.$userEmail.assign(to: &$email)
         authViewModel.$userProfileImageURL.assign(to: &$imageURL)
         
-        // Initialize account information from UserDefaults
-        self.publisherId = UserDefaults.standard.string(forKey: "publisherId") ?? ""
-        self.publisherName = UserDefaults.standard.string(forKey: "publisherName") ?? ""
-        self.timeZone = UserDefaults.standard.string(forKey: "timeZone") ?? Foundation.TimeZone.current.identifier
+        // Initialize account information from UserDefaults or use demo values
+        if authViewModel.isDemoMode {
+            self.publisherId = "pub-1234567890"
+            self.publisherName = "Demo Publisher"
+            self.timeZone = "America/New_York"
+            self.currency = "USD"
+            self.paymentThreshold = 100.0
+            self.demoPaymentThreshold = 100.0
+        } else {
+            // Initialize account information from UserDefaults
+            self.publisherId = UserDefaults.standard.string(forKey: "publisherId") ?? ""
+            self.publisherName = UserDefaults.standard.string(forKey: "publisherName") ?? ""
+            self.timeZone = UserDefaults.standard.string(forKey: "timeZone") ?? Foundation.TimeZone.current.identifier
+            
+            // Get currency from UserDefaults or use the user's locale currency
+            if let savedCurrency = UserDefaults.standard.string(forKey: "currency") {
+                self.currency = savedCurrency
+            } else {
+                // Get the currency code from the user's locale
+                let locale = Locale.current
+                if let currencyCode = locale.currency?.identifier {
+                    self.currency = currencyCode
+                    // Save it to UserDefaults for future use
+                    UserDefaults.standard.set(currencyCode, forKey: "currency")
+                } else {
+                    // Fallback to USD if currency code can't be determined
+                    self.currency = "USD"
+                }
+            }
+            
+            // Initialize payment threshold - default based on currency
+            if let savedThreshold = UserDefaults.standard.object(forKey: "paymentThreshold") as? Double {
+                self.paymentThreshold = savedThreshold
+            } else {
+                // Set default thresholds based on currency
+                switch currency {
+                case "USD", "EUR", "GBP", "CAD", "AUD":
+                    self.paymentThreshold = 100.0
+                case "ZAR":
+                    self.paymentThreshold = 1000.0
+                case "INR":
+                    self.paymentThreshold = 8000.0
+                case "JPY":
+                    self.paymentThreshold = 12000.0
+                case "BRL":
+                    self.paymentThreshold = 500.0
+                case "MXN":
+                    self.paymentThreshold = 2000.0
+                default:
+                    self.paymentThreshold = 100.0
+                }
+                // Save default threshold
+                UserDefaults.standard.set(self.paymentThreshold, forKey: "paymentThreshold")
+            }
+            
+            // Initialize demo threshold with currency-appropriate value
+            switch currency {
+            case "ZAR":
+                self.demoPaymentThreshold = 1000.0
+            case "INR":
+                self.demoPaymentThreshold = 8000.0
+            case "JPY":
+                self.demoPaymentThreshold = 12000.0
+            case "BRL":
+                self.demoPaymentThreshold = 500.0
+            case "MXN":
+                self.demoPaymentThreshold = 2000.0
+            default:
+                self.demoPaymentThreshold = 100.0
+            }
+        }
         
         // Initialize AdMob Apps visibility (default: false)
         self.showAdMobApps = UserDefaults.standard.bool(forKey: "showAdMobApps")
         
-        // Get currency from UserDefaults or use the user's locale currency
-        if let savedCurrency = UserDefaults.standard.string(forKey: "currency") {
-            self.currency = savedCurrency
-        } else {
-            // Get the currency code from the user's locale
-            let locale = Locale.current
-            if let currencyCode = locale.currency?.identifier {
-                self.currency = currencyCode
-                // Save it to UserDefaults for future use
-                UserDefaults.standard.set(currencyCode, forKey: "currency")
-            } else {
-                // Fallback to ZAR if currency code can't be determined
-                self.currency = "ZAR"
+        // Fetch account information when initialized (only if not in demo mode)
+        if !authViewModel.isDemoMode {
+            Task {
+                await fetchAccountInfo()
             }
-        }
-        
-        // Initialize payment threshold - default based on currency
-        if let savedThreshold = UserDefaults.standard.object(forKey: "paymentThreshold") as? Double {
-            self.paymentThreshold = savedThreshold
-        } else {
-            // Set default thresholds based on currency
-            switch currency {
-            case "USD", "EUR", "GBP", "CAD", "AUD":
-                self.paymentThreshold = 100.0
-            case "ZAR":
-                self.paymentThreshold = 1000.0
-            case "INR":
-                self.paymentThreshold = 8000.0
-            case "JPY":
-                self.paymentThreshold = 12000.0
-            case "BRL":
-                self.paymentThreshold = 500.0
-            case "MXN":
-                self.paymentThreshold = 2000.0
-            default:
-                self.paymentThreshold = 100.0
-            }
-            // Save default threshold
-            UserDefaults.standard.set(self.paymentThreshold, forKey: "paymentThreshold")
-        }
-        
-        // Fetch account information when initialized
-        Task {
-            await fetchAccountInfo()
         }
     }
     
@@ -90,8 +124,12 @@ class SettingsViewModel: ObservableObject {
     }
     
     func updatePaymentThreshold(_ threshold: Double) {
-        self.paymentThreshold = threshold
-        UserDefaults.standard.set(threshold, forKey: "paymentThreshold")
+        if authViewModel.isDemoMode {
+            self.demoPaymentThreshold = threshold
+        } else {
+            self.paymentThreshold = threshold
+            UserDefaults.standard.set(threshold, forKey: "paymentThreshold")
+        }
     }
     
     func updateAdMobAppsVisibility(_ isVisible: Bool) {
@@ -101,7 +139,8 @@ class SettingsViewModel: ObservableObject {
     
     @MainActor
     func fetchAccountInfo() async {
-        guard let accessToken = authViewModel.accessToken else { return }
+        // Don't fetch account info in demo mode
+        guard !authViewModel.isDemoMode, let accessToken = authViewModel.accessToken else { return }
         
         switch await AdSenseAPI.shared.fetchAccountInfo(accessToken: accessToken) {
         case .success(let account):

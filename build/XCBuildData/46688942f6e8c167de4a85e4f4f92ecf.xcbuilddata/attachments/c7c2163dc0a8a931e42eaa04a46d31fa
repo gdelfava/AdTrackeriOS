@@ -1,0 +1,4 @@
+module AppAuth {
+umbrella "/Users/guiliodelfava/Library/Developer/Xcode/DerivedData/AdRadar-eqfwsqncqsfpopanrhwdshyrcgrl/SourcePackages/checkouts/AppAuth-iOS/Sources/AppAuth"
+export *
+}

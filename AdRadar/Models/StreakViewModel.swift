@@ -69,190 +69,209 @@ class StreakViewModel: ObservableObject {
     }
     
     func fetchStreakData() async {
+        // If in demo mode, use demo data
+        if let authVM = authViewModel, authVM.isDemoMode {
+            self.streakData = DemoDataProvider.shared.streakData
+            self.lastUpdateTime = Date()
+            self.isLoading = false
+            self.hasLoaded = true
+            return
+        }
+        
         // Cancel any existing task
         fetchTask?.cancel()
         
         // Create new task
         fetchTask = Task {
-            guard let token = accessToken else { return }
-            isLoading = true
-            error = nil
-            showEmptyState = false
-            emptyStateMessage = nil
-            
-            // Fetch account ID with retry logic
-            var retryCount = 0
-            let maxRetries = 3
-            var currentToken = token
-            
-            while retryCount < maxRetries {
-                do {
+            await performFetchStreakData()
+        }
+        
+        await fetchTask?.value
+    }
+    
+    private func performFetchStreakData() async {
+        guard let token = accessToken else { return }
+        isLoading = true
+        error = nil
+        showEmptyState = false
+        emptyStateMessage = nil
+        
+        // Fetch account ID with retry logic
+        var retryCount = 0
+        let maxRetries = 3
+        var currentToken = token
+        
+        while retryCount < maxRetries {
+            do {
+                try Task.checkCancellation()
+                
+                let accountResult = await AdSenseAPI.fetchAccountID(accessToken: currentToken)
+                switch accountResult {
+                case .success(let accountID):
+                    self.accountID = accountID
+                    break
+                case .failure(let err):
+                    switch err {
+                    case .unauthorized:
+                        if let authVM = authViewModel {
+                            let refreshed = await authVM.refreshTokenIfNeeded()
+                            if refreshed {
+                                currentToken = authVM.accessToken ?? currentToken
+                                retryCount += 1
+                                continue
+                            }
+                        }
+                        self.showEmptyState = true
+                        self.emptyStateMessage = "Please sign in again to continue viewing your streak data."
+                        self.error = nil
+                        self.isLoading = false
+                        return
+                    case .requestFailed(let message):
+                        if message.contains("cancelled") {
+                            return // Task was cancelled, exit gracefully
+                        }
+                        // Instead of showing error, show empty state
+                        if retryCount >= maxRetries - 1 {
+                            self.showEmptyState = true
+                            self.emptyStateMessage = "Unable to connect to AdSense. Please check your connection and try again."
+                            self.error = nil
+                            self.isLoading = false
+                            return
+                        }
+                        retryCount += 1
+                        continue
+                    default:
+                        self.showEmptyState = true
+                        self.emptyStateMessage = "Unable to access your AdSense account. Please try again later."
+                        self.error = nil
+                        self.isLoading = false
+                        return
+                    }
+                }
+                
+                guard let accountID = self.accountID else {
+                    self.showEmptyState = true
+                    self.emptyStateMessage = "No AdSense account found. Please ensure you have an active AdSense account."
+                    self.error = nil
+                    self.isLoading = false
+                    return
+                }
+                
+                // Calculate date range for last 7 days
+                let calendar = Calendar.current
+                let today = Date()
+                let startDate = calendar.date(byAdding: .day, value: -6, to: today)!
+                
+                // Fetch metrics for each day
+                var newStreakData: [StreakDayData] = []
+                var previousEarnings: Double?
+                
+                for dayOffset in 0...6 {
                     try Task.checkCancellation()
                     
-                    let accountResult = await AdSenseAPI.fetchAccountID(accessToken: currentToken)
-                    switch accountResult {
-                    case .success(let accountID):
-                        self.accountID = accountID
-                        break
-                    case .failure(let err):
-                        switch err {
-                        case .unauthorized:
-                            if let authVM = authViewModel {
-                                let refreshed = await authVM.refreshTokenIfNeeded()
-                                if refreshed {
-                                    currentToken = authVM.accessToken ?? currentToken
-                                    retryCount += 1
-                                    continue
-                                }
-                            }
-                            self.showEmptyState = true
-                            self.emptyStateMessage = "Please sign in again to continue viewing your streak data."
-                            self.error = nil
-                            self.isLoading = false
-                            return
-                        case .requestFailed(let message):
-                            if message.contains("cancelled") {
-                                return // Task was cancelled, exit gracefully
-                            }
-                            // Instead of showing error, show empty state
-                            if retryCount >= maxRetries - 1 {
-                                self.showEmptyState = true
-                                self.emptyStateMessage = "Unable to connect to AdSense. Please check your connection and try again."
-                                self.error = nil
-                                self.isLoading = false
-                                return
-                            }
-                            retryCount += 1
-                            continue
-                        default:
-                            self.showEmptyState = true
-                            self.emptyStateMessage = "Unable to access your AdSense account. Please try again later."
-                            self.error = nil
-                            self.isLoading = false
-                            return
-                        }
-                    }
+                    let currentDate = calendar.date(byAdding: .day, value: dayOffset, to: startDate)!
+                    let result = await AdSenseAPI.shared.fetchMetricsForRange(
+                        accountID: accountID,
+                        accessToken: currentToken,
+                        startDate: currentDate,
+                        endDate: currentDate
+                    )
                     
-                    guard let accountID = self.accountID else {
-                        self.showEmptyState = true
-                        self.emptyStateMessage = "No AdSense account found. Please ensure you have an active AdSense account."
-                        self.error = nil
-                        self.isLoading = false
-                        return
-                    }
-                    
-                    // Calculate date range for last 7 days
-                    let calendar = Calendar.current
-                    let today = Date()
-                    let startDate = calendar.date(byAdding: .day, value: -6, to: today)!
-                    
-                    // Fetch metrics for each day
-                    var newStreakData: [StreakDayData] = []
-                    var previousEarnings: Double?
-                    
-                    for dayOffset in 0...6 {
-                        try Task.checkCancellation()
+                    switch result {
+                    case .success(let metrics):
+                        let earnings = Double(metrics.estimatedEarnings) ?? 0
+                        let clicks = Int(metrics.clicks) ?? 0
+                        let impressions = Int(metrics.impressions) ?? 0
+                        let impressionCTR = Double(metrics.impressionsCTR) ?? 0
+                        let pageViews = Int(metrics.pageViews) ?? 0
+                        let costPerClick = Double(metrics.costPerClick) ?? 0
+                        let requests = Int(metrics.requests) ?? 0
                         
-                        let currentDate = calendar.date(byAdding: .day, value: dayOffset, to: startDate)!
-                        let result = await AdSenseAPI.shared.fetchMetricsForRange(
-                            accountID: accountID,
-                            accessToken: currentToken,
-                            startDate: currentDate,
-                            endDate: currentDate
+                        // Calculate delta if we have previous earnings
+                        var delta: Double?
+                        var deltaPositive: Bool?
+                        if let prevEarnings = previousEarnings {
+                            delta = earnings - prevEarnings
+                            deltaPositive = delta! >= 0
+                        }
+                        
+                        let dayData = StreakDayData(
+                            date: currentDate,
+                            earnings: earnings,
+                            clicks: clicks,
+                            impressions: impressions,
+                            impressionCTR: impressionCTR,
+                            pageViews: pageViews,
+                            costPerClick: costPerClick,
+                            requests: requests,
+                            delta: delta,
+                            deltaPositive: deltaPositive
                         )
                         
-                        switch result {
-                        case .success(let metrics):
-                            let earnings = Double(metrics.estimatedEarnings) ?? 0
-                            let clicks = Int(metrics.clicks) ?? 0
-                            let impressions = Int(metrics.impressions) ?? 0
-                            let impressionCTR = Double(metrics.impressionsCTR) ?? 0
-                            let pageViews = Int(metrics.pageViews) ?? 0
-                            let costPerClick = Double(metrics.costPerClick) ?? 0
-                            let requests = Int(metrics.requests) ?? 0
-                            
-                            // Calculate delta if we have previous earnings
-                            var delta: Double?
-                            var deltaPositive: Bool?
-                            if let prevEarnings = previousEarnings {
-                                delta = earnings - prevEarnings
-                                deltaPositive = delta! >= 0
-                            }
-                            
-                            let dayData = StreakDayData(
-                                date: currentDate,
-                                earnings: earnings,
-                                clicks: clicks,
-                                impressions: impressions,
-                                impressionCTR: impressionCTR,
-                                pageViews: pageViews,
-                                costPerClick: costPerClick,
-                                requests: requests,
-                                delta: delta,
-                                deltaPositive: deltaPositive
-                            )
-                            
-                            newStreakData.append(dayData)
-                            previousEarnings = earnings
-                            
-                        case .failure(let error):
-                            if error.localizedDescription.contains("cancelled") {
-                                return // Task was cancelled, exit gracefully
-                            }
-                            // Check for specific empty state conditions
-                            if case .requestFailed(let message) = error,
-                               message.contains("NEEDS_ATTENTION|") {
-                                let actualMessage = String(message.dropFirst("NEEDS_ATTENTION|".count))
-                                self.showEmptyState = true
-                                self.emptyStateMessage = actualMessage
-                                self.error = nil
-                                self.isLoading = false
-                                return
-                            }
-                            // Show empty state for any other API errors instead of error message
+                        newStreakData.append(dayData)
+                        previousEarnings = earnings
+                        
+                    case .failure(let error):
+                        if error.localizedDescription.contains("cancelled") {
+                            return // Task was cancelled, exit gracefully
+                        }
+                        // Check for specific empty state conditions
+                        if case .requestFailed(let message) = error,
+                           message.contains("NEEDS_ATTENTION|") {
+                            let actualMessage = String(message.dropFirst("NEEDS_ATTENTION|".count))
                             self.showEmptyState = true
-                            self.emptyStateMessage = "Unable to load streak data at this time. Please check your connection and try again."
+                            self.emptyStateMessage = actualMessage
                             self.error = nil
                             self.isLoading = false
                             return
                         }
-                    }
-                    
-                    self.streakData = newStreakData.sorted { $0.date > $1.date }
-                    self.lastUpdateTime = Date()
-                    self.isLoading = false
-                    self.hasLoaded = true
-                    return
-                    
-                } catch {
-                    if error is CancellationError {
-                        return // Task was cancelled, exit gracefully
-                    }
-                    // Show empty state instead of error for unexpected errors
-                    if retryCount >= maxRetries - 1 {
+                        // Show empty state for any other API errors instead of error message
                         self.showEmptyState = true
-                        self.emptyStateMessage = "Unable to load streak data. Please try again later."
+                        self.emptyStateMessage = "Unable to load streak data at this time. Please check your connection and try again."
                         self.error = nil
                         self.isLoading = false
                         return
                     }
-                    retryCount += 1
                 }
+                
+                self.streakData = newStreakData.sorted { $0.date > $1.date }
+                self.lastUpdateTime = Date()
+                self.isLoading = false
+                self.hasLoaded = true
+                return
+                
+            } catch {
+                if error is CancellationError {
+                    return // Task was cancelled, exit gracefully
+                }
+                // Show empty state instead of error for unexpected errors
+                if retryCount >= maxRetries - 1 {
+                    self.showEmptyState = true
+                    self.emptyStateMessage = "Unable to load streak data. Please try again later."
+                    self.error = nil
+                    self.isLoading = false
+                    return
+                }
+                retryCount += 1
             }
-            
-            self.isLoading = false
         }
+        
+        self.isLoading = false
     }
     
     func formatCurrency(_ value: Double) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencySymbol = "R "
-        formatter.currencyGroupingSeparator = " "
-        formatter.currencyDecimalSeparator = ","
+        
+        if let authVM = authViewModel, authVM.isDemoMode {
+            formatter.currencySymbol = "$"
+        } else {
+            formatter.locale = Locale.current // Use user's locale for currency
+        }
+        
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
-        return formatter.string(from: NSNumber(value: value)) ?? "R 0,00"
+        return formatter.string(from: NSNumber(value: value)) ?? "0.00"
     }
     
     func formatPercentage(_ value: Double) -> String {

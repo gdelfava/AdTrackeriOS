@@ -1,0 +1,998 @@
+{
+  "" : {
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdRadar-master.dia",
+    "emit-module-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdRadar-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdRadar-master-emit-module.dia",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdRadar-master.swiftdeps"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/AdRadar_App.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdRadar_App.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdRadar_App.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdRadar_App.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdRadar_App.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdRadar_App.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdRadar_App.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdRadar_App.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdRadar_App~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Core/AdMobAPI.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdMobAPI.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdMobAPI.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdMobAPI.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdMobAPI.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdMobAPI.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdMobAPI.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdMobAPI.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdMobAPI~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Core/AdSenseAPI.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseAPI.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseAPI.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseAPI.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseAPI.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseAPI.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseAPI.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseAPI.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseAPI~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Core/BackgroundDataManager.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundDataManager.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundDataManager.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundDataManager.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundDataManager.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundDataManager.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundDataManager.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundDataManager.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundDataManager~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Core/DemoDataProvider.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DemoDataProvider.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DemoDataProvider.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DemoDataProvider.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DemoDataProvider.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DemoDataProvider.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DemoDataProvider.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DemoDataProvider.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DemoDataProvider~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Core/GlobalFontModifier.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GlobalFontModifier.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GlobalFontModifier.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GlobalFontModifier.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GlobalFontModifier.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GlobalFontModifier.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GlobalFontModifier.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GlobalFontModifier.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GlobalFontModifier~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Core/MemoryManager.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MemoryManager.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MemoryManager.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MemoryManager.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MemoryManager.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MemoryManager.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MemoryManager.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MemoryManager.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MemoryManager~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Core/NetworkMonitor.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkMonitor.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkMonitor.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkMonitor.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkMonitor.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkMonitor.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkMonitor.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkMonitor.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkMonitor~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Core/SoraFont.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SoraFont.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SoraFont.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SoraFont.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SoraFont.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SoraFont.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SoraFont.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SoraFont.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SoraFont~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Core/StoreKitManager.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StoreKitManager.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StoreKitManager.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StoreKitManager.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StoreKitManager.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StoreKitManager.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StoreKitManager.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StoreKitManager.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StoreKitManager~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Core/UserDefaultsManager.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UserDefaultsManager.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UserDefaultsManager.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UserDefaultsManager.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UserDefaultsManager.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UserDefaultsManager.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UserDefaultsManager.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UserDefaultsManager.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UserDefaultsManager~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Core/WatchDataSyncService.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WatchDataSyncService.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WatchDataSyncService.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WatchDataSyncService.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WatchDataSyncService.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WatchDataSyncService.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WatchDataSyncService.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WatchDataSyncService.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WatchDataSyncService~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/AdNetworkData.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkData.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkData.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkData.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkData.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkData.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkData.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkData.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkData~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/AdNetworkViewModel.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkViewModel.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkViewModel.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkViewModel.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkViewModel.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkViewModel.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkViewModel.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkViewModel.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkViewModel~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/AdSenseDayMetrics.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseDayMetrics.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseDayMetrics.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseDayMetrics.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseDayMetrics.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseDayMetrics.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseDayMetrics.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseDayMetrics.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSenseDayMetrics~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/AdSizeData.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeData.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeData.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeData.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeData.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeData.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeData.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeData.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeData~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/AdSizeViewModel.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeViewModel.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeViewModel.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeViewModel.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeViewModel.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeViewModel.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeViewModel.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeViewModel.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeViewModel~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/AppData.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppData.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppData.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppData.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppData.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppData.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppData.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppData.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppData~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/AppViewModel.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppViewModel.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppViewModel.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppViewModel.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppViewModel.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppViewModel.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppViewModel.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppViewModel.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppViewModel~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/AuthViewModel.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AuthViewModel.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AuthViewModel.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AuthViewModel.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AuthViewModel.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AuthViewModel.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AuthViewModel.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AuthViewModel.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AuthViewModel~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/CountryData.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryData.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryData.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryData.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryData.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryData.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryData.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryData.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryData~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/CountryViewModel.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryViewModel.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryViewModel.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryViewModel.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryViewModel.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryViewModel.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryViewModel.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryViewModel.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryViewModel~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/DateFilter.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DateFilter.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DateFilter.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DateFilter.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DateFilter.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DateFilter.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DateFilter.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DateFilter.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DateFilter~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/DomainData.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainData.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainData.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainData.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainData.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainData.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainData.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainData.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainData~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/DomainViewModel.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainViewModel.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainViewModel.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainViewModel.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainViewModel.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainViewModel.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainViewModel.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainViewModel.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainViewModel~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/PaymentsViewModel.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsViewModel.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsViewModel.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsViewModel.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsViewModel.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsViewModel.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsViewModel.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsViewModel.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsViewModel~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/PlatformData.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformData.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformData.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformData.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformData.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformData.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformData.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformData.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformData~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/PlatformViewModel.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformViewModel.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformViewModel.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformViewModel.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformViewModel.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformViewModel.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformViewModel.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformViewModel.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformViewModel~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/PremiumStatusManager.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumStatusManager.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumStatusManager.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumStatusManager.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumStatusManager.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumStatusManager.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumStatusManager.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumStatusManager.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumStatusManager~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/SettingsViewModel.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsViewModel.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsViewModel.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsViewModel.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsViewModel.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsViewModel.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsViewModel.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsViewModel.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsViewModel~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/SharedDataModels.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SharedDataModels.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SharedDataModels.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SharedDataModels.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SharedDataModels.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SharedDataModels.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SharedDataModels.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SharedDataModels.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SharedDataModels~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/StreakViewModel.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakViewModel.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakViewModel.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakViewModel.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakViewModel.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakViewModel.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakViewModel.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakViewModel.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakViewModel~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/SummaryViewModel.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryViewModel.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryViewModel.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryViewModel.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryViewModel.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryViewModel.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryViewModel.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryViewModel.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryViewModel~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/TargetingData.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingData.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingData.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingData.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingData.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingData.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingData.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingData.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingData~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Models/TargetingViewModel.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingViewModel.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingViewModel.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingViewModel.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingViewModel.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingViewModel.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingViewModel.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingViewModel.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingViewModel~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/BackgroundTaskStatusView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundTaskStatusView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundTaskStatusView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundTaskStatusView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundTaskStatusView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundTaskStatusView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundTaskStatusView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundTaskStatusView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/BackgroundTaskStatusView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/ErrorBannerView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ErrorBannerView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ErrorBannerView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ErrorBannerView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ErrorBannerView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ErrorBannerView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ErrorBannerView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ErrorBannerView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ErrorBannerView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/FeatureRow.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FeatureRow.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FeatureRow.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FeatureRow.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FeatureRow.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FeatureRow.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FeatureRow.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FeatureRow.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FeatureRow~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/FloatingElementsView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FloatingElementsView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FloatingElementsView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FloatingElementsView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FloatingElementsView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FloatingElementsView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FloatingElementsView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FloatingElementsView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/FloatingElementsView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/GoogleSignInButton.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GoogleSignInButton.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GoogleSignInButton.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GoogleSignInButton.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GoogleSignInButton.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GoogleSignInButton.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GoogleSignInButton.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GoogleSignInButton.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GoogleSignInButton~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/InfoSection.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/InfoSection.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/InfoSection.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/InfoSection.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/InfoSection.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/InfoSection.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/InfoSection.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/InfoSection.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/InfoSection~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/MailView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MailView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MailView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MailView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MailView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MailView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MailView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MailView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MailView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/ModernButtonStyle.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernButtonStyle.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernButtonStyle.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernButtonStyle.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernButtonStyle.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernButtonStyle.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernButtonStyle.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernButtonStyle.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernButtonStyle~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/ModernSignInView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernSignInView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernSignInView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernSignInView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernSignInView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernSignInView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernSignInView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernSignInView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernSignInView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/NetworkErrorModalView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkErrorModalView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkErrorModalView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkErrorModalView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkErrorModalView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkErrorModalView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkErrorModalView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkErrorModalView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/NetworkErrorModalView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/OnboardingView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OnboardingView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OnboardingView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OnboardingView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OnboardingView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OnboardingView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OnboardingView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OnboardingView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OnboardingView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/PremiumFeatureGate.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumFeatureGate.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumFeatureGate.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumFeatureGate.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumFeatureGate.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumFeatureGate.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumFeatureGate.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumFeatureGate.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumFeatureGate~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/PremiumUpgradeView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumUpgradeView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumUpgradeView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumUpgradeView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumUpgradeView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumUpgradeView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumUpgradeView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumUpgradeView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PremiumUpgradeView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/ProfileImageView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ProfileImageView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ProfileImageView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ProfileImageView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ProfileImageView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ProfileImageView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ProfileImageView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ProfileImageView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ProfileImageView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/SplashScreenView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SplashScreenView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SplashScreenView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SplashScreenView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SplashScreenView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SplashScreenView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SplashScreenView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SplashScreenView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SplashScreenView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/UI/Components/WhyGoogleModal.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WhyGoogleModal.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WhyGoogleModal.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WhyGoogleModal.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WhyGoogleModal.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WhyGoogleModal.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WhyGoogleModal.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WhyGoogleModal.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/WhyGoogleModal~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Payments Screen/Components/Cards/PreviousPaymentCardView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PreviousPaymentCardView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PreviousPaymentCardView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PreviousPaymentCardView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PreviousPaymentCardView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PreviousPaymentCardView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PreviousPaymentCardView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PreviousPaymentCardView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PreviousPaymentCardView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Payments Screen/Components/Cards/UnpaidEarningsCardView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UnpaidEarningsCardView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UnpaidEarningsCardView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UnpaidEarningsCardView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UnpaidEarningsCardView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UnpaidEarningsCardView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UnpaidEarningsCardView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UnpaidEarningsCardView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/UnpaidEarningsCardView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Payments Screen/Components/EmptyState/PaymentsEmptyStateView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsEmptyStateView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsEmptyStateView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsEmptyStateView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsEmptyStateView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsEmptyStateView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsEmptyStateView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsEmptyStateView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsEmptyStateView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Payments Screen/Components/Headers/PaymentsHeaderView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsHeaderView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsHeaderView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsHeaderView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsHeaderView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsHeaderView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsHeaderView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsHeaderView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsHeaderView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Payments Screen/Components/Metrics/PaymentDetailedMetricRow.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentDetailedMetricRow.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentDetailedMetricRow.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentDetailedMetricRow.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentDetailedMetricRow.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentDetailedMetricRow.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentDetailedMetricRow.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentDetailedMetricRow.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentDetailedMetricRow~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Payments Screen/Components/Metrics/PaymentMetricPill.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentMetricPill.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentMetricPill.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentMetricPill.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentMetricPill.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentMetricPill.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentMetricPill.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentMetricPill.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentMetricPill~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Payments Screen/Components/Progress/PaymentProgressView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentProgressView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentProgressView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentProgressView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentProgressView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentProgressView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentProgressView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentProgressView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentProgressView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Payments Screen/PaymentsView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PaymentsView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Settings Screen/SettingsView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SettingsView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/Components/LegacyMenuComponents.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LegacyMenuComponents.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LegacyMenuComponents.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LegacyMenuComponents.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LegacyMenuComponents.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LegacyMenuComponents.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LegacyMenuComponents.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LegacyMenuComponents.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LegacyMenuComponents~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/Components/MenuContentSections.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuContentSections.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuContentSections.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuContentSections.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuContentSections.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuContentSections.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuContentSections.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuContentSections.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuContentSections~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/Components/MenuHeaderView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuHeaderView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuHeaderView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuHeaderView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuHeaderView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuHeaderView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuHeaderView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuHeaderView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuHeaderView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/Components/MenuSection.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuSection.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuSection.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuSection.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuSection.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuSection.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuSection.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuSection.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MenuSection~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/Components/ModernMenuRow.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernMenuRow.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernMenuRow.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernMenuRow.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernMenuRow.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernMenuRow.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernMenuRow.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernMenuRow.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ModernMenuRow~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/Components/RoundedCornerShape.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/RoundedCornerShape.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/RoundedCornerShape.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/RoundedCornerShape.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/RoundedCornerShape.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/RoundedCornerShape.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/RoundedCornerShape.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/RoundedCornerShape.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/RoundedCornerShape~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/View Models/AdNetworkCard.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkCard.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkCard.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkCard.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkCard.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkCard.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkCard.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkCard.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkCard~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/View Models/AdSizeCard.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeCard.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeCard.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeCard.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeCard.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeCard.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeCard.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeCard.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeCard~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/View Models/CountryCard.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryCard.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryCard.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryCard.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryCard.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryCard.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryCard.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryCard.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountryCard~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/View Models/PlatformCard.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformCard.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformCard.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformCard.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformCard.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformCard.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformCard.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformCard.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformCard~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/View Models/TargetingCard.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingCard.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingCard.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingCard.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingCard.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingCard.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingCard.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingCard.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingCard~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/Views/AdNetworkView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdNetworkView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/Views/AdSizeView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AdSizeView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/Views/AppsView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppsView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppsView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppsView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppsView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppsView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppsView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppsView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/AppsView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/Views/CountriesView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountriesView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountriesView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountriesView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountriesView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountriesView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountriesView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountriesView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CountriesView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/Views/DomainsView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainsView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainsView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainsView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainsView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainsView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainsView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainsView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DomainsView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/Views/PlatformView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PlatformView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/Views/SlideOverMenuView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SlideOverMenuView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SlideOverMenuView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SlideOverMenuView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SlideOverMenuView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SlideOverMenuView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SlideOverMenuView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SlideOverMenuView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SlideOverMenuView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/SlideOverMenu/Views/TargetingView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/TargetingView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Summary Screen/Components/Cards/CompactSummaryCard.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CompactSummaryCard.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CompactSummaryCard.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CompactSummaryCard.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CompactSummaryCard.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CompactSummaryCard.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CompactSummaryCard.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CompactSummaryCard.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/CompactSummaryCard~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Summary Screen/Components/Cards/HeroSummaryCard.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSummaryCard.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSummaryCard.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSummaryCard.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSummaryCard.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSummaryCard.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSummaryCard.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSummaryCard.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSummaryCard~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Summary Screen/Components/Cards/LifetimeSummaryCard.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LifetimeSummaryCard.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LifetimeSummaryCard.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LifetimeSummaryCard.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LifetimeSummaryCard.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LifetimeSummaryCard.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LifetimeSummaryCard.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LifetimeSummaryCard.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/LifetimeSummaryCard~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Summary Screen/Components/Cards/MonthlyCompactCard.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MonthlyCompactCard.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MonthlyCompactCard.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MonthlyCompactCard.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MonthlyCompactCard.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MonthlyCompactCard.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MonthlyCompactCard.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MonthlyCompactCard.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/MonthlyCompactCard~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Summary Screen/Components/Headers/HeroSectionHeader.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSectionHeader.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSectionHeader.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSectionHeader.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSectionHeader.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSectionHeader.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSectionHeader.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSectionHeader.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HeroSectionHeader~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Summary Screen/Components/Headers/SectionHeader.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SectionHeader.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SectionHeader.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SectionHeader.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SectionHeader.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SectionHeader.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SectionHeader.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SectionHeader.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SectionHeader~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Summary Screen/Components/Metrics/DayMetricsSheet.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DayMetricsSheet.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DayMetricsSheet.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DayMetricsSheet.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DayMetricsSheet.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DayMetricsSheet.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DayMetricsSheet.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DayMetricsSheet.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/DayMetricsSheet~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Summary Screen/Components/Metrics/EnhancedMetricCard.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/EnhancedMetricCard.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/EnhancedMetricCard.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/EnhancedMetricCard.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/EnhancedMetricCard.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/EnhancedMetricCard.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/EnhancedMetricCard.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/EnhancedMetricCard.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/EnhancedMetricCard~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Summary Screen/Components/Utils/PatternOverlay.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PatternOverlay.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PatternOverlay.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PatternOverlay.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PatternOverlay.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PatternOverlay.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PatternOverlay.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PatternOverlay.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PatternOverlay~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Summary Screen/ContentView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ContentView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/ContentView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Summary Screen/SummaryTabView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryTabView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryTabView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryTabView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryTabView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryTabView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryTabView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryTabView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryTabView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Summary Screen/SummaryView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SummaryView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Trends Screen/Components/Calendar/HorizontalDatePickerView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HorizontalDatePickerView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HorizontalDatePickerView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HorizontalDatePickerView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HorizontalDatePickerView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HorizontalDatePickerView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HorizontalDatePickerView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HorizontalDatePickerView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/HorizontalDatePickerView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Trends Screen/Components/Header/StreakHeaderView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakHeaderView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakHeaderView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakHeaderView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakHeaderView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakHeaderView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakHeaderView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakHeaderView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakHeaderView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Trends Screen/Components/Metrics/SelectedDayMetricsView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SelectedDayMetricsView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SelectedDayMetricsView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SelectedDayMetricsView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SelectedDayMetricsView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SelectedDayMetricsView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SelectedDayMetricsView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SelectedDayMetricsView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/SelectedDayMetricsView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Trends Screen/Components/Overview/OverviewCardsView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OverviewCardsView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OverviewCardsView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OverviewCardsView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OverviewCardsView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OverviewCardsView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OverviewCardsView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OverviewCardsView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/OverviewCardsView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Trends Screen/Components/Overview/StreakEmptyStateView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakEmptyStateView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakEmptyStateView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakEmptyStateView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakEmptyStateView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakEmptyStateView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakEmptyStateView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakEmptyStateView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakEmptyStateView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Trends Screen/Components/Performance/PerformanceInsightsView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PerformanceInsightsView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PerformanceInsightsView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PerformanceInsightsView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PerformanceInsightsView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PerformanceInsightsView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PerformanceInsightsView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PerformanceInsightsView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/PerformanceInsightsView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/AdRadar/Views/Trends Screen/StreakView.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakView.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakView.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakView.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakView.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakView.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakView.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakView.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/StreakView~partial.swiftmodule"
+  },
+  "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/guiliodelfava/Downloads/AdRadar/build/AdRadar.build/Debug-iphoneos/AdRadar.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

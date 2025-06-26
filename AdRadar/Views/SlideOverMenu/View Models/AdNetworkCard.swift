@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct AdNetworkCard: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
     let adNetwork: AdNetworkData
     @State private var isPressed = false
     @State private var showDetailedMetrics = false
@@ -81,7 +82,7 @@ struct AdNetworkCard: View {
                 
                 // Earnings badge
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text(adNetwork.formattedEarnings)
+                    Text(formattedCurrency(adNetwork.earnings))
                         .soraTitle2()
                         .foregroundColor(.green)
                     
@@ -161,14 +162,14 @@ struct AdNetworkCard: View {
                 AdNetworkDetailedMetricRow(
                     icon: "chart.line.uptrend.xyaxis",
                     title: "RPM",
-                    value: adNetwork.formattedRPM,
+                    value: formattedCurrency(adNetwork.rpm),
                     color: .pink
                 )
                 
                 AdNetworkDetailedMetricRow(
                     icon: "dollarsign.circle.fill",
                     title: "Total Revenue",
-                    value: adNetwork.formattedEarnings,
+                    value: formattedCurrency(adNetwork.earnings),
                     color: .green
                 )
             }
@@ -222,6 +223,21 @@ struct AdNetworkCard: View {
         default:
             return "network"
         }
+    }
+    
+    private func formattedCurrency(_ valueString: String) -> String {
+        guard let value = Double(valueString) else { return valueString }
+        
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        
+        if authViewModel.isDemoMode {
+            formatter.currencySymbol = "$"
+        } else {
+            formatter.locale = Locale.current
+        }
+        
+        return formatter.string(from: NSNumber(value: value)) ?? valueString
     }
 }
 

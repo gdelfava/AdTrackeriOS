@@ -284,13 +284,18 @@ struct AppsView: View {
         
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.locale = Locale.current // Use user's locale for currency
+        if authViewModel.isDemoMode {
+            formatter.currencySymbol = "$"
+        } else {
+            formatter.locale = Locale.current // Use user's locale for currency
+        }
         
         return formatter.string(from: NSNumber(value: totalEarnings)) ?? formatter.string(from: NSNumber(value: 0.0)) ?? "0.00"
     }
 }
 
 struct AppCard: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
     let app: AppData
     @State private var isPressed = false
     @State private var showDetailedMetrics = false
@@ -371,7 +376,7 @@ struct AppCard: View {
                 
                 // Earnings badge
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text(app.formattedEarnings)
+                    Text(formattedCurrency(app.earnings))
                         .soraTitle2()
                         .foregroundColor(.green)
                     
@@ -444,7 +449,7 @@ struct AppCard: View {
                 DetailedMetricRow(
                     icon: "chart.line.uptrend.xyaxis",
                     title: "RPM",
-                    value: app.formattedRPM,
+                    value: formattedCurrency(app.rpm),
                     color: .pink
                 )
                 
@@ -458,7 +463,7 @@ struct AppCard: View {
                 DetailedMetricRow(
                     icon: "dollarsign.circle.fill",
                     title: "Revenue",
-                    value: app.formattedEarnings,
+                    value: formattedCurrency(app.earnings),
                     color: .green
                 )
             }
@@ -495,6 +500,21 @@ struct AppCard: View {
             Spacer()
         }
         .padding(.bottom, 16)
+    }
+    
+    private func formattedCurrency(_ valueString: String) -> String {
+        guard let value = Double(valueString) else { return valueString }
+        
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        
+        if authViewModel.isDemoMode {
+            formatter.currencySymbol = "$"
+        } else {
+            formatter.locale = Locale.current
+        }
+        
+        return formatter.string(from: NSNumber(value: value)) ?? valueString
     }
 }
 
