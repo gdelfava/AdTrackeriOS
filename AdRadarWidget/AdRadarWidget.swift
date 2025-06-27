@@ -229,7 +229,7 @@ struct AdRadarWidgetEntry: TimelineEntry {
 
 // Enhanced data loading for widget using shared data models
 struct WidgetDataLoader {
-    static let appGroupID = "group.com.delteqws.AdRadar" // Must match main app
+    static let appGroupID = "group.com.delteqis.AdRadar" // Must match main app
     
     private static var sharedDefaults: UserDefaults? {
         return UserDefaults(suiteName: appGroupID)

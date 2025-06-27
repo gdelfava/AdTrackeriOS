@@ -14,9 +14,10 @@ public class StoreKitManager: ObservableObject {
     
     private var updateListenerTask: Task<Void, Error>?
     private let productIdentifiers: Set<String> = [
-        "com.delteqws.adradar.premium_monthly_sub",
-        "com.delteqws.adradar.premium_yearly_sub",
-        "com.delteqws.adradar.remove_ads"
+        "com.delteqis.adradar.premium_monthly_sub",
+        "com.delteqis.adradar.premium_yearly_sub",
+        "com.delteqis.adradar.pro_monthly",
+        "com.delteqis.adradar.pro_yearly"
     ]
     
     public enum StoreKitError: Error, LocalizedError {
@@ -222,12 +223,14 @@ public class StoreKitManager: ObservableObject {
     }
     
     func hasActivePremiumSubscription() -> Bool {
-        return isPurchased("com.delteqws.adradar.premium_monthly_sub") ||
-               isPurchased("com.delteqws.adradar.premium_yearly_sub")
+        return isPurchased("com.delteqis.adradar.premium_monthly_sub") ||
+               isPurchased("com.delteqis.adradar.premium_yearly_sub")
     }
     
     func hasRemovedAds() -> Bool {
-        return isPurchased("com.delteqws.adradar.remove_ads") || hasActivePremiumSubscription()
+        return isPurchased("com.delteqis.adradar.pro_monthly") ||
+               isPurchased("com.delteqis.adradar.pro_yearly") ||
+               hasActivePremiumSubscription()
     }
 }
 

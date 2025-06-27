@@ -139,14 +139,14 @@ enum DataSource: String, Codable {
 
 // MARK: - Shared Constants
 enum SharedConstants {
-    static let appGroupID = "group.com.delteqws.AdRadar"
+    static let appGroupID = "group.com.delteqis.AdRadar"
     static let sharedSummaryDataKey = "shared_summary_data"
     static let backgroundTaskStatusKey = "background_task_status"
     static let dataFreshnessKey = "data_freshness_info"
     
     // Background task identifiers
-    static let backgroundRefreshTaskID = "com.delteqws.AdRadar.refresh"
-    static let backgroundProcessingTaskID = "com.delteqws.AdRadar.processing"
+    static let backgroundRefreshTaskID = "com.delteqis.AdRadar.refresh"
+    static let backgroundProcessingTaskID = "com.delteqis.AdRadar.processing"
     
     // Refresh intervals
     static let backgroundRefreshInterval: TimeInterval = 15 * 60  // 15 minutes

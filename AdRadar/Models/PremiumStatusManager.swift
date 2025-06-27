@@ -155,7 +155,7 @@ class PremiumStatusManager: ObservableObject {
             features = Set(PremiumFeature.allCases)
         } else {
             // Check individual purchases
-            if storeKitManager.isPurchased("com.delteqws.adradar.remove_ads") {
+            if storeKitManager.isPurchased("com.delteqis.adradar.pro_monthly") {
                 features.insert(.adFree)
             }
         }
@@ -212,21 +212,21 @@ class PremiumStatusManager: ObservableObject {
     // MARK: - Purchase Methods
     
     func purchasePremiumMonthly() async throws {
-        guard let product = storeKitManager.products.first(where: { $0.id == "com.delteqws.adradar.premium_monthly_sub" }) else {
+        guard let product = storeKitManager.products.first(where: { $0.id == "com.delteqis.adradar.premium_monthly_sub" }) else {
             throw StoreKitManager.StoreKitError.productNotAvailable
         }
         try await storeKitManager.purchase(product)
     }
     
     func purchasePremiumYearly() async throws {
-        guard let product = storeKitManager.products.first(where: { $0.id == "com.delteqws.adradar.premium_yearly_sub" }) else {
+        guard let product = storeKitManager.products.first(where: { $0.id == "com.delteqis.adradar.premium_yearly_sub" }) else {
             throw StoreKitManager.StoreKitError.productNotAvailable
         }
         try await storeKitManager.purchase(product)
     }
     
     func purchaseRemoveAds() async throws {
-        guard let product = storeKitManager.products.first(where: { $0.id == "com.delteqws.adradar.remove_ads" }) else {
+        guard let product = storeKitManager.products.first(where: { $0.id == "com.delteqis.adradar.pro_monthly" }) else {
             throw StoreKitManager.StoreKitError.productNotAvailable
         }
         try await storeKitManager.purchase(product)

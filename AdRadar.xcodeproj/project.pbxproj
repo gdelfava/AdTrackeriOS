@@ -481,7 +481,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AdRadar/AdRadar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250627.9;
+				CURRENT_PROJECT_VERSION = 20250627.10;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -498,7 +498,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.4;
+				MARKETING_VERSION = 2.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.delteqis.AdRadar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -518,7 +518,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AdRadar/AdRadar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250627.9;
+				CURRENT_PROJECT_VERSION = 20250627.10;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -535,7 +535,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.4;
+				MARKETING_VERSION = 2.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.delteqis.AdRadar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -555,20 +555,20 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "AdRadarWatch Watch App/AdRadarWatch Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250627.9;
+				CURRENT_PROJECT_VERSION = 20250627.10;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AdRadarWatch-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = AdRadar;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.delteqws.AdRadar;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.delteqis.AdRadar;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar.watchkitapp;
+				MARKETING_VERSION = 2.0.5;
+				PRODUCT_BUNDLE_IDENTIFIER = com.delteqis.AdRadar.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -586,20 +586,20 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "AdRadarWatch Watch App/AdRadarWatch Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250627.9;
+				CURRENT_PROJECT_VERSION = 20250627.10;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AdRadarWatch-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = AdRadar;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.delteqws.AdRadar;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.delteqis.AdRadar;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar.watchkitapp;
+				MARKETING_VERSION = 2.0.5;
+				PRODUCT_BUNDLE_IDENTIFIER = com.delteqis.AdRadar.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -617,7 +617,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AdRadarWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250627.9;
+				CURRENT_PROJECT_VERSION = 20250627.10;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AdRadarWidget/Info.plist;
@@ -629,8 +629,8 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar.AdRadarWidget;
+				MARKETING_VERSION = 2.0.5;
+				PRODUCT_BUNDLE_IDENTIFIER = com.delteqis.AdRadar.AdRadarWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -650,7 +650,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AdRadarWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250627.9;
+				CURRENT_PROJECT_VERSION = 20250627.10;
 				DEVELOPMENT_TEAM = XB29ZAF479;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AdRadarWidget/Info.plist;
@@ -662,8 +662,8 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.delteqws.AdRadar.AdRadarWidget;
+				MARKETING_VERSION = 2.0.5;
+				PRODUCT_BUNDLE_IDENTIFIER = com.delteqis.AdRadar.AdRadarWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

@@ -160,7 +160,7 @@ struct WatchSummaryData {
 // MARK: - Watch Data Bridge
 class WatchDataBridge {
     static let shared = WatchDataBridge()
-    private let appGroupID = "group.com.delteqws.AdRadar"
+    private let appGroupID = "group.com.delteqis.AdRadar"
     
     private init() {}
     

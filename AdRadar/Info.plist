@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>AppGroupIdentifier</key>
-	<string>group.com.delteqws.AdRadar</string>
+	<string>group.com.delteqis.AdRadar</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.delteqws.AdRadar.refresh</string>
-		<string>com.delteqws.AdRadar.processing</string>
+		<string>com.delteqis.AdRadar.refresh</string>
+		<string>com.delteqis.AdRadar.processing</string>
 	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
@@ -34,5 +34,12 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array/>
+	<key>BackgroundTaskIdentifiers</key>
+	<dict>
+		<key>refresh</key>
+		<string>com.delteqis.AdRadar.refresh</string>
+		<key>processing</key>
+		<string>com.delteqis.AdRadar.processing</string>
+	</dict>
 </dict>
 </plist>
