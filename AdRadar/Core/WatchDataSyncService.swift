@@ -72,7 +72,7 @@ class WatchDataSyncService: NSObject, ObservableObject {
     }
     
     // Send summary data to watch
-    func sendSummaryData(_ summaryData: AdSenseSummaryData, todayMetrics: AdSenseDayMetrics? = nil) {
+    func sendSummaryData(_ summaryData: SharedSummaryData, todayMetrics: AdSenseDayMetrics? = nil) {
         print("📱 [iOS] Attempting to send data to watch...")
         
         guard checkConnectionState() else {
@@ -98,12 +98,13 @@ class WatchDataSyncService: NSObject, ObservableObject {
         
         // Create dictionary with summary and metrics data
         var watchContext: [String: Any] = [
-            "todayEarnings": summaryData.today,
-            "yesterdayEarnings": summaryData.yesterday,
-            "last7DaysEarnings": summaryData.last7Days,
-            "thisMonthEarnings": summaryData.thisMonth,
-            "lastMonthEarnings": summaryData.lastMonth,
-            "lastUpdated": Date().timeIntervalSince1970
+            "todayEarnings": summaryData.todayEarnings,
+            "yesterdayEarnings": summaryData.yesterdayEarnings,
+            "last7DaysEarnings": summaryData.last7DaysEarnings,
+            "thisMonthEarnings": summaryData.thisMonthEarnings,
+            "lastMonthEarnings": summaryData.lastMonthEarnings,
+            "lastUpdated": summaryData.lastUpdated.timeIntervalSince1970,
+            "dataVersion": summaryData.dataVersion
         ]
         
         // Add delta information
@@ -133,6 +134,10 @@ class WatchDataSyncService: NSObject, ObservableObject {
             watchContext["todayClicks"] = metrics.clicks
             watchContext["todayPageViews"] = metrics.pageViews
             watchContext["todayImpressions"] = metrics.impressions
+        } else if let clicks = summaryData.todayClicks {
+            watchContext["todayClicks"] = clicks
+            watchContext["todayPageViews"] = summaryData.todayPageViews
+            watchContext["todayImpressions"] = summaryData.todayImpressions
         }
         
         do {

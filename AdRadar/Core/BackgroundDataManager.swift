@@ -411,29 +411,8 @@ class BackgroundDataManager: NSObject, ObservableObject {
             return
         }
         
-        // Convert to legacy format for existing watch service
-        let legacySummaryData = AdSenseSummaryData(
-            today: sharedData.todayEarnings,
-            yesterday: sharedData.yesterdayEarnings,
-            last7Days: sharedData.last7DaysEarnings,
-            thisMonth: sharedData.thisMonthEarnings,
-            lastMonth: sharedData.lastMonthEarnings,
-            lifetime: sharedData.lifetimeEarnings,
-            todayDelta: sharedData.todayDelta,
-            todayDeltaPositive: sharedData.todayDeltaPositive,
-            yesterdayDelta: sharedData.yesterdayDelta,
-            yesterdayDeltaPositive: sharedData.yesterdayDeltaPositive,
-            last7DaysDelta: sharedData.last7DaysDelta,
-            last7DaysDeltaPositive: sharedData.last7DaysDeltaPositive,
-            thisMonthDelta: sharedData.thisMonthDelta,
-            thisMonthDeltaPositive: sharedData.thisMonthDeltaPositive,
-            lastMonthDelta: sharedData.lastMonthDelta,
-            lastMonthDeltaPositive: sharedData.lastMonthDeltaPositive
-        )
-        
         // Send to watch via WatchDataSyncService
-        WatchDataSyncService.shared.sendSummaryData(legacySummaryData)
-        print("[BackgroundDataManager] Sent updated data to watch app")
+        WatchDataSyncService.shared.sendSummaryData(sharedData)
     }
     
     private func refreshMainAppUI() {

@@ -278,7 +278,11 @@ class SummaryViewModel: ObservableObject {
                     )
                     
                     let todayMetrics: AdSenseDayMetrics? = try? todayMetricsResult.get()
-                    WatchDataSyncService.shared.sendSummaryData(summary, todayMetrics: todayMetrics)
+                    
+                    // Convert to SharedSummaryData format using the from: initializer
+                    let sharedData = SharedSummaryData(from: summary)
+                    
+                    WatchDataSyncService.shared.sendSummaryData(sharedData, todayMetrics: todayMetrics)
                 }
                 return
             }
