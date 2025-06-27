@@ -33,9 +33,6 @@
 		<string>Sora-Bold.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
-	<array>
-		<string>fetch</string>
-		<string>processing</string>
-	</array>
+	<array/>
 </dict>
 </plist>

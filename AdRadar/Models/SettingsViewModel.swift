@@ -43,6 +43,9 @@ class SettingsViewModel: ObservableObject {
         authViewModel.$userEmail.assign(to: &$email)
         authViewModel.$userProfileImageURL.assign(to: &$imageURL)
         
+        // Always initialize demo threshold independently - never based on user settings
+        self.demoPaymentThreshold = UserDefaults.standard.object(forKey: "demoPaymentThreshold") as? Double ?? 100.0
+        
         // Initialize account information from UserDefaults or use demo values
         if authViewModel.isDemoMode {
             self.publisherId = "pub-1234567890345678"
@@ -50,7 +53,7 @@ class SettingsViewModel: ObservableObject {
             self.timeZone = "America/New_York"
             self.currency = "USD"
             self.paymentThreshold = 100.0
-            self.demoPaymentThreshold = 100.0
+            // Demo threshold is already initialized above
         } else {
             // Initialize account information from UserDefaults
             self.publisherId = UserDefaults.standard.string(forKey: "publisherId") ?? ""
@@ -98,21 +101,7 @@ class SettingsViewModel: ObservableObject {
                 UserDefaults.standard.set(self.paymentThreshold, forKey: "paymentThreshold")
             }
             
-            // Initialize demo threshold with currency-appropriate value
-            switch currency {
-            case "ZAR":
-                self.demoPaymentThreshold = 1000.0
-            case "INR":
-                self.demoPaymentThreshold = 8000.0
-            case "JPY":
-                self.demoPaymentThreshold = 12000.0
-            case "BRL":
-                self.demoPaymentThreshold = 500.0
-            case "MXN":
-                self.demoPaymentThreshold = 2000.0
-            default:
-                self.demoPaymentThreshold = 100.0
-            }
+            // Demo threshold remains independent - already initialized above
         }
         
         // Initialize AdMob Apps visibility (default: false)
@@ -134,6 +123,8 @@ class SettingsViewModel: ObservableObject {
     func updatePaymentThreshold(_ threshold: Double) {
         if authViewModel.isDemoMode {
             self.demoPaymentThreshold = threshold
+            // Save demo threshold separately to avoid cross-contamination
+            UserDefaults.standard.set(threshold, forKey: "demoPaymentThreshold")
         } else {
             self.paymentThreshold = threshold
             UserDefaults.standard.set(threshold, forKey: "paymentThreshold")
