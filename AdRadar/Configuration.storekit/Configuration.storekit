@@ -74,7 +74,11 @@
     {
       "id" : "21521172",
       "localizations" : [
-
+        {
+          "description" : "Premium features for AdRadar",
+          "displayName" : "AdRadar Premium",
+          "locale" : "en_US"
+        }
       ],
       "name" : "Pro Subscriptions",
       "subscriptions" : [
@@ -99,7 +103,7 @@
           ],
           "productID" : "com.delteqis.adradar.premium_monthly_sub",
           "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "Pro Monthly Subscription Full Access",
+          "referenceName" : "Pro Monthly Subscription",
           "subscriptionGroupID" : "21521172",
           "type" : "RecurringSubscription",
           "winbackOffers" : [
@@ -127,7 +131,7 @@
           ],
           "productID" : "com.delteqis.adradar.premium_yearly_sub",
           "recurringSubscriptionPeriod" : "P1Y",
-          "referenceName" : "Pro Yearly Subscription Full Access",
+          "referenceName" : "Pro Yearly Subscription",
           "subscriptionGroupID" : "21521172",
           "type" : "RecurringSubscription",
           "winbackOffers" : [

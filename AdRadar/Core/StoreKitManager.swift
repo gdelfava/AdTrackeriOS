@@ -15,9 +15,7 @@ public class StoreKitManager: ObservableObject {
     private var updateListenerTask: Task<Void, Error>?
     private let productIdentifiers: Set<String> = [
         "com.delteqis.adradar.premium_monthly_sub",
-        "com.delteqis.adradar.premium_yearly_sub",
-        "com.delteqis.adradar.pro_monthly",
-        "com.delteqis.adradar.pro_yearly"
+        "com.delteqis.adradar.premium_yearly_sub"
     ]
     
     public enum StoreKitError: Error, LocalizedError {
