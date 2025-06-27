@@ -519,7 +519,7 @@ class AdSenseAPI {
         }
     }
 
-    static let appGroupID = "group.com.delteqws.AdRadar"
+    static let appGroupID = "group.com.delteqis.AdRadar"
     
     func fetchAccountInfo(accessToken: String) async -> Result<Account, AdSenseError> {
         guard NetworkMonitor.shared.isConnected else {

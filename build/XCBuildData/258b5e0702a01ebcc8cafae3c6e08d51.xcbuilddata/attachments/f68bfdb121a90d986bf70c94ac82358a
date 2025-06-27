@@ -1,4 +1,0 @@
-module GoogleUtilities_Logger {
-umbrella "/Users/guiliodelfava/Library/Developer/Xcode/DerivedData/AdRadar-eqfwsqncqsfpopanrhwdshyrcgrl/SourcePackages/checkouts/GoogleUtilities/GoogleUtilities/Logger/Public"
-export *
-}

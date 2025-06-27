@@ -1,4 +1,0 @@
-module GoogleUtilities_UserDefaults {
-umbrella "/Users/guiliodelfava/Library/Developer/Xcode/DerivedData/AdRadar-eqfwsqncqsfpopanrhwdshyrcgrl/SourcePackages/checkouts/GoogleUtilities/GoogleUtilities/UserDefaults/Public"
-export *
-}

@@ -4,7 +4,7 @@ import Foundation
 class UserDefaultsManager {
     static let shared = UserDefaultsManager()
     
-    private let appGroupID = "group.com.delteqws.AdRadar"
+    private let appGroupID = "group.com.delteqis.AdRadar"
     private var sharedDefaults: UserDefaults?
     private var standardDefaults: UserDefaults
     private var useSharedContainer: Bool = false
