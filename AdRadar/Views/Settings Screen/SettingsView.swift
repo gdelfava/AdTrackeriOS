@@ -628,11 +628,11 @@ struct SettingsView: View {
                                 ModernSettingsRow(
                                     icon: "bird.fill",
                                     iconColor: .blue,
-                                    title: "Follow @AdRadar",
+                                    title: "Follow @AdRadarApp",
                                     subtitle: "Stay updated on X",
                                     showChevron: true
                                 ) {
-                                    if let url = URL(string: "https://x.com/gdelfava") {
+                                    if let url = URL(string: "https://x.com/AdRadarApp") {
                                         UIApplication.shared.open(url)
                                     }
                                 }

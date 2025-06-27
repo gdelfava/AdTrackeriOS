@@ -15,7 +15,7 @@
   ],
   "products" : [
     {
-      "displayPrice" : "2.99",
+      "displayPrice" : "19.99",
       "familyShareable" : false,
       "internalID" : "6736166445",
       "localizations" : [
@@ -30,7 +30,7 @@
       "type" : "Consumable"
     },
     {
-      "displayPrice" : "19.99",
+      "displayPrice" : "199.99",
       "familyShareable" : false,
       "internalID" : "6736166446",
       "localizations" : [
@@ -46,9 +46,11 @@
     }
   ],
   "settings" : {
+    "_billingGracePeriodEnabled" : true,
     "_failTransactionsEnabled" : false,
     "_locale" : "en_US",
-    "_storefront" : "USA",
+    "_renewalBillingIssuesEnabled" : true,
+    "_storefront" : "ZAF",
     "_storeKitErrors" : [
       {
         "current" : null,
@@ -112,7 +114,7 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "4.99",
+          "displayPrice" : "19.99",
           "familyShareable" : false,
           "groupNumber" : 1,
           "internalID" : "6736166448",
@@ -140,7 +142,7 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "19.99",
+          "displayPrice" : "199.99",
           "familyShareable" : false,
           "groupNumber" : 2,
           "internalID" : "6736166449",
