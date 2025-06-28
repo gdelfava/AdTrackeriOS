@@ -87,15 +87,10 @@ struct ModernSignInView: View {
                                             .offset(y: animateContent ? 0 : 30)
                                             .animation(.easeOut(duration: 0.8).delay(0.8), value: animateContent)
                                         
-                                        Text("for AdSense & AdMob")
-                                            .font(.sora(.medium, size: 20))
-                                            .foregroundColor(.secondary)
-                                            .opacity(animateContent ? 1.0 : 0.0)
-                                            .offset(y: animateContent ? 0 : 20)
-                                            .animation(.easeOut(duration: 0.8).delay(1.0), value: animateContent)
+                                        // Text("for AdSense & AdMob") - Removed as requested
                                     }
                                     
-                                    Text("Track your earnings with beautiful analytics and detailed insights")
+                                    Text("Track your ads income and payments with beautiful analytics and detailed insights")
                                         .font(.sora(.regular, size: 18))
                                         .multilineTextAlignment(.center)
                                         .foregroundColor(.secondary)

@@ -82,7 +82,7 @@ struct SplashScreenView: View {
                         .offset(y: animateText ? 0 : 30)
                         .animation(.easeOut(duration: 0.8).delay(1.2), value: animateText)
                     
-                    Text("Track Your AdSense Journey")
+                    Text("Track your ads income and stats")
                         .font(.sora(.medium, size: 16))
                         .foregroundColor(.secondary)
                         .opacity(animateSubtext ? 1.0 : 0.0)

@@ -182,6 +182,11 @@ class PremiumStatusManager: ObservableObject {
     // MARK: - Feature Access Methods
     
     func hasFeature(_ feature: PremiumFeature) -> Bool {
+        // Only bypass premium gates in demo mode
+        if AuthViewModel.shared.isDemoMode {
+            return true
+        }
+        // For real users, check if they have purchased the feature
         return premiumFeatures.contains(feature)
     }
     

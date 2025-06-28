@@ -74,6 +74,7 @@ struct ModernMenuRowWithPremium: View {
 struct AnalyticsMenuSection: View {
     @EnvironmentObject var settingsViewModel: SettingsViewModel
     @EnvironmentObject var premiumStatusManager: PremiumStatusManager
+    @EnvironmentObject var authViewModel: AuthViewModel
     let onDismiss: () -> Void
     @Binding var showDomainsView: Bool
     @Binding var showAdSizeView: Bool
@@ -98,7 +99,19 @@ struct AnalyticsMenuSection: View {
             )
             
             VStack {
-                if premiumStatusManager.hasFeature(.advancedAnalytics) {
+                if authViewModel.isDemoMode {
+                    ModernMenuRow(
+                        icon: "rectangle.3.group.fill", 
+                        title: "Ad Sizes", 
+                        subtitle: "Format metrics",
+                        iconColor: .purple,
+                        action: {
+                            hapticFeedback()
+                            showAdSizeView = true
+                            onDismiss()
+                        }
+                    )
+                } else if premiumStatusManager.hasFeature(.advancedAnalytics) {
                     ModernMenuRow(
                         icon: "rectangle.3.group.fill", 
                         title: "Ad Sizes", 
@@ -120,14 +133,25 @@ struct AnalyticsMenuSection: View {
                         action: {
                             hapticFeedback()
                             premiumStatusManager.trackFeatureUsage(.advancedAnalytics)
-                            // Don't dismiss the menu, let the premium gate handle it
                         }
                     )
                 }
             }
             
             VStack {
-                if premiumStatusManager.hasFeature(.advancedAnalytics) {
+                if authViewModel.isDemoMode {
+                    ModernMenuRow(
+                        icon: "iphone", 
+                        title: "Platforms", 
+                        subtitle: "Device breakdown",
+                        iconColor: .green,
+                        action: {
+                            hapticFeedback()
+                            showPlatformsView = true
+                            onDismiss()
+                        }
+                    )
+                } else if premiumStatusManager.hasFeature(.advancedAnalytics) {
                     ModernMenuRow(
                         icon: "iphone", 
                         title: "Platforms", 
@@ -155,7 +179,19 @@ struct AnalyticsMenuSection: View {
             }
             
             VStack {
-                if premiumStatusManager.hasFeature(.advancedAnalytics) {
+                if authViewModel.isDemoMode {
+                    ModernMenuRow(
+                        icon: "flag.fill", 
+                        title: "Countries", 
+                        subtitle: "Geographic data",
+                        iconColor: .orange,
+                        action: {
+                            hapticFeedback()
+                            showCountriesView = true
+                            onDismiss()
+                        }
+                    )
+                } else if premiumStatusManager.hasFeature(.advancedAnalytics) {
                     ModernMenuRow(
                         icon: "flag.fill", 
                         title: "Countries", 
@@ -183,7 +219,19 @@ struct AnalyticsMenuSection: View {
             }
             
             VStack {
-                if premiumStatusManager.hasFeature(.advancedAnalytics) {
+                if authViewModel.isDemoMode {
+                    ModernMenuRow(
+                        icon: "network", 
+                        title: "Ad Networks", 
+                        subtitle: "Network performance",
+                        iconColor: .indigo,
+                        action: {
+                            hapticFeedback()
+                            showAdNetworkView = true
+                            onDismiss()
+                        }
+                    )
+                } else if premiumStatusManager.hasFeature(.advancedAnalytics) {
                     ModernMenuRow(
                         icon: "network", 
                         title: "Ad Networks", 
@@ -211,7 +259,19 @@ struct AnalyticsMenuSection: View {
             }
             
             VStack {
-                if premiumStatusManager.hasFeature(.advancedAnalytics) {
+                if authViewModel.isDemoMode {
+                    ModernMenuRow(
+                        icon: "target", 
+                        title: "Targeting", 
+                        subtitle: "Type performance",
+                        iconColor: .pink,
+                        action: {
+                            hapticFeedback()
+                            showTargetingView = true
+                            onDismiss()
+                        }
+                    )
+                } else if premiumStatusManager.hasFeature(.advancedAnalytics) {
                     ModernMenuRow(
                         icon: "target", 
                         title: "Targeting", 

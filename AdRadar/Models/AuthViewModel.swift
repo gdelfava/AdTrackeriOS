@@ -4,6 +4,8 @@ import Combine
 import Security
 
 class AuthViewModel: ObservableObject {
+    static let shared = AuthViewModel()
+    
     @Published var isSignedIn: Bool = false
     @Published var accessToken: String? = nil
     @Published var userName: String = ""

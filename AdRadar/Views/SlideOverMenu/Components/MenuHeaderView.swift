@@ -29,9 +29,9 @@ struct MenuHeaderView: View {
                                 .lineLimit(1)
                         }
                         
-                        Text("AdSense & Admob Analytics")
-                            .soraCaption()
-                            .foregroundColor(.white.opacity(0.7))
+//                        Text("AdSense & Admob Analytics")
+//                            .soraCaption()
+//                            .foregroundColor(.white.opacity(0.7))
                     }
                     
                     Spacer()

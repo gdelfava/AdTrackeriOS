@@ -4,6 +4,7 @@ struct PremiumFeatureGate<Content: View>: View {
     let feature: PremiumStatusManager.PremiumFeature
     let content: () -> Content
     @EnvironmentObject private var premiumStatusManager: PremiumStatusManager
+    @EnvironmentObject private var authViewModel: AuthViewModel
     @State private var showUpgradeSheet = false
     
     init(feature: PremiumStatusManager.PremiumFeature, @ViewBuilder content: @escaping () -> Content) {
@@ -13,7 +14,9 @@ struct PremiumFeatureGate<Content: View>: View {
     
     var body: some View {
         Group {
-            if premiumStatusManager.hasFeature(feature) {
+            if authViewModel.isDemoMode {
+                content()
+            } else if premiumStatusManager.hasFeature(feature) {
                 content()
             } else {
                 // Show locked content with upgrade prompt
