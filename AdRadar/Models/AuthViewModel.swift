@@ -162,43 +162,62 @@ class AuthViewModel: NSObject, ObservableObject {
         print("🔑 [GoogleAuth] Requesting scopes: \(scopes)")
         
         GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController, hint: nil, additionalScopes: scopes) { [weak self] signInResult, error in
+            guard let self = self else { return }
+            
+            // Always update transitioning state on main thread
             DispatchQueue.main.async {
-                self?.isTransitioningToGoogle = false
+                self.isTransitioningToGoogle = false
             }
             
             if let error = error {
                 print("❌ [GoogleAuth] Google Sign-In error: \(error.localizedDescription)")
                 return
             }
+            
             guard let result = signInResult else { 
                 print("❌ [GoogleAuth] No sign-in result returned")
                 return 
             }
-            result.user.refreshTokensIfNeeded { auth, error in
+            
+            print("✅ [GoogleAuth] Sign-in successful, refreshing tokens...")
+            result.user.refreshTokensIfNeeded { [weak self] auth, error in
+                guard let self = self else { return }
+                
                 if let error = error {
-                    print("Auth error: \(error.localizedDescription)")
+                    print("❌ [GoogleAuth] Token refresh error: \(error.localizedDescription)")
                     return
                 }
-                if let accessToken = auth?.accessToken.tokenString {
-                    DispatchQueue.main.async {
-                        self?.accessToken = accessToken
-                        self?.isSignedIn = true
-                        self?.saveTokenToKeychain(accessToken)
-                        print("Sign-in successful. Granted scopes: \(result.user.grantedScopes ?? [])")
-                        if let profile = result.user.profile {
-                            self?.userName = profile.name
-                            self?.userEmail = profile.email
-                            self?.userProfileImageURL = profile.hasImage ? profile.imageURL(withDimension: 200) : nil
-                            // Save to UserDefaults
-                            let defaults = UserDefaults.standard
-                            defaults.set(profile.name, forKey: self?.userNameKey ?? "userName")
-                            defaults.set(profile.email, forKey: self?.userEmailKey ?? "userEmail")
-                            if let url = self?.userProfileImageURL?.absoluteString {
-                                defaults.set(url, forKey: self?.userProfileImageURLKey ?? "userProfileImageURL")
-                            } else {
-                                defaults.removeObject(forKey: self?.userProfileImageURLKey ?? "userProfileImageURL")
-                            }
+                
+                guard let accessToken = auth?.accessToken.tokenString else {
+                    print("❌ [GoogleAuth] No access token returned")
+                    return
+                }
+                
+                print("✅ [GoogleAuth] Token refresh successful")
+                print("🔑 [GoogleAuth] Granted scopes: \(result.user.grantedScopes ?? [])")
+                
+                // Perform all UI updates on main thread
+                DispatchQueue.main.async {
+                    self.accessToken = accessToken
+                    self.isSignedIn = true
+                    self.saveTokenToKeychain(accessToken)
+                    
+                    if let profile = result.user.profile {
+                        print("👤 [GoogleAuth] Updating user profile...")
+                        self.userName = profile.name
+                        self.userEmail = profile.email
+                        self.userProfileImageURL = profile.hasImage ? profile.imageURL(withDimension: 200) : nil
+                        
+                        // Save to UserDefaults
+                        let defaults = UserDefaults.standard
+                        defaults.set(profile.name, forKey: self.userNameKey)
+                        defaults.set(profile.email, forKey: self.userEmailKey)
+                        if let url = self.userProfileImageURL?.absoluteString {
+                            defaults.set(url, forKey: self.userProfileImageURLKey)
+                        } else {
+                            defaults.removeObject(forKey: self.userProfileImageURLKey)
                         }
+                        print("✅ [GoogleAuth] User profile updated successfully")
                     }
                 }
             }

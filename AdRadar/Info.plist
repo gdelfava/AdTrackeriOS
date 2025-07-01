@@ -14,12 +14,12 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.879262946985-kbg935ltvf3pfgdoncicgrsr12cqeqcl</string>
+				<string>com.googleusercontent.apps.600528459871-mp7s9ru90tjnkuoc7dbvvr4kfmf7opfc</string>
 			</array>
 		</dict>
 	</array>
 	<key>GIDClientID</key>
-	<string>879262946985-kbg935ltvf3pfgdoncicgrsr12cqeqcl.apps.googleusercontent.com</string>
+	<string>600528459871-mp7s9ru90tjnkuoc7dbvvr4kfmf7opfc.apps.googleusercontent.com</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>google</string>
