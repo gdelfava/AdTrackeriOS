@@ -2,8 +2,9 @@ import Foundation
 import GoogleSignIn
 import Combine
 import Security
+import AuthenticationServices
 
-class AuthViewModel: ObservableObject {
+class AuthViewModel: NSObject, ObservableObject {
     static let shared = AuthViewModel()
     
     @Published var isSignedIn: Bool = false
@@ -13,15 +14,23 @@ class AuthViewModel: ObservableObject {
     @Published var userProfileImageURL: URL? = nil
     @Published var isDemoMode: Bool = false
     
+    // Apple Sign In properties
+    @Published var appleUserID: String? = nil
+    @Published var isAppleSignedIn: Bool = false
+    @Published var isTransitioningToGoogle: Bool = false
+    
     private var cancellables = Set<AnyCancellable>()
     private let keychainService = "com.delteqws.AdRadar"
     private let keychainAccount = "googleAccessToken"
+    private let appleUserIDKey = "appleUserID"
     private let userNameKey = "userName"
     private let userEmailKey = "userEmail"
     private let userProfileImageURLKey = "userProfileImageURL"
     private let isDemoModeKey = "isDemoMode"
     
-    init() {
+    override init() {
+        super.init()
+        
         // Load demo mode state
         self.isDemoMode = UserDefaults.standard.bool(forKey: isDemoModeKey)
         
@@ -30,6 +39,10 @@ class AuthViewModel: ObservableObject {
             setupDemoUser()
             return
         }
+        
+        // Load Apple Sign In state
+        self.appleUserID = UserDefaults.standard.string(forKey: appleUserIDKey)
+        self.isAppleSignedIn = appleUserID != nil
         
         // Load cached values synchronously (these are fast local operations)
         if let token = loadTokenFromKeychain() {
@@ -45,9 +58,14 @@ class AuthViewModel: ObservableObject {
             self.userProfileImageURL = url
         }
         
+        // Check Apple Sign In credential state if Apple user exists
+        if let appleUserID = appleUserID {
+            checkAppleSignInState(for: appleUserID)
+        }
+        
         // Defer Google Sign-In restoration to async method to prevent blocking init
-        Task {
-            await restoreGoogleSignInSession()
+        Task { [weak self] in
+            await self?.restoreGoogleSignInSession()
         }
     }
     
@@ -116,21 +134,46 @@ class AuthViewModel: ObservableObject {
     }
     
     func signIn() {
+        print("🔍 [GoogleAuth] Starting Google Sign-In...")
+        
+        // Check if Google Sign-In is configured
+        guard GIDSignIn.sharedInstance.configuration != nil else {
+            print("❌ [GoogleAuth] Google Sign-In not configured!")
+            DispatchQueue.main.async {
+                self.isTransitioningToGoogle = false
+            }
+            return
+        }
+        
         guard let rootViewController = UIApplication.shared.connectedScenes
                 .compactMap({ $0 as? UIWindowScene })
                 .flatMap({ $0.windows })
                 .first(where: { $0.isKeyWindow })?.rootViewController else {
-            print("No root view controller found")
+            print("❌ [GoogleAuth] No root view controller found")
+            DispatchQueue.main.async {
+                self.isTransitioningToGoogle = false
+            }
             return
         }
+        
+        print("✅ [GoogleAuth] Found root view controller: \(type(of: rootViewController))")
+        
         let scopes = ["https://www.googleapis.com/auth/adsense.readonly", "https://www.googleapis.com/auth/admob.readonly"]
-        print("Requesting scopes: \(scopes)")
+        print("🔑 [GoogleAuth] Requesting scopes: \(scopes)")
+        
         GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController, hint: nil, additionalScopes: scopes) { [weak self] signInResult, error in
+            DispatchQueue.main.async {
+                self?.isTransitioningToGoogle = false
+            }
+            
             if let error = error {
-                print("Google Sign-In error: \(error.localizedDescription)")
+                print("❌ [GoogleAuth] Google Sign-In error: \(error.localizedDescription)")
                 return
             }
-            guard let result = signInResult else { return }
+            guard let result = signInResult else { 
+                print("❌ [GoogleAuth] No sign-in result returned")
+                return 
+            }
             result.user.refreshTokensIfNeeded { auth, error in
                 if let error = error {
                     print("Auth error: \(error.localizedDescription)")
@@ -163,7 +206,13 @@ class AuthViewModel: ObservableObject {
     }
     
     func signOut() {
+        // Sign out of Google
         GIDSignIn.sharedInstance.signOut()
+        
+        // Clear Apple Sign In data
+        appleUserID = nil
+        isAppleSignedIn = false
+        UserDefaults.standard.removeObject(forKey: appleUserIDKey)
         
         // Clear all user data
         self.accessToken = nil
@@ -182,6 +231,105 @@ class AuthViewModel: ObservableObject {
         
         // Clear from Keychain
         deleteTokenFromKeychain()
+    }
+    
+    /// Permanently deletes the user account and all associated data.
+    /// This function performs a comprehensive cleanup of all user data and provides
+    /// guidance for revoking authorization from authentication providers.
+    func deleteAccount() {
+        print("🗑️ [AccountDeletion] Starting account deletion process...")
+        
+        // Sign out of Google
+        GIDSignIn.sharedInstance.signOut()
+        print("✅ [AccountDeletion] Signed out of Google")
+        
+        // Clear Apple Sign In data
+        appleUserID = nil
+        isAppleSignedIn = false
+        UserDefaults.standard.removeObject(forKey: appleUserIDKey)
+        print("✅ [AccountDeletion] Cleared Apple Sign In data")
+        
+        // Clear all user authentication data
+        self.accessToken = nil
+        self.isSignedIn = false
+        self.userName = ""
+        self.userEmail = ""
+        self.userProfileImageURL = nil
+        self.isDemoMode = false
+        self.isTransitioningToGoogle = false
+        
+        // Clear from UserDefaults - comprehensive cleanup
+        let defaults = UserDefaults.standard
+        defaults.removeObject(forKey: userNameKey)
+        defaults.removeObject(forKey: userEmailKey)
+        defaults.removeObject(forKey: userProfileImageURLKey)
+        defaults.removeObject(forKey: isDemoModeKey)
+        defaults.removeObject(forKey: appleUserIDKey)
+        
+        // Clear any other app-specific user preferences that might exist
+        // This ensures no personal data remains on the device
+        let userDefaultsKeys = [
+            "hasSeenOnboarding",
+            "selectedAdNetwork",
+            "lastSyncDate",
+            "userPreferences",
+            "analyticsConsent"
+        ]
+        
+        for key in userDefaultsKeys {
+            defaults.removeObject(forKey: key)
+        }
+        
+        defaults.synchronize()
+        print("✅ [AccountDeletion] Cleared all UserDefaults data")
+        
+        // Clear from Keychain - comprehensive cleanup
+        deleteTokenFromKeychain()
+        
+        // Clear any other potential keychain items
+        let keychainKeys = [
+            "refreshToken",
+            "userCredentials",
+            "encryptedUserData"
+        ]
+        
+        for key in keychainKeys {
+            let query: [String: Any] = [
+                kSecClass as String: kSecClassGenericPassword,
+                kSecAttrService as String: keychainService,
+                kSecAttrAccount as String: key
+            ]
+            SecItemDelete(query as CFDictionary)
+        }
+        
+        print("✅ [AccountDeletion] Cleared all Keychain data")
+        
+        // Clear any cached images or temporary files
+        clearCachedUserData()
+        
+        print("✅ [AccountDeletion] Account deletion completed successfully")
+    }
+    
+    /// Clears any cached user data, images, or temporary files
+    private func clearCachedUserData() {
+        // Clear URL cache that might contain user images
+        URLCache.shared.removeAllCachedResponses()
+        
+        // Clear any temporary files in the app's documents directory
+        if let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            do {
+                let fileURLs = try FileManager.default.contentsOfDirectory(at: documentsPath, includingPropertiesForKeys: nil)
+                for fileURL in fileURLs {
+                    if fileURL.lastPathComponent.contains("user") || fileURL.lastPathComponent.contains("profile") {
+                        try FileManager.default.removeItem(at: fileURL)
+                    }
+                }
+            } catch {
+                print("⚠️ [AccountDeletion] Could not clear cached files: \(error)")
+            }
+        }
+        
+        print("✅ [AccountDeletion] Cleared cached user data")
     }
     
     func requestAdditionalScopes() {
@@ -333,5 +481,130 @@ class AuthViewModel: ObservableObject {
         ]
         
         SecItemDelete(query as CFDictionary)
+    }
+    
+    // MARK: - Apple Sign In Methods
+    
+    func signInWithApple() {
+        let request = ASAuthorizationAppleIDProvider().createRequest()
+        request.requestedScopes = [.fullName, .email]
+        
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        authorizationController.delegate = self
+        authorizationController.presentationContextProvider = self
+        authorizationController.performRequests()
+    }
+    
+    private func checkAppleSignInState(for userID: String) {
+        let provider = ASAuthorizationAppleIDProvider()
+        provider.getCredentialState(forUserID: userID) { [weak self] credentialState, error in
+            DispatchQueue.main.async {
+                switch credentialState {
+                case .authorized:
+                    // Apple ID is still valid
+                    self?.isAppleSignedIn = true
+                case .revoked, .notFound:
+                    // Apple ID has been revoked or not found
+                    self?.handleAppleSignOut()
+                default:
+                    break
+                }
+            }
+        }
+    }
+    
+    private func handleAppleSignOut() {
+        // Clear Apple Sign In data
+        appleUserID = nil
+        isAppleSignedIn = false
+        UserDefaults.standard.removeObject(forKey: appleUserIDKey)
+        
+        // Also sign out of Google to maintain consistency
+        signOut()
+    }
+}
+
+// MARK: - Apple Sign In Delegate Methods
+extension AuthViewModel: ASAuthorizationControllerDelegate {
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+            let userID = appleIDCredential.user
+            
+            // Save Apple user ID
+            appleUserID = userID
+            isAppleSignedIn = true
+            UserDefaults.standard.set(userID, forKey: appleUserIDKey)
+            
+            // Extract user information from Apple ID credential
+            var appleUserName = ""
+            var appleUserEmail = ""
+            
+            if let fullName = appleIDCredential.fullName {
+                let firstName = fullName.givenName ?? ""
+                let lastName = fullName.familyName ?? ""
+                appleUserName = "\(firstName) \(lastName)".trimmingCharacters(in: .whitespaces)
+            }
+            
+            if let email = appleIDCredential.email {
+                appleUserEmail = email
+            }
+            
+            // Store Apple user info temporarily
+            if !appleUserName.isEmpty {
+                self.userName = appleUserName
+                UserDefaults.standard.set(appleUserName, forKey: userNameKey)
+            }
+            
+            if !appleUserEmail.isEmpty {
+                self.userEmail = appleUserEmail
+                UserDefaults.standard.set(appleUserEmail, forKey: userEmailKey)
+            }
+            
+            print("Apple Sign In successful for user: \(userID)")
+            
+            // Set transitioning state and start Google OAuth flow for AdSense access
+            isTransitioningToGoogle = true
+            startGoogleOAuthFlow()
+        }
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        print("Apple Sign In failed: \(error.localizedDescription)")
+        
+        // Reset Apple Sign In state and transitioning state
+        appleUserID = nil
+        isAppleSignedIn = false
+        isTransitioningToGoogle = false
+        UserDefaults.standard.removeObject(forKey: appleUserIDKey)
+    }
+    
+    private func startGoogleOAuthFlow() {
+        print("🚀 [Auth] Starting Google OAuth flow for AdSense access...")
+        print("⏱️ [Auth] Waiting for Apple Sign In UI to dismiss...")
+        
+        // Add a delay to ensure Apple Sign In UI is fully dismissed
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            print("📱 [Auth] Presenting Google OAuth dialog...")
+            self?.signIn() // This will call the existing Google Sign In method
+        }
+        
+        // Add a timeout mechanism in case Google Sign-In hangs
+        DispatchQueue.main.asyncAfter(deadline: .now() + 15.0) { [weak self] in
+            if self?.isTransitioningToGoogle == true {
+                print("⚠️ [Auth] Google OAuth timeout - resetting state")
+                self?.isTransitioningToGoogle = false
+            }
+        }
+    }
+}
+
+// MARK: - Apple Sign In Presentation Context
+extension AuthViewModel: ASAuthorizationControllerPresentationContextProviding {
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            return UIWindow()
+        }
+        return window
     }
 }

@@ -42,7 +42,7 @@ struct WhyGoogleModal: View {
                 .animation(.easeOut(duration: 1.0).delay(0.3), value: animateContent)
                 
                 // Title
-                Text("Why Google Sign-In?")
+                Text("Why Google Access?")
                     .font(.sora(.bold, size: 24))
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.center)
@@ -55,12 +55,12 @@ struct WhyGoogleModal: View {
             // Content sections
             ScrollView {
                 VStack(spacing: 24) {
-                    // Security section
+                    // Apple + Google explanation
                     InfoSection(
-                        icon: "lock.shield",
-                        iconColor: .green,
-                        title: "Secure & Private",
-                        description: "AdRadar uses Google's secure OAuth system to safely access only your AdSense data.",
+                        icon: "person.badge.shield.checkmark",
+                        iconColor: .blue,
+                        title: "Apple ID for Identity",
+                        description: "Your Apple ID securely identifies you and provides basic profile information. No payment details are shared.",
                         animateContent: animateContent,
                         delay: 0.8
                     )
@@ -69,8 +69,8 @@ struct WhyGoogleModal: View {
                     InfoSection(
                         icon: "chart.bar.fill",
                         iconColor: .accentColor,
-                        title: "Real AdSense Data",
-                        description: "We need access to your AdSense account to provide accurate earnings and performance analytics.",
+                        title: "Google for AdSense Data",
+                        description: "Google OAuth provides secure access to your AdSense account data for accurate earnings and performance analytics.",
                         animateContent: animateContent,
                         delay: 1.0
                     )
@@ -80,7 +80,7 @@ struct WhyGoogleModal: View {
                         icon: "hand.raised.fill",
                         iconColor: .purple,
                         title: "No Data Storage",
-                        description: "AdRadar doesn't store your personal information. Data is only used to display your analytics.",
+                        description: "AdRadar doesn't store your personal information. Data is only used to display your analytics and is never shared.",
                         animateContent: animateContent,
                         delay: 1.2
                     )

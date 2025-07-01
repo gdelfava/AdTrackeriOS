@@ -140,6 +140,9 @@ struct SettingsView: View {
         @State private var premiumAppeared = false
         @State private var animateFloatingElements = false
         @State private var showPremiumUpgrade = false
+    @State private var showAccountDeletionConfirmation = false
+    @State private var showAccountDeletionInfo = false
+    @State private var isProcessingDeletion = false
     @Binding var showSlideOverMenu: Bool
     @Binding var selectedTab: Int
     
@@ -340,6 +343,56 @@ struct SettingsView: View {
                                     .contentShape(Rectangle())
                                 }
                                 .buttonStyle(PlainButtonStyle())
+                                
+                                Divider()
+                                    .padding(.leading, 56)
+                                
+                                // Delete Account Button
+                                Button(action: {
+                                    let generator = UIImpactFeedbackGenerator(style: .heavy)
+                                    generator.impactOccurred()
+                                    showAccountDeletionInfo = true
+                                }) {
+                                    HStack(spacing: 16) {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                .fill(Color.red.opacity(0.15))
+                                                .frame(width: 40, height: 40)
+                                            
+                                            Image(systemName: "trash.fill")
+                                                .font(.system(size: 18, weight: .medium))
+                                                .foregroundColor(.red)
+                                        }
+                                        
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text("Delete Account")
+                                                .soraBody()
+                                                .fontWeight(.medium)
+                                                .foregroundColor(.red)
+                                            
+                                            Text("Permanently delete all data")
+                                                .soraCaption()
+                                                .foregroundColor(.secondary)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        if isProcessingDeletion {
+                                            ProgressView()
+                                                .scaleEffect(0.8)
+                                        } else {
+                                            Image(systemName: "chevron.right")
+                                                .font(.caption)
+                                                .fontWeight(.medium)
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 16)
+                                    .contentShape(Rectangle())
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .disabled(isProcessingDeletion)
                             }
                             .background(Color(.secondarySystemGroupedBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
@@ -768,6 +821,34 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showPremiumUpgrade) {
             PremiumUpgradeView()
+        }
+        .sheet(isPresented: $showAccountDeletionInfo) {
+            AccountDeletionInfoSheet(
+                showConfirmation: $showAccountDeletionConfirmation,
+                isProcessingDeletion: $isProcessingDeletion,
+                onConfirmDeletion: {
+                    Task { @MainActor in
+                        isProcessingDeletion = true
+                        try? await Task.sleep(nanoseconds: 500_000_000) // Brief delay for UX
+                        settingsViewModel.deleteAccount(authViewModel: authViewModel)
+                        isProcessingDeletion = false
+                    }
+                }
+            )
+            .environmentObject(authViewModel)
+        }
+        .alert("Confirm Account Deletion", isPresented: $showAccountDeletionConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                Task { @MainActor in
+                    isProcessingDeletion = true
+                    try? await Task.sleep(nanoseconds: 500_000_000) // Brief delay for UX
+                    settingsViewModel.deleteAccount(authViewModel: authViewModel)
+                    isProcessingDeletion = false
+                }
+            }
+        } message: {
+            Text("This action cannot be undone. All your local data will be permanently deleted, and you'll need to revoke authorization from your Apple/Google account settings.")
         }
     }
 }
@@ -1392,6 +1473,291 @@ struct PaymentThresholdRow: View {
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 2
         return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
+}
+
+// MARK: - Account Deletion Sheet
+
+struct AccountDeletionInfoSheet: View {
+    @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var authViewModel: AuthViewModel
+    @Binding var showConfirmation: Bool
+    @Binding var isProcessingDeletion: Bool
+    let onConfirmDeletion: () -> Void
+    
+    @State private var animateContent = false
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 32) {
+                    // Top spacing
+                    Rectangle()
+                        .fill(Color.clear)
+                        .frame(height: 20)
+                    
+                    // Header section
+                    VStack(spacing: 24) {
+                        // Warning icon
+                        ZStack {
+                            Circle()
+                                .fill(Color.red.opacity(0.1))
+                                .frame(width: 120, height: 120)
+                                .scaleEffect(animateContent ? 1.0 : 0.8)
+                                .opacity(animateContent ? 1.0 : 0.0)
+                            
+                            Circle()
+                                .fill(Color.red.opacity(0.15))
+                                .frame(width: 80, height: 80)
+                                .scaleEffect(animateContent ? 1.0 : 0.6)
+                                .opacity(animateContent ? 1.0 : 0.0)
+                            
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.system(size: 36, weight: .semibold))
+                                .foregroundColor(.red)
+                                .scaleEffect(animateContent ? 1.0 : 0.4)
+                                .opacity(animateContent ? 1.0 : 0.0)
+                        }
+                        .animation(.easeOut(duration: 1.2).delay(0.3), value: animateContent)
+                        
+                        VStack(spacing: 16) {
+                            Text("Delete Account")
+                                .font(.sora(.bold, size: 32))
+                                .foregroundColor(.primary)
+                                .opacity(animateContent ? 1.0 : 0.0)
+                                .offset(y: animateContent ? 0 : 30)
+                                .animation(.easeOut(duration: 0.8).delay(0.8), value: animateContent)
+                            
+                            Text("This action will permanently delete all your local data and sign you out")
+                                .font(.sora(.regular, size: 18))
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 20)
+                                .opacity(animateContent ? 1.0 : 0.0)
+                                .offset(y: animateContent ? 0 : 30)
+                                .animation(.easeOut(duration: 0.8).delay(1.0), value: animateContent)
+                        }
+                    }
+                    
+                    // What gets deleted section
+                    VStack(alignment: .leading, spacing: 20) {
+                        AccountDeletionInfoCard(
+                            icon: "iphone.gen3",
+                            iconColor: .blue,
+                            title: "Local Data",
+                            description: "All settings, preferences, and cached data stored on this device will be permanently deleted."
+                        )
+                        
+                        AccountDeletionInfoCard(
+                            icon: "key.fill",
+                            iconColor: .orange,
+                            title: "Authentication Tokens",
+                            description: "Your access tokens and authentication data will be cleared from the device's secure storage."
+                        )
+                        
+                        AccountDeletionInfoCard(
+                            icon: "person.circle.fill",
+                            iconColor: .purple,
+                            title: "Profile Information",
+                            description: "Your name, email, profile picture, and other account details will be removed from the app."
+                        )
+                    }
+                    .padding(.horizontal)
+                    
+                    // Authorization revocation section
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("To Complete Account Deletion")
+                            .font(.sora(.semibold, size: 20))
+                            .foregroundColor(.primary)
+                            .padding(.horizontal)
+                        
+                        VStack(spacing: 16) {
+                            if authViewModel.isAppleSignedIn {
+                                AuthRevocationCard(
+                                    provider: "Apple",
+                                    icon: "applelogo",
+                                    iconColor: .black,
+                                    steps: [
+                                        "Open iPhone Settings",
+                                        "Tap your name at the top",
+                                        "Go to 'Sign-In & Security'",
+                                        "Tap 'Apps Using Apple ID'",
+                                        "Find 'AdRadar' and tap it",
+                                        "Tap 'Stop Using Apple ID'"
+                                    ]
+                                )
+                            }
+                            
+                            if authViewModel.isSignedIn && !authViewModel.isAppleSignedIn {
+                                AuthRevocationCard(
+                                    provider: "Google",
+                                    icon: "globe",
+                                    iconColor: .blue,
+                                    steps: [
+                                        "Visit myaccount.google.com",
+                                        "Go to 'Security' section",
+                                        "Click 'Third-party apps with account access'",
+                                        "Find 'AdRadar' in the list",
+                                        "Click 'Remove Access'"
+                                    ]
+                                )
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                    
+                    // Action buttons
+                    VStack(spacing: 16) {
+                        Button(action: {
+                            let generator = UIImpactFeedbackGenerator(style: .heavy)
+                            generator.impactOccurred()
+                            presentationMode.wrappedValue.dismiss()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                showConfirmation = true
+                            }
+                        }) {
+                            HStack(spacing: 12) {
+                                if isProcessingDeletion {
+                                    ProgressView()
+                                        .scaleEffect(0.9)
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                } else {
+                                    Image(systemName: "trash.fill")
+                                        .font(.system(size: 16, weight: .semibold))
+                                }
+                                
+                                Text(isProcessingDeletion ? "Deleting Account..." : "Delete My Account")
+                                    .font(.sora(.semibold, size: 17))
+                            }
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 56)
+                            .background(Color.red)
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .shadow(color: Color.red.opacity(0.3), radius: 12, x: 0, y: 4)
+                        }
+                        .disabled(isProcessingDeletion)
+                        
+                        Button("Cancel") {
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                        .font(.sora(.medium, size: 16))
+                        .foregroundColor(.secondary)
+                        .frame(height: 44)
+                    }
+                    .padding(.horizontal)
+                    
+                    Spacer(minLength: 50)
+                }
+            }
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                    .font(.sora(.medium, size: 16))
+                    .foregroundColor(.primary)
+                }
+            }
+            .onAppear {
+                withAnimation(.easeOut(duration: 0.5).delay(0.1)) {
+                    animateContent = true
+                }
+            }
+        }
+    }
+}
+
+struct AccountDeletionInfoCard: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    let description: String
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 16) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(iconColor.opacity(0.1))
+                    .frame(width: 48, height: 48)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 22, weight: .medium))
+                    .foregroundColor(iconColor)
+            }
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+                    .font(.sora(.semibold, size: 17))
+                    .foregroundColor(.primary)
+                
+                Text(description)
+                    .font(.sora(.regular, size: 15))
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            
+            Spacer()
+        }
+        .padding(20)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
+    }
+}
+
+struct AuthRevocationCard: View {
+    let provider: String
+    let icon: String
+    let iconColor: Color
+    let steps: [String]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 12) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(iconColor.opacity(0.1))
+                        .frame(width: 40, height: 40)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(iconColor)
+                }
+                
+                Text("Revoke \(provider) Authorization")
+                    .font(.sora(.semibold, size: 16))
+                    .foregroundColor(.primary)
+                
+                Spacer()
+            }
+            
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(Array(steps.enumerated()), id: \.offset) { index, step in
+                    HStack(alignment: .top, spacing: 12) {
+                        Text("\(index + 1)")
+                            .font(.sora(.semibold, size: 14))
+                            .foregroundColor(.white)
+                            .frame(width: 24, height: 24)
+                            .background(iconColor)
+                            .clipShape(Circle())
+                        
+                        Text(step)
+                            .font(.sora(.regular, size: 14))
+                            .foregroundColor(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                        
+                        Spacer()
+                    }
+                }
+            }
+        }
+        .padding(20)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
     }
 }
 

@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Combine
+import GoogleSignIn
 
 @main
 struct AdRadar_App: App {
@@ -24,6 +25,8 @@ struct AdRadar_App: App {
         setupBackgroundDataManager()
         // Initialize StoreKit
         setupStoreKit()
+        // Configure Google Sign In
+        configureGoogleSignIn()
     }
     
     private func setupAppEnvironment() {
@@ -75,6 +78,38 @@ struct AdRadar_App: App {
         }
     }
     
+    private func configureGoogleSignIn() {
+        print("🔧 [App] Configuring Google Sign-In...")
+        
+        guard let path = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
+              let plist = NSDictionary(contentsOfFile: path),
+              let clientId = plist["CLIENT_ID"] as? String else {
+            // Fall back to Info.plist if GoogleService-Info.plist doesn't exist
+            guard let clientId = Bundle.main.object(forInfoDictionaryKey: "GIDClientID") as? String else {
+                print("❌ [App] No Google Sign-In client ID found in GoogleService-Info.plist or Info.plist")
+                print("📋 [App] Please ensure you have:")
+                print("   1. GoogleService-Info.plist with CLIENT_ID")
+                print("   2. OR GIDClientID in Info.plist")
+                return
+            }
+            print("📱 [App] Using client ID from Info.plist: \(clientId)")
+            GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientId)
+            print("✅ [App] Google Sign-In configured successfully from Info.plist")
+            return
+        }
+        
+        print("📁 [App] Using client ID from GoogleService-Info.plist: \(clientId)")
+        GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientId)
+        print("✅ [App] Google Sign-In configured successfully from GoogleService-Info.plist")
+        
+        // Verify configuration
+        if GIDSignIn.sharedInstance.configuration != nil {
+            print("✅ [App] Google Sign-In configuration verified")
+        } else {
+            print("❌ [App] Google Sign-In configuration failed")
+        }
+    }
+    
     private func logInitializationStatus() {
         #if DEBUG
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -121,6 +156,10 @@ struct AdRadar_App: App {
                     Task { @MainActor in
                         BackgroundDataManager.shared.handleAppEnterBackground()
                     }
+                }
+                .onOpenURL { url in
+                    // Handle Google Sign In URL
+                    GIDSignIn.sharedInstance.handle(url)
                 }
         }
     }

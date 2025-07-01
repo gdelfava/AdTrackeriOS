@@ -120,6 +120,39 @@ class SettingsViewModel: ObservableObject {
         self.isSignedOut = true
     }
     
+    func deleteAccount(authViewModel: AuthViewModel) {
+        // Clear all SettingsViewModel data
+        self.publisherId = ""
+        self.publisherName = ""
+        self.timeZone = ""
+        self.currency = ""
+        self.paymentThreshold = 100.0
+        self.demoPaymentThreshold = 100.0
+        self.showAdMobApps = false
+        
+        // Clear all relevant UserDefaults keys used by SettingsViewModel
+        let settingsKeys = [
+            "publisherId",
+            "publisherName",
+            "timeZone", 
+            "currency",
+            "paymentThreshold",
+            "demoPaymentThreshold",
+            "showAdMobApps"
+        ]
+        
+        for key in settingsKeys {
+            UserDefaults.standard.removeObject(forKey: key)
+        }
+        
+        UserDefaults.standard.synchronize()
+        
+        // Perform comprehensive account deletion through AuthViewModel
+        authViewModel.deleteAccount()
+        
+        self.isSignedOut = true
+    }
+    
     func updatePaymentThreshold(_ threshold: Double) {
         if authViewModel.isDemoMode {
             self.demoPaymentThreshold = threshold

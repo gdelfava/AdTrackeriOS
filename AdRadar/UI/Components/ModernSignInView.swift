@@ -106,7 +106,74 @@ struct ModernSignInView: View {
                             
                             // Sign in section
                             VStack(spacing: 16) {
-                                // Modern Google Sign In Button
+                                // Apple Sign In Button or Transition Loading
+                                if authViewModel.isTransitioningToGoogle {
+                                    // Transition loading state
+                                    VStack(spacing: 12) {
+                                        HStack(spacing: 16) {
+                                            ProgressView()
+                                                .scaleEffect(1.2)
+                                            
+                                            Text("Connecting to Google...")
+                                                .font(.sora(.semibold, size: 17))
+                                                .foregroundColor(.primary)
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 56)
+                                        .background(Color(.secondarySystemGroupedBackground))
+                                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                        .shadow(color: Color.primary.opacity(0.1), radius: 12, x: 0, y: 4)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                                .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                        )
+                                        
+                                        Text("Please wait while we connect to your Google account for AdSense access")
+                                            .font(.sora(.regular, size: 14))
+                                            .foregroundColor(.secondary)
+                                            .multilineTextAlignment(.center)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                        
+                                        // Cancel button for if it gets stuck
+                                        Button("Cancel") {
+                                            authViewModel.isTransitioningToGoogle = false
+                                        }
+                                        .font(.sora(.medium, size: 14))
+                                        .foregroundColor(.red)
+                                        .padding(.top, 8)
+                                    }
+                                } else {
+                                    // Apple Sign In Button
+                                    AppleSignInButton(action: {
+                                        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                                        impactFeedback.impactOccurred()
+                                        authViewModel.signInWithApple()
+                                    })
+                                    .scaleEffect(showSignInButton ? 1.0 : 0.8)
+                                    .opacity(showSignInButton ? 1.0 : 0.0)
+                                    .animation(.easeOut(duration: 0.6).delay(1.4), value: showSignInButton)
+                                }
+                                
+                                // Divider with "OR"
+                                HStack {
+                                    Rectangle()
+                                        .fill(Color.primary.opacity(0.2))
+                                        .frame(height: 1)
+                                    
+                                    Text("OR")
+                                        .font(.sora(.medium, size: 14))
+                                        .foregroundColor(.secondary)
+                                        .padding(.horizontal, 16)
+                                    
+                                    Rectangle()
+                                        .fill(Color.primary.opacity(0.2))
+                                        .frame(height: 1)
+                                }
+                                .scaleEffect(showSignInButton ? 1.0 : 0.8)
+                                .opacity(showSignInButton ? 1.0 : 0.0)
+                                .animation(.easeOut(duration: 0.6).delay(1.45), value: showSignInButton)
+                                
+                                // Google Sign In Button (for users who prefer direct Google auth)
                                 Button(action: {
                                     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
                                     impactFeedback.impactOccurred()
@@ -136,7 +203,7 @@ struct ModernSignInView: View {
                                 .buttonStyle(ModernButtonStyle())
                                 .scaleEffect(showSignInButton ? 1.0 : 0.8)
                                 .opacity(showSignInButton ? 1.0 : 0.0)
-                                .animation(.easeOut(duration: 0.6).delay(1.4), value: showSignInButton)
+                                .animation(.easeOut(duration: 0.6).delay(1.5), value: showSignInButton)
                                 
                                 // Demo Mode Button
                                 Button(action: {
@@ -161,7 +228,7 @@ struct ModernSignInView: View {
                                 .buttonStyle(ModernButtonStyle())
                                 .scaleEffect(showSignInButton ? 1.0 : 0.8)
                                 .opacity(showSignInButton ? 1.0 : 0.0)
-                                .animation(.easeOut(duration: 0.6).delay(1.5), value: showSignInButton)
+                                .animation(.easeOut(duration: 0.6).delay(1.55), value: showSignInButton)
                                 
                                 // Info text
                                 Button(action: { 
@@ -172,13 +239,13 @@ struct ModernSignInView: View {
                                     HStack(spacing: 6) {
                                         Image(systemName: "info.circle")
                                             .font(.system(size: 14, weight: .medium))
-                                        Text("Why Google Sign-In?")
+                                        Text("Why do I need Google access?")
                                             .font(.sora(.medium, size: 14))
                                     }
                                     .foregroundColor(.secondary)
                                 }
                                 .opacity(showSignInButton ? 1.0 : 0.0)
-                                .animation(.easeOut(duration: 0.6).delay(1.6), value: showSignInButton)
+                                .animation(.easeOut(duration: 0.6).delay(1.65), value: showSignInButton)
                             }
                             .padding(.horizontal, 32)
                         }
