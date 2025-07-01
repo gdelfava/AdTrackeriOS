@@ -80,7 +80,7 @@
           "locale" : "en_US"
         }
       ],
-      "name" : "Pro Subscriptions",
+      "name" : "AdRadar Pro Access",
       "subscriptions" : [
         {
           "adHocOffers" : [
@@ -101,7 +101,7 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.delteqis.adradar.premium_monthly_sub",
+          "productID" : "com.delteqis.adradar.pro_monthly_sub",
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "Pro Monthly Subscription",
           "subscriptionGroupID" : "21521172",
@@ -129,7 +129,7 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.delteqis.adradar.premium_yearly_sub",
+          "productID" : "com.delteqis.adradar.pro_yearly_sub",
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Pro Yearly Subscription",
           "subscriptionGroupID" : "21521172",
