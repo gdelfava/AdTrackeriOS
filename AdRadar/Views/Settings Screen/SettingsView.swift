@@ -810,7 +810,7 @@ struct SettingsView: View {
             premiumAppeared = false
         }
         .sheet(isPresented: $isShareSheetPresented) {
-            ShareSheet(activityItems: ["Check out AdRadar! https://apps.apple.com/app/adradar-ad-revenue-tracker/id6747883093"])
+            ShareSheet(activityItems: [URL(string: "https://apps.apple.com/app/adradar-ad-revenue-tracker/id6747883093")!])
                 .presentationDetents([.medium])
                 .presentationDragIndicator(.visible)
         }
@@ -1056,6 +1056,8 @@ struct ShareSheet: UIViewControllerRepresentable {
     
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
+
+
 
 struct WidgetSupportSheet: View {
     @Environment(\.presentationMode) var presentationMode
