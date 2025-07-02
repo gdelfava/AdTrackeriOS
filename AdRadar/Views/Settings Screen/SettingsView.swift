@@ -2,6 +2,7 @@ import SwiftUI
 import UIKit
 import MessageUI
 import WebKit
+import StoreKit
 
 // Enhanced Toast View with modern design
 struct Toast: View {
@@ -410,7 +411,7 @@ struct SettingsView: View {
                                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                                 .fill(Color.accentColor.opacity(0.1))
                                                 .frame(width: 40, height: 40)
-                                            
+                                                
                                             Image(systemName: "crown.fill")
                                                 .font(.system(size: 18, weight: .medium))
                                                 .foregroundColor(.accentColor)
@@ -694,6 +695,34 @@ struct SettingsView: View {
                                     .padding(.leading, 56)
                                 
                                 ModernSettingsRow(
+                                    icon: "square.and.arrow.up.fill",
+                                    iconColor: .indigo,
+                                    title: "Share AdRadar",
+                                    subtitle: "Tell others about the app",
+                                    showChevron: true
+                                ) {
+                                    isShareSheetPresented = true
+                                }
+                                
+                                Divider()
+                                    .padding(.leading, 56)
+                                
+                                ModernSettingsRow(
+                                    icon: "star.fill",
+                                    iconColor: .yellow,
+                                    title: "Rate AdRadar",
+                                    subtitle: "Leave a review on the App Store",
+                                    showChevron: true
+                                ) {
+                                    if let writeReviewURL = URL(string: "https://apps.apple.com/app/id6747883093?action=write-review") {
+                                        UIApplication.shared.open(writeReviewURL, options: [:], completionHandler: nil)
+                                    }
+                                }
+                                
+                                Divider()
+                                    .padding(.leading, 56)
+                                
+                                ModernSettingsRow(
                                     icon: "doc.text.fill",
                                     iconColor: .purple,
                                     title: "Terms & Privacy",
@@ -781,7 +810,9 @@ struct SettingsView: View {
             premiumAppeared = false
         }
         .sheet(isPresented: $isShareSheetPresented) {
-            ShareSheet(activityItems: ["Check out AdRadar for AdSense! https://apps.apple.com/app/add own id here"])
+            ShareSheet(activityItems: ["Check out AdRadar! https://apps.apple.com/app/adradar-ad-revenue-tracker/id6747883093"])
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $isWidgetSupportSheetPresented) {
             WidgetSupportSheet()
@@ -807,7 +838,7 @@ struct SettingsView: View {
                         .soraTitle2()
                         .fontWeight(.bold)
                     
-                    Text("Email is not configured on this device. Please contact us directly at apps@delteqis.co.za")
+                    Text("Email is not configured on this device. Please contact us directly at apps@delteqis.com")
                         .soraBody()
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -1187,7 +1218,7 @@ struct TermsAndPrivacySheet: View {
     
     var body: some View {
         NavigationView {
-            WebView(url: URL(string: "https://www.notion.so/AdRadar-Terms-Privacy-Policy-21539fba0e268090a327da6296c3c99a?source=copy_link")!)
+            WebView(url: URL(string: "https://adradar.delteqis.com/terms-privacy-policy")!)
                 .navigationTitle("Terms & Privacy Policy")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
