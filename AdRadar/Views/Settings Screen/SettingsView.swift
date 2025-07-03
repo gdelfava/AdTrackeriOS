@@ -819,7 +819,7 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $isMailSheetPresented) {
             if MFMailComposeViewController.canSendMail() {
-                MailView(toRecipients: ["support@adradar.app"], subject: "AdRadar Feedback", body: "") { result in
+                MailView(toRecipients: ["apps@delteqis.com"], subject: "AdRadar Feedback", body: "") { result in
                     switch result {
                     case .success:
                         print("Email sent successfully")
