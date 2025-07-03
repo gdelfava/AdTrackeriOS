@@ -480,7 +480,7 @@ struct SettingsView: View {
                                     }
                                     .buttonStyle(PlainButtonStyle())
                                 } else {
-                                    // Upgrade to Premium
+                                    // Upgrade to Pro
                                     Button(action: {
                                         showPremiumUpgrade = true
                                     }) {
@@ -496,7 +496,7 @@ struct SettingsView: View {
                                             }
                                             
                                             VStack(alignment: .leading, spacing: 2) {
-                                                Text("Upgrade to Premium")
+                                                Text("Upgrade to Pro")
                                                     .soraBody()
                                                     .fontWeight(.medium)
                                                     .foregroundColor(.primary)
@@ -508,13 +508,13 @@ struct SettingsView: View {
                                             
                                             Spacer()
                                             
-                                            Text("NEW")
+                                            Text("Free Trial")
                                                 .soraCaption()
                                                 .fontWeight(.bold)
                                                 .foregroundColor(.white)
                                                 .padding(.horizontal, 8)
                                                 .padding(.vertical, 4)
-                                                .background(Color.accentColor)
+                                                .background(Color.green)
                                                 .clipShape(Capsule())
                                         }
                                         .padding(.horizontal, 20)

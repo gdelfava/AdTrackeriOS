@@ -17,7 +17,15 @@ struct PremiumFeatureGate<Content: View>: View {
             if authViewModel.isDemoMode {
                 content()
             } else if premiumStatusManager.hasFeature(feature) {
-                content()
+                VStack(spacing: 0) {
+                    // Show trial banner if user is in trial and feature is accessed
+                    if premiumStatusManager.isInTrialPeriod && premiumStatusManager.isTrialExpiringSoon() {
+                        TrialExpiryWarning()
+                            .padding(.bottom, 8)
+                    }
+                    
+                    content()
+                }
             } else {
                 // Show locked content with upgrade prompt
                 ZStack {
@@ -47,13 +55,13 @@ struct PremiumFeatureGate<Content: View>: View {
                                 .fontWeight(.bold)
                                 .multilineTextAlignment(.center)
                             
-                            Text("Upgrade to Premium to unlock this feature")
+                            Text("Start your 3-day free trial to unlock this feature")
                                 .soraBody()
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
                         }
                         
-                        Button("Upgrade Now") {
+                        Button("Start Free Trial") {
                             premiumStatusManager.trackFeatureUsage(feature)
                             showUpgradeSheet = true
                         }
@@ -182,6 +190,119 @@ extension View {
             if isVisible {
                 PremiumBadge()
             }
+        }
+    }
+}
+
+// MARK: - Trial Status Banner
+
+struct TrialStatusBanner: View {
+    @EnvironmentObject private var premiumStatusManager: PremiumStatusManager
+    @State private var showUpgradeSheet = false
+    
+    var body: some View {
+        if premiumStatusManager.isInTrialPeriod {
+            VStack(spacing: 12) {
+                HStack {
+                    Image(systemName: "timer")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.green)
+                    
+                    Text("Free Trial")
+                        .soraSubheadline()
+                        .fontWeight(.bold)
+                        .foregroundColor(.green)
+                    
+                    Spacer()
+                    
+                    Text(premiumStatusManager.trialTimeRemaining())
+                        .soraCaption()
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                    
+                    if premiumStatusManager.isTrialExpiringSoon() {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 12))
+                            .foregroundColor(.orange)
+                    }
+                }
+                
+                if premiumStatusManager.isTrialExpiringSoon() {
+                    HStack {
+                        Text("Trial ending soon. Subscribe to continue using premium features.")
+                            .soraCaption()
+                            .foregroundColor(.orange)
+                            .multilineTextAlignment(.leading)
+                        
+                        Spacer()
+                        
+                        Button("Subscribe") {
+                            showUpgradeSheet = true
+                        }
+                        .soraCaption()
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.orange)
+                        .cornerRadius(8)
+                    }
+                }
+            }
+            .padding(12)
+            .background(Color.green.opacity(0.1))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.green.opacity(0.3), lineWidth: 1)
+            )
+            .cornerRadius(10)
+            .sheet(isPresented: $showUpgradeSheet) {
+                PremiumUpgradeView()
+            }
+        }
+    }
+}
+
+// MARK: - Trial Expiry Warning
+
+struct TrialExpiryWarning: View {
+    @EnvironmentObject private var premiumStatusManager: PremiumStatusManager
+    @State private var showUpgradeSheet = false
+    
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 12))
+                .foregroundColor(.orange)
+            
+            Text("Trial expires in \(premiumStatusManager.trialTimeRemaining().lowercased())")
+                .soraCaption()
+                .foregroundColor(.orange)
+                .fontWeight(.medium)
+            
+            Spacer()
+            
+            Button("Subscribe") {
+                showUpgradeSheet = true
+            }
+            .soraCaption()
+            .fontWeight(.semibold)
+            .foregroundColor(.white)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 4)
+            .background(Color.orange)
+            .cornerRadius(6)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color.orange.opacity(0.1))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.orange.opacity(0.3), lineWidth: 1)
+        )
+        .cornerRadius(8)
+        .sheet(isPresented: $showUpgradeSheet) {
+            PremiumUpgradeView()
         }
     }
 }

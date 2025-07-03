@@ -7,6 +7,7 @@ import GoogleSignIn
 /// Features animated cards, sections, and error handling.
 struct SummaryView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
+    @EnvironmentObject private var premiumStatusManager: PremiumStatusManager
     @StateObject private var viewModel: SummaryViewModel
     @State private var cardAppearances: [Bool] = Array(repeating: false, count: 6)
     @State private var animateFloatingElements = false
@@ -82,6 +83,9 @@ struct SummaryView: View {
                                     .padding(.horizontal, 16)
                                 }
                                 .padding(.top, 8)
+                                
+                                // Trial Status Banner
+                                trialStatusSection
                                 
                                 // RECENT SECTION - Yesterday & Last 7 Days
                                 VStack(spacing: 16) {
@@ -317,6 +321,16 @@ struct SummaryView: View {
                     .soraBody()
                     .padding()
             }
+        }
+    }
+    
+    // MARK: - Trial Status Section
+    @ViewBuilder
+    private var trialStatusSection: some View {
+        if premiumStatusManager.isInTrialPeriod {
+            TrialStatusBanner()
+                .padding(.horizontal, 20)
+                .padding(.vertical, 8)
         }
     }
     

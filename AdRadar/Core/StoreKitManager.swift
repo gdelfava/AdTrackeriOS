@@ -167,33 +167,35 @@ public class StoreKitManager: ObservableObject {
     
     func updateSubscriptionStatus() async {
         do {
-            guard let product = products.first(where: { $0.subscription != nil }),
-                  let subscription = product.subscription else {
-                return
-            }
-            
-            let statuses = try await subscription.status
+            // Get all subscription products to check their status
+            let subscriptionProducts = products.filter { $0.subscription != nil }
             
             var highestStatus: Product.SubscriptionInfo.Status?
             var highestRenewalState: RenewalState?
             
-            for status in statuses {
-                switch status.state {
-                case .subscribed, .inGracePeriod, .inBillingRetryPeriod:
-                    let renewalInfo = try checkVerified(status.renewalInfo)
-                    let transaction = try checkVerified(status.transaction)
-                    
-                    if highestStatus == nil {
-                        highestStatus = status
-                        highestRenewalState = RenewalState(
-                            transaction: transaction,
-                            renewalInfo: renewalInfo
-                        )
+            for product in subscriptionProducts {
+                guard let subscription = product.subscription else { continue }
+                
+                let statuses = try await subscription.status
+                
+                for status in statuses {
+                    switch status.state {
+                    case .subscribed, .inGracePeriod, .inBillingRetryPeriod:
+                        let renewalInfo = try checkVerified(status.renewalInfo)
+                        let transaction = try checkVerified(status.transaction)
+                        
+                        if highestStatus == nil {
+                            highestStatus = status
+                            highestRenewalState = RenewalState(
+                                transaction: transaction,
+                                renewalInfo: renewalInfo
+                            )
+                        }
+                    case .revoked, .expired:
+                        continue
+                    default:
+                        break
                     }
-                case .revoked, .expired:
-                    continue
-                default:
-                    break
                 }
             }
             
@@ -251,5 +253,24 @@ public struct RenewalState {
     
     var expirationDate: Date? {
         transaction.expirationDate
+    }
+    
+    var isInTrialPeriod: Bool {
+        // Check if this is a trial period by examining the transaction
+        guard let expirationDate = transaction.expirationDate else {
+            return false
+        }
+        
+        // purchaseDate is not optional in StoreKit 2
+        let purchaseDate = transaction.purchaseDate
+        
+        // For a 3-day trial, check if the duration is approximately 3 days
+        let timeInterval = expirationDate.timeIntervalSince(purchaseDate)
+        let isTrialDuration = timeInterval <= (3 * 24 * 60 * 60 + 3600) // 3 days + 1 hour buffer
+        
+        // Also check if we're currently within the subscription period
+        let isCurrentlyActive = expirationDate > Date()
+        
+        return isTrialDuration && isCurrentlyActive
     }
 } 

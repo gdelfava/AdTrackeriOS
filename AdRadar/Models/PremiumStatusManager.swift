@@ -10,6 +10,9 @@ class PremiumStatusManager: ObservableObject {
     @Published var hasRemovedAds: Bool = false
     @Published var premiumFeatures: Set<PremiumFeature> = []
     @Published var subscriptionStatus: SubscriptionStatus?
+    @Published var isInTrialPeriod: Bool = false
+    @Published var trialDaysRemaining: Int = 0
+    @Published var trialExpiryDate: Date?
     
     private let storeKitManager = StoreKitManager.shared
     private var cancellables = Set<AnyCancellable>()
@@ -80,6 +83,7 @@ class PremiumStatusManager: ObservableObject {
         case inGracePeriod
         case inBillingRetryPeriod
         case revoked
+        case trial
         case none
         
         var displayName: String {
@@ -94,6 +98,8 @@ class PremiumStatusManager: ObservableObject {
                 return "Billing Retry"
             case .revoked:
                 return "Revoked"
+            case .trial:
+                return "Free Trial"
             case .none:
                 return "None"
             }
@@ -101,7 +107,7 @@ class PremiumStatusManager: ObservableObject {
         
         var isValid: Bool {
             switch self {
-            case .active, .inGracePeriod, .inBillingRetryPeriod:
+            case .active, .inGracePeriod, .inBillingRetryPeriod, .trial:
                 return true
             case .expired, .revoked, .none:
                 return false
@@ -134,11 +140,14 @@ class PremiumStatusManager: ObservableObject {
     }
     
     func updatePremiumStatus() {
-        // Check if user has active premium subscription
-        isPremiumUser = storeKitManager.hasActivePremiumSubscription()
+        // Update trial status first
+        updateTrialStatus()
+        
+        // Check if user has active premium subscription or is in trial
+        isPremiumUser = storeKitManager.hasActivePremiumSubscription() || isInTrialPeriod
         
         // Check if user has removed ads
-        hasRemovedAds = storeKitManager.hasRemovedAds()
+        hasRemovedAds = storeKitManager.hasRemovedAds() || isPremiumUser
         
         // Update premium features based on purchases
         updatePremiumFeatures()
@@ -147,15 +156,57 @@ class PremiumStatusManager: ObservableObject {
         updateSubscriptionStatus()
     }
     
+    private func updateTrialStatus() {
+        guard let renewalState = storeKitManager.subscriptionStatus else {
+            isInTrialPeriod = false
+            trialDaysRemaining = 0
+            trialExpiryDate = nil
+            return
+        }
+        
+        // Check if this is a trial period
+        let transaction = renewalState.transaction
+        let _ = renewalState.renewalInfo // Acknowledge but don't use
+        
+        // Trial period is when:
+        // 1. Transaction has an introductory offer
+        // 2. User hasn't been charged yet (transaction amount is 0 or nil for trial)
+        // 3. Subscription is active but hasn't converted to paid
+        
+        if let expirationDate = transaction.expirationDate {
+            // purchaseDate is not optional in StoreKit 2
+            let purchaseDate = transaction.purchaseDate
+            
+            // Check if this transaction represents a trial
+            // For StoreKit 2, we need to check if the user is in the introductory offer period
+            let timeInterval = expirationDate.timeIntervalSince(purchaseDate)
+            let isTrialDuration = timeInterval <= (3 * 24 * 60 * 60 + 3600) // 3 days + 1 hour buffer
+            
+            if isTrialDuration && expirationDate > Date() {
+                isInTrialPeriod = true
+                trialExpiryDate = expirationDate
+                trialDaysRemaining = max(0, Calendar.current.dateComponents([.day], from: Date(), to: expirationDate).day ?? 0)
+            } else {
+                isInTrialPeriod = false
+                trialDaysRemaining = 0
+                trialExpiryDate = nil
+            }
+        } else {
+            isInTrialPeriod = false
+            trialDaysRemaining = 0
+            trialExpiryDate = nil
+        }
+    }
+    
     private func updatePremiumFeatures() {
         var features: Set<PremiumFeature> = []
         
         if isPremiumUser {
-            // Premium subscription includes all features
+            // Premium subscription or trial includes all features
             features = Set(PremiumFeature.allCases)
         } else {
-            // Check individual purchases
-            if storeKitManager.isPurchased("com.delteqis.adradar.pro_monthly") {
+            // Check individual purchases (keeping existing logic for non-subscription purchases)
+            if storeKitManager.isPurchased("com.delteqis.adradar.pro_monthly_sub") {
                 features.insert(.adFree)
             }
         }
@@ -172,6 +223,8 @@ class PremiumStatusManager: ObservableObject {
         // Check if subscription is revoked
         if renewalState.transaction.revocationDate != nil {
             subscriptionStatus = .revoked
+        } else if isInTrialPeriod {
+            subscriptionStatus = .trial
         } else if renewalState.isActive {
             subscriptionStatus = .active
         } else {
@@ -186,7 +239,7 @@ class PremiumStatusManager: ObservableObject {
         if AuthViewModel.shared.isDemoMode {
             return true
         }
-        // For real users, check if they have purchased the feature
+        // For real users, check if they have purchased the feature OR are in trial
         return premiumFeatures.contains(feature)
     }
     
@@ -217,21 +270,21 @@ class PremiumStatusManager: ObservableObject {
     // MARK: - Purchase Methods
     
     func purchasePremiumMonthly() async throws {
-        guard let product = storeKitManager.products.first(where: { $0.id == "com.delteqis.adradar.premium_monthly_sub" }) else {
+        guard let product = storeKitManager.products.first(where: { $0.id == "com.delteqis.adradar.pro_monthly_sub" }) else {
             throw StoreKitManager.StoreKitError.productNotAvailable
         }
         try await storeKitManager.purchase(product)
     }
     
     func purchasePremiumYearly() async throws {
-        guard let product = storeKitManager.products.first(where: { $0.id == "com.delteqis.adradar.premium_yearly_sub" }) else {
+        guard let product = storeKitManager.products.first(where: { $0.id == "com.delteqis.adradar.pro_yearly_sub" }) else {
             throw StoreKitManager.StoreKitError.productNotAvailable
         }
         try await storeKitManager.purchase(product)
     }
     
     func purchaseRemoveAds() async throws {
-        guard let product = storeKitManager.products.first(where: { $0.id == "com.delteqis.adradar.pro_monthly" }) else {
+        guard let product = storeKitManager.products.first(where: { $0.id == "com.delteqis.adradar.pro_monthly_sub" }) else {
             throw StoreKitManager.StoreKitError.productNotAvailable
         }
         try await storeKitManager.purchase(product)
@@ -259,6 +312,43 @@ class PremiumStatusManager: ObservableObject {
         }
     }
     
+    // MARK: - Trial Helper Methods
+    
+    func trialTimeRemaining() -> String {
+        guard isInTrialPeriod, let expiryDate = trialExpiryDate else {
+            return ""
+        }
+        
+        let now = Date()
+        let timeInterval = expiryDate.timeIntervalSince(now)
+        
+        if timeInterval <= 0 {
+            return "Trial Expired"
+        }
+        
+        let hours = Int(timeInterval) / 3600
+        let days = hours / 24
+        let remainingHours = hours % 24
+        
+        if days > 0 {
+            return "\(days) day\(days == 1 ? "" : "s") remaining"
+        } else if remainingHours > 0 {
+            return "\(remainingHours) hour\(remainingHours == 1 ? "" : "s") remaining"
+        } else {
+            let minutes = Int(timeInterval) / 60
+            return "\(minutes) minute\(minutes == 1 ? "" : "s") remaining"
+        }
+    }
+    
+    func isTrialExpiringSoon() -> Bool {
+        guard isInTrialPeriod, let expiryDate = trialExpiryDate else {
+            return false
+        }
+        
+        let timeRemaining = expiryDate.timeIntervalSince(Date())
+        return timeRemaining <= (24 * 60 * 60) // 1 day
+    }
+    
     // MARK: - Helper Methods
     
     func formattedSubscriptionStatus() -> String {
@@ -266,7 +356,9 @@ class PremiumStatusManager: ObservableObject {
         
         var statusText = status.displayName
         
-        if let expirationDate = subscriptionExpirationDate {
+        if isInTrialPeriod {
+            statusText += " (\(trialTimeRemaining()))"
+        } else if let expirationDate = subscriptionExpirationDate {
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
             statusText += " (expires: \(formatter.string(from: expirationDate)))"
@@ -279,19 +371,25 @@ class PremiumStatusManager: ObservableObject {
         return !hasFeature(feature) && !isPremiumUser
     }
     
+    func shouldShowTrialUpgradePrompt() -> Bool {
+        return isInTrialPeriod && isTrialExpiringSoon()
+    }
+    
     // MARK: - Usage Analytics
     
     func trackFeatureUsage(_ feature: PremiumFeature) {
         // Track feature usage for analytics
         #if DEBUG
-        print("📊 Feature used: \(feature.displayName) - Access: \(hasFeature(feature) ? "Granted" : "Denied")")
+        print("📊 Feature used: \(feature.displayName) - Access: \(hasFeature(feature) ? "Granted" : "Denied") - Trial: \(isInTrialPeriod)")
         #endif
         
         // You can integrate with your analytics service here
         // Analytics.track("feature_usage", parameters: [
         //     "feature": feature.rawValue,
         //     "access_granted": hasFeature(feature),
-        //     "is_premium": isPremiumUser
+        //     "is_premium": isPremiumUser,
+        //     "is_trial": isInTrialPeriod,
+        //     "trial_days_remaining": trialDaysRemaining
         // ])
     }
 } 

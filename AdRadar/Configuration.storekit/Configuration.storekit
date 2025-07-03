@@ -121,7 +121,11 @@
           "familyShareable" : false,
           "groupNumber" : 2,
           "internalID" : "6736166449",
-          "introductoryOffer" : null,
+          "introductoryOffer" : {
+            "internalID" : "318384C4",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P3D"
+          },
           "localizations" : [
             {
               "description" : "Yearly subscription for premium features at a discounted rate",

@@ -3,6 +3,7 @@ import StoreKit
 
 struct PremiumUpgradeView: View {
     @StateObject private var storeManager = StoreKitManager.shared
+    @EnvironmentObject private var premiumStatusManager: PremiumStatusManager
     @Environment(\.dismiss) private var dismiss
     @State private var showingRestoreAlert = false
     @State private var isPurchasing = false
@@ -30,17 +31,24 @@ struct PremiumUpgradeView: View {
                 
                 ScrollView {
                     VStack(spacing: 0) {
+                        // TRIAL STATUS BANNER - Show if user is in trial
+                        if premiumStatusManager.isInTrialPeriod {
+                            trialStatusBanner
+                                .padding(.horizontal, 20)
+                                .padding(.top, 10)
+                        }
+                        
                         // HERO SECTION - Premium branding
                         VStack(spacing: 20) {
                             heroSection
                         }
-                        .padding(.top, 20)
+                        .padding(.top, premiumStatusManager.isInTrialPeriod ? 20 : 40)
                         .padding(.horizontal, 20)
                         
                         // FEATURES SECTION
                         VStack(spacing: 16) {
                             SectionHeader(
-                                title: "Premium Features", 
+                                title: "Pro Features", 
                                 icon: "star.fill", 
                                 color: .accentColor
                             )
@@ -51,9 +59,9 @@ struct PremiumUpgradeView: View {
                         .padding(.top, 32)
                         
                         // PRICING SECTION
-                        VStack(spacing: 16) {
+                        VStack(spacing: 20) {
                             SectionHeader(
-                                title: "Choose Your Plan", 
+                                title: premiumStatusManager.isInTrialPeriod ? "Continue with Pro" : "Choose Your Plan", 
                                 icon: "creditcard.fill", 
                                 color: .green
                             )
@@ -98,7 +106,7 @@ struct PremiumUpgradeView: View {
                     }
                 }
             }
-            .navigationTitle("Premium")
+            .navigationTitle(premiumStatusManager.isInTrialPeriod ? "Free Trial Active" : "Pro")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -147,6 +155,58 @@ struct PremiumUpgradeView: View {
         }
     }
     
+    private var trialStatusBanner: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Image(systemName: "timer")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.green)
+                
+                Text("Free Trial Active")
+                    .soraSubheadline()
+                    .fontWeight(.bold)
+                    .foregroundColor(.green)
+                
+                Spacer()
+                
+                if premiumStatusManager.isTrialExpiringSoon() {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 14))
+                        .foregroundColor(.orange)
+                }
+            }
+            
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(premiumStatusManager.trialTimeRemaining())
+                        .soraBody()
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                    
+                    Text("Continue enjoying all pro features")
+                        .soraCaption()
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+            }
+            
+            if premiumStatusManager.isTrialExpiringSoon() {
+                Text("Your trial expires soon. Subscribe to continue using pro features.")
+                    .soraCaption()
+                    .foregroundColor(.orange)
+                    .padding(.top, 4)
+            }
+        }
+        .padding(16)
+        .background(Color.green.opacity(0.1))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.green.opacity(0.3), lineWidth: 1)
+        )
+        .cornerRadius(12)
+    }
+    
     private var heroSection: some View {
         VStack(spacing: 16) {
             // Premium crown icon with background
@@ -161,7 +221,7 @@ struct PremiumUpgradeView: View {
             }
             
             VStack(spacing: 8) {
-                Text("Premium Upgrade")
+                Text("Pro Upgrade")
                     .soraTitle()
                     .multilineTextAlignment(.center)
                 
@@ -218,8 +278,19 @@ struct PremiumUpgradeView: View {
     }
     
     private var productsSection: some View {
-        LazyVStack(spacing: 12) {
-            ForEach(Array(storeManager.products.enumerated()), id: \.element.id) { index, product in
+        LazyVStack(spacing: 16) {
+            // Sort products to show yearly first, then monthly
+            ForEach(Array(storeManager.products.sorted { product1, product2 in
+                // Yearly products first
+                if product1.id.contains("yearly") && !product2.id.contains("yearly") {
+                    return true
+                } else if !product1.id.contains("yearly") && product2.id.contains("yearly") {
+                    return false
+                } else {
+                    // If both are same type, maintain original order
+                    return false
+                }
+            }.enumerated()), id: \.element.id) { index, product in
                 PremiumProductCard(
                     product: product,
                     isPurchased: storeManager.isPurchased(product.id),
@@ -229,6 +300,7 @@ struct PremiumUpgradeView: View {
                         await purchaseProduct(product)
                     }
                 )
+                .padding(.vertical, 4)
             }
         }
     }
@@ -338,6 +410,31 @@ struct PremiumProductCard: View {
         product.subscription != nil
     }
     
+    private var hasTrialOffer: Bool {
+        product.subscription?.introductoryOffer != nil
+    }
+    
+    private var trialPeriod: String? {
+        guard let intro = product.subscription?.introductoryOffer else { return nil }
+        
+        let period = intro.period
+        let unit = period.unit
+        let value = period.value
+        
+        switch unit {
+        case .day:
+            return value == 1 ? "1 Day" : "\(value) Days"
+        case .week:
+            return value == 1 ? "1 Week" : "\(value) Weeks"
+        case .month:
+            return value == 1 ? "1 Month" : "\(value) Months"
+        case .year:
+            return value == 1 ? "1 Year" : "\(value) Years"
+        @unknown default:
+            return nil
+        }
+    }
+    
     private var displayPrice: String {
         if isPurchased {
             return "Active"
@@ -367,51 +464,105 @@ struct PremiumProductCard: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Recommended badge
-            if isRecommended && !isPurchased {
+            // Header with recommendation badge - only show if not trial offer
+            if isRecommended && !(hasTrialOffer && product.id.contains("yearly")) {
                 HStack {
                     Spacer()
-                    Text("RECOMMENDED")
-                        .soraCaption()
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(Color.accentColor)
-                        .cornerRadius(12, corners: [.bottomLeft, .bottomRight])
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(Color.green)
+                            .frame(height: 24)
+                        
+                        Text("BEST VALUE")
+                            .soraCaption2()
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                    }
                 }
-                .padding(.bottom, 16)
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+                .padding(.bottom, 4)
             }
             
-            HStack(alignment: .top, spacing: 16) {
-                VStack(alignment: .leading, spacing: 8) {
+            // Trial Banner for yearly plan - replaces recommendation badge
+            if hasTrialOffer && product.id.contains("yearly") {
+                VStack(spacing: 0) {
+                    // Best Value badge for trial
+                    HStack {
+                        Spacer()
+                        Text("BEST VALUE")
+                            .soraCaption2()
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 4)
+                            .background(Color.green)
+                            .cornerRadius(12)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 8)
+                    .padding(.bottom, 8)
+                    
+                    // Trial content
+                    VStack(spacing: 8) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "gift.fill")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.green)
+                            
+                            Text("3-Day FREE Trial")
+                                .soraSubheadline()
+                                .fontWeight(.bold)
+                                .foregroundColor(.green)
+                            
+                            Spacer()
+                        }
+                        
+                        HStack {
+                            Text("Try all pro features for free, then \(displayPrice)/year")
+                                .soraCaption()
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.leading)
+                            
+                            Spacer()
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                    .background(Color.green.opacity(0.1))
+                }
+            }
+            
+            // Main content
+            HStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 6) {
+                    // Product title
                     HStack {
                         Text(product.displayName)
-                            .soraHeadline()
+                            .soraSubheadline()
+                            .fontWeight(.semibold)
                         
-                        if isPurchased {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
-                                .font(.headline)
+                        if isRecommended {
+                            Image(systemName: "star.fill")
+                                .font(.caption)
+                                .foregroundColor(.yellow)
                         }
                     }
                     
-                    Text(product.description)
-                        .soraBody()
-                        .foregroundColor(.secondary)
-                        .lineLimit(2)
-                    
+                    // Subscription period
                     if let period = subscriptionPeriod {
-                        HStack(spacing: 4) {
-                            Image(systemName: "arrow.clockwise")
-                                .font(.caption)
-                            Text(period)
-                        }
-                        .soraCaption()
-                        .foregroundColor(.accentColor)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.accentColor.opacity(0.1))
-                        .cornerRadius(8)
+                        Text(period)
+                            .soraCaption()
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    // Trial info for monthly (if any)
+                    if hasTrialOffer && !product.id.contains("yearly"), let trial = trialPeriod {
+                        Text("\(trial) Free Trial")
+                            .soraCaption()
+                            .foregroundColor(.green)
+                            .fontWeight(.medium)
                     }
                 }
                 
@@ -439,13 +590,24 @@ struct PremiumProductCard: View {
                                     .scaleEffect(0.8)
                                     .frame(height: 20)
                             } else {
-                                Text(displayPrice)
-                                    .soraSubheadline()
+                                if hasTrialOffer && product.id.contains("yearly") {
+                                    Text("Start Free Trial")
+                                        .soraSubheadline()
+                                        .fontWeight(.semibold)
+                                } else {
+                                    Text(displayPrice)
+                                        .soraSubheadline()
+                                }
                             }
                             
                             if !isPurchasing {
-                                Text("Subscribe")
-                                    .soraCaption()
+                                if hasTrialOffer && product.id.contains("yearly") {
+                                    Text("Then \(displayPrice)/year")
+                                        .soraCaption()
+                                } else {
+                                    Text("Subscribe")
+                                        .soraCaption()
+                                }
                             }
                         }
                         .foregroundColor(.white)
@@ -453,7 +615,9 @@ struct PremiumProductCard: View {
                         .padding(.vertical, 12)
                         .background(
                             LinearGradient(
-                                colors: [Color.accentColor, Color.accentColor.opacity(0.8)],
+                                colors: hasTrialOffer && product.id.contains("yearly") ? 
+                                    [Color.green, Color.green.opacity(0.8)] :
+                                    [Color.accentColor, Color.accentColor.opacity(0.8)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -470,13 +634,15 @@ struct PremiumProductCard: View {
         .overlay(
             RoundedRectangle(cornerRadius: 16)
                 .stroke(
-                    isRecommended ? Color.accentColor.opacity(0.3) : Color.clear,
-                    lineWidth: isRecommended ? 2 : 0
+                    (isRecommended || (hasTrialOffer && product.id.contains("yearly"))) ? Color.green.opacity(0.3) : Color.gray.opacity(0.1), 
+                    lineWidth: (isRecommended || (hasTrialOffer && product.id.contains("yearly"))) ? 2 : 1
                 )
         )
         .shadow(
-            color: isRecommended ? Color.accentColor.opacity(0.1) : Color.clear,
-            radius: isRecommended ? 8 : 0
+            color: Color.black.opacity(0.1), 
+            radius: (isRecommended || (hasTrialOffer && product.id.contains("yearly"))) ? 8 : 4, 
+            x: 0, 
+            y: (isRecommended || (hasTrialOffer && product.id.contains("yearly"))) ? 4 : 2
         )
     }
 }
