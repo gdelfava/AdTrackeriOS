@@ -418,7 +418,7 @@ struct SettingsView: View {
                                         }
                                         
                                         VStack(alignment: .leading, spacing: 2) {
-                                            Text("Premium Active")
+                                            Text("Pro Active")
                                                 .soraBody()
                                                 .fontWeight(.medium)
                                                 .foregroundColor(.primary)

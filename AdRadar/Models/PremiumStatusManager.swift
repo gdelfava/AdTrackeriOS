@@ -354,17 +354,26 @@ class PremiumStatusManager: ObservableObject {
     func formattedSubscriptionStatus() -> String {
         guard let status = subscriptionStatus else { return "No subscription" }
         
-        var statusText = status.displayName
+        // Determine which plan the user has
+        var planText = ""
+        if storeKitManager.isPurchased("com.delteqis.adradar.pro_yearly_sub") {
+            planText = "Yearly Plan"
+        } else if storeKitManager.isPurchased("com.delteqis.adradar.pro_monthly_sub") {
+            planText = "Monthly Plan"
+        } else {
+            planText = status.displayName
+        }
         
+        // Add additional status information
         if isInTrialPeriod {
-            statusText += " (\(trialTimeRemaining()))"
+            return "\(planText) - \(trialTimeRemaining())"
         } else if let expirationDate = subscriptionExpirationDate {
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
-            statusText += " (expires: \(formatter.string(from: expirationDate)))"
+            return "\(planText) (expires: \(formatter.string(from: expirationDate)))"
         }
         
-        return statusText
+        return planText
     }
     
     func shouldShowUpgradePrompt(for feature: PremiumFeature) -> Bool {
